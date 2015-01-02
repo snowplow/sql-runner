@@ -1,0 +1,21 @@
+targets:
+  - name: "My Postgres database 1"
+    type: postgres
+    host: localhost
+    database: sql_runner_tests_1
+    port: 5432
+    username: postgres
+    password:
+  - name: "My Hana database 1"
+    type: hana
+    host: localhost
+    database: sql_runner_tests_2
+    port: 34015
+    username: hana
+    password:
+variables:
+steps:
+  - name: Failing
+    queries:
+      - name: Corrupted script
+        file: postgres-sql/bad/1.sql

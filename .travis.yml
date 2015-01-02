@@ -1,0 +1,21 @@
+language: go
+go:
+  - 1.4
+  - tip
+install:
+  - export PATH=$PATH:$HOME/gopath/bin
+  - go get -v -u github.com/kr/godep
+  - godep get
+  - godep go build -v ./...
+before_script:
+  - psql -c 'create database sql_runner_tests_1' -U postgres
+  - psql -c 'create database sql_runner_tests_2' -U postgres
+script:
+  - godep go test -i ./...
+  - godep go test ./...
+  - test -z "$(go fmt ./...)"
+  - godep go build -v
+  - sql-runner -playbook ./integration-tests/good-postgres.yml
+  - test "7" = "$(sql-runner -playbook ./integration-tests/bad-mixed.yml &>/dev/null; echo $?)"
+addons:
+  postgresql: "9.3"

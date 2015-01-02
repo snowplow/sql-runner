@@ -1,0 +1,29 @@
+targets:
+  - name: "My Redshift database"
+    type: redshift
+    host: ADD HERE # The endpoint as shown in the Redshift console
+    database: ADD HERE # Name of database
+    port: 5439 # Default Redshift port
+    username: ADD HERE
+    password: ADD HERE
+variables:
+  foo: bar
+steps:
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: false
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: false
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true

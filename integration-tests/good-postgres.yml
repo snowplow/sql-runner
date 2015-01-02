@@ -1,0 +1,43 @@
+# Note Ruby-flavored :s at start of YAML properties. Not required
+:targets:
+  - :name: "My Postgres database 1"
+    :type: postgres
+    :host: localhost
+    :database: sql_runner_tests_1
+    :port: 5432
+    :username: postgres
+    :password:
+  - :name: "My Postgres database 2"
+    :type: postgres
+    :host: localhost
+    :database: sql_runner_tests_2
+    :port: 5432
+    :username: postgres
+    :password:
+:variables:
+  :test_schema: sql_runner_tests
+  :timeFormat: "2006_01_02"
+:steps:
+  - :name: Create schema and table
+    :queries:
+      - :name: Create schema and table
+        :file: postgres-sql/good/1.sql
+        :template: true
+  - :name: Parallel load
+    :queries:
+      - :name: Parallel load 1
+        :file: postgres-sql/good/2a.sql
+        :template: true
+      - :name: Parallel load 2
+        :file: postgres-sql/good/2b.sql
+        :template: true
+  - :name: Create view
+    :queries:
+      - :name: Create view
+        :file: postgres-sql/good/3.sql
+        :template: true
+  - :name: Assertions
+    :queries:
+      - :name: Assertions
+        :file: postgres-sql/good/assert.sql
+        :template: true
