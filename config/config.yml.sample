@@ -6,6 +6,7 @@ targets:
     port: 5439 # Default Redshift port
     username: ADD HERE
     password: ADD HERE
+    ssl: false # SSL disabled by default
 variables:
   foo: bar
 steps:
