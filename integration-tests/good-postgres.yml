@@ -7,6 +7,7 @@
     :port: 5432
     :username: postgres
     :password:
+    :ssl: false # SSL disabled by default
   - :name: "My Postgres database 2"
     :type: postgres
     :host: localhost
@@ -14,6 +15,7 @@
     :port: 5432
     :username: postgres
     :password:
+    :ssl: false # SSL disabled by default
 :variables:
   :test_schema: sql_runner_tests
   :timeFormat: "2006_01_02"

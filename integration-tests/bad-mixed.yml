@@ -6,6 +6,7 @@ targets:
     port: 5432
     username: postgres
     password:
+    ssl: false # SSL disabled by default
   - name: "My Hana database 1"
     type: hana
     host: localhost
@@ -13,6 +14,7 @@ targets:
     port: 34015
     username: hana
     password:
+    ssl: false # SSL disabled by default
 variables:
 steps:
   - name: Failing
