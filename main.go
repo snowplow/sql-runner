@@ -13,8 +13,8 @@
 package main
 
 import (
-	"github.com/kardianos/osext"
 	"fmt"
+	"github.com/kardianos/osext"
 	"github.com/snowplow/sql-runner/playbook"
 	"github.com/snowplow/sql-runner/run"
 	"log"

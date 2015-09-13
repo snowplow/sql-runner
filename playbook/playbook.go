@@ -21,7 +21,7 @@ type Playbook struct {
 
 type Target struct {
 	Name, Type, Host, Database, Port, Username, Password string
-	Ssl bool
+	Ssl                                                  bool
 }
 
 type Step struct {
