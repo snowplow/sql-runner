@@ -36,7 +36,7 @@ func NewPostgresTarget(target playbook.Target) *PostgresTarget {
 		User:        target.Username,
 		Password:    target.Password,
 		Database:    target.Database,
-		SSL:         false, // SSL is a problem for Redshift
+		SSL:         target.Ssl,
 		DialTimeout: dialTimeout,
 		ReadTimeout: readTimeout,
 	})
