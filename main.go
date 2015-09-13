@@ -13,7 +13,7 @@
 package main
 
 import (
-	"bitbucket.org/kardianos/osext"
+	"github.com/kardianos/osext"
 	"fmt"
 	"github.com/snowplow/sql-runner/playbook"
 	"github.com/snowplow/sql-runner/run"
