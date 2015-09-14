@@ -44,7 +44,7 @@ func ParsePlaybook(filepath string, variables map[string]string) (Playbook, erro
 	return playbook, err
 }
 
-func MergeCLIVariables(playbook Playbook, variables map[string]string) (Playbook) {
+func MergeCLIVariables(playbook Playbook, variables map[string]string) Playbook {
 	for k, v := range variables {
 		playbook.Variables[k] = v
 	}
