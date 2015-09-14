@@ -35,7 +35,7 @@ func main() {
 
 	options := processFlags()
 
-	pb, err := playbook.ParsePlaybook(options.playbook)
+	pb, err := playbook.ParsePlaybook(options.playbook, options.variables)
 	if err != nil {
 		log.Fatalf("Could not parse playbook (YAML): %s", err.Error())
 	}
@@ -51,7 +51,7 @@ func main() {
 // required flag
 func processFlags() Options {
 
-	var options Options
+	var options Options = NewOptions()
 	var fs = options.GetFlagSet()
 	fs.Parse(os.Args[1:])
 
