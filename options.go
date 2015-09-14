@@ -48,7 +48,6 @@ func NewOptions() Options {
 }
 
 func (o *Options) GetFlagSet() *flag.FlagSet {
-	o.variables = make(map[string]string)
 	var fs = flag.NewFlagSet("Options", flag.ContinueOnError)
 
 	fs.BoolVar(&(o.help), "help", false, "Shows this message")
