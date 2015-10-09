@@ -3,12 +3,12 @@
 	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
-			"ImportPath": "github.com/aws/aws-sdk-go/aws/awserr",
+			"ImportPath": "github.com/aws/aws-sdk-go/aws",
 			"Comment": "v0.9.14",
 			"Rev": "6bb00dc3527e8a08fc06588b92429c54de709d63"
 		},
 		{
-			"ImportPath": "github.com/aws/aws-sdk-go/aws/credentials",
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/endpoints",
 			"Comment": "v0.9.14",
 			"Rev": "6bb00dc3527e8a08fc06588b92429c54de709d63"
 		},
