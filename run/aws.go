@@ -14,6 +14,7 @@ package run
 
 import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"fmt"
 )
 
@@ -31,5 +32,20 @@ func awsEnvCredentials() (string, error) {
 
 func awsProfileCredentials(profile string) (string, error) {
 	creds := credentials.NewSharedCredentials("", profile)
+	return awsCredentials(creds)
+}
+
+func awsEC2RoleCredentials() (string, error) {
+	creds := credentials.NewCredentials(&ec2rolecreds.EC2RoleProvider{})
+	return awsCredentials(creds)
+}
+
+func awsChainCredentials(profile string) (string, error) {
+	creds := credentials.NewChainCredentials(
+	    []credentials.Provider{
+	        &credentials.EnvProvider{},
+	        &credentials.SharedCredentialsProvider{Filename: "", Profile: profile},
+	        &ec2rolecreds.EC2RoleProvider{},
+	    })
 	return awsCredentials(creds)
 }
