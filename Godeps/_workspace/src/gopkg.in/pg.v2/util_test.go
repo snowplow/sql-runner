@@ -10,5 +10,5 @@ type NopWriteCloser struct {
 }
 
 func (w *NopWriteCloser) Close() error {
-	return nil;
+	return nil
 }

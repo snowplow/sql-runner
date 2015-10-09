@@ -1,7 +1,17 @@
 {
 	"ImportPath": "github.com/snowplow/sql-runner",
-	"GoVersion": "go1.4",
+	"GoVersion": "go1.4.2",
 	"Deps": [
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/aws",
+			"Comment": "v0.9.14",
+			"Rev": "6bb00dc3527e8a08fc06588b92429c54de709d63"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/endpoints",
+			"Comment": "v0.9.14",
+			"Rev": "6bb00dc3527e8a08fc06588b92429c54de709d63"
+		},
 		{
 			"ImportPath": "github.com/golang/glog",
 			"Rev": "44145f04b68cf362d9c4df2182967c2275eaefed"
@@ -9,6 +19,10 @@
 		{
 			"ImportPath": "github.com/kardianos/osext",
 			"Rev": "6e7f843663477789fac7c02def0d0909e969b4e5"
+		},
+		{
+			"ImportPath": "github.com/vaughan0/go-ini",
+			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
 		},
 		{
 			"ImportPath": "gopkg.in/bufio.v1",
