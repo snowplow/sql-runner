@@ -25,6 +25,8 @@ var (
 		"nowWithFormat": func(format string) string {
 			return time.Now().Format(format)
 		},
+		"awsEnvCredentials": awsEnvCredentials,
+		"awsProfileCredentials": awsProfileCredentials,
 	}
 )
 
