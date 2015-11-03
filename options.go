@@ -40,6 +40,7 @@ type Options struct {
 	version   bool
 	playbook  string
 	sqlroot   string
+	fromStep  string
 	variables CLIVariables
 }
 
@@ -55,6 +56,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.playbook), "playbook", "", "Playbook of SQL scripts to execute")
 	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY))
 	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
+	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
 	// TODO: add format flag if/when we support TOML
 
 	return fs
