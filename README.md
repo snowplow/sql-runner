@@ -125,7 +125,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.2.0-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.3.0-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
