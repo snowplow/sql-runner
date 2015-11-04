@@ -120,7 +120,9 @@ function build_artifact() {
 	echo "------------------------------------------------"
 
 	vagrant ssh -c "cd ${build_dir} && export GOOS=${__goos_type} && export GOARCH=${__goos_arch} && ${build_cmd} -o ${guest_repo_path}/${dist_path}/${__out_binary}"
-	zip ${dist_path}/${artifact_name} ${dist_path}/${__out_binary}
+	cd ${dist_path}
+	zip ${artifact_name} ${__out_binary}
+	cd ..
 }
 
 # Uploads our artifact to BinTray

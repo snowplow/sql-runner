@@ -67,7 +67,7 @@ func Run(pb playbook.Playbook, sqlroot string, fromStep string) []TargetStatus {
 			if pb.Steps[i].Name == fromStep {
 				exists = true
 				stepIndex = i
-				break;
+				break
 			}
 		}
 

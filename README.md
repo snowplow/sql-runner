@@ -45,7 +45,7 @@ psql# Enter password: postgres
 psql# \q
 guest> psql -c 'create database sql_runner_tests_1' -U postgres
 guest> psql -c 'create database sql_runner_tests_2' -U postgres
-guest> ./sql-runner -playbook ./integration-tests/good-postgres.yml
+guest> ./sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"`
 ```
 
 ### Publishing
@@ -92,7 +92,7 @@ Templates are run through Golang's [text template processor] [go-text-template].
 The following custom functions are also supported:
 
 * `nowWithFormat [timeFormat]`: where `timeFormat` is a valid Golang [time format] [go-time-format]
-* `awsEnvCredentials`: supports passing credentials through environment variables, such as `AWS_ACCESS_KEY_ID`, `AWS_ACCESS_KEY`, `AWS_SECRET_ACCESS_KEY` and `AWS_SECRET_KEY`
+* `awsEnvCredentials`: supports passing credentials through environment variables, such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 * `awsProfileCredentials`: supports getting credentials from a credentials file, also used by boto/awscli
 * `awsEC2RoleCredentials`: supports getting role-based credentials, i.e. getting the automatically generated credentials in EC2 instances
 * `awsChainCredentials`: tries to get credentials from each of the three methods above in order, using the first one returned

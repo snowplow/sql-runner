@@ -1,4 +1,4 @@
-Version 0.3.0 (2015-04-11)
+Version 0.3.0 (2015-11-05)
 --------------------------
 Hardened push script (#8)
 Upgraded vagrant push to upload OS X and Windows binaries (#31)
