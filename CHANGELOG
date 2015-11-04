@@ -1,3 +1,13 @@
+Version 0.3.0 (2015-04-11)
+--------------------------
+Hardened push script (#8)
+Upgraded vagrant push to upload OS X and Windows binaries (#31)
+Added option to start SQL Runner from a given step (#32)
+Updated vagrant up to use Golang 1.5 and Wine (#34)
+Added support to passing variables as command-line options (#35)
+Added AWS credentials support (#39)
+Added new template functions into README (#41)
+
 Version 0.2.0 (2015-09-13)
 --------------------------
 Fixed typo of "queries executed againt targets" (#20)
