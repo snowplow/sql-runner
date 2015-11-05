@@ -15,7 +15,8 @@ script:
   - godep go test ./...
   - test -z "$(go fmt ./...)"
   - godep go build -v
-  - sql-runner -playbook ./integration-tests/good-postgres.yml
+  - sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep "Create schema and table"
   - test "7" = "$(sql-runner -playbook ./integration-tests/bad-mixed.yml &>/dev/null; echo $?)"
+  - test "6" = "$(sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` &>/dev/null; echo $?)"
 addons:
   postgresql: "9.3"

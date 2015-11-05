@@ -39,9 +39,13 @@ guest> godep go build
 Assuming **Building** complete:
 
 ```
+guest> sudo -u postgres psql
+psql# \password
+psql# Enter password: postgres
+psql# \q
 guest> psql -c 'create database sql_runner_tests_1' -U postgres
 guest> psql -c 'create database sql_runner_tests_2' -U postgres
-guest> ./sql-runner -playbook ./integration-tests/postgres.yml
+guest> ./sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"`
 ```
 
 ### Publishing
@@ -49,11 +53,21 @@ guest> ./sql-runner -playbook ./integration-tests/postgres.yml
 Assuming **[Travis] [travis]** is green and versions updated:
 
 ```bash
-guest> godep go build
  host> vagrant push
 ```
 
+This will build an individual artifact for Windows, OSX and Linux all in 64 bit.  All artifacts are stored in the `dist/` directory.
+
 ## User guide
+
+### CLI Arguments
+
+There are several command line arguments that can be used:
+
+* `-playbook` : This is a required argument and should point to the playbook you wish to run.
+* `-fromStep` : Optional argument which will allow you to start the sql-runner from any step in your playbook.
+* `-sqlroot`  : Optional argument to change where we look for the sql statements to run, defaults to the directory of your playbook.
+* `-var`      : Optional argument which allows you to pass a dictionary of key-value pairs which will be used to flesh out your templates.
 
 ### Playbooks
 
@@ -77,7 +91,13 @@ Templates are run through Golang's [text template processor] [go-text-template].
 
 The following custom functions are also supported:
 
-* `nowWithFormat [timeFormat]` - where `timeFormat` is a valid Golang [time format] [go-time-format]
+* `nowWithFormat [timeFormat]`: where `timeFormat` is a valid Golang [time format] [go-time-format]
+* `awsEnvCredentials`: supports passing credentials through environment variables, such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+* `awsProfileCredentials`: supports getting credentials from a credentials file, also used by boto/awscli
+* `awsEC2RoleCredentials`: supports getting role-based credentials, i.e. getting the automatically generated credentials in EC2 instances
+* `awsChainCredentials`: tries to get credentials from each of the three methods above in order, using the first one returned
+
+**Note**: All AWS functions output strings in the Redshift credentials format (`CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'`).
 
 For an example query file using templating see: [integration-tests/postgres-sql/good/3.sql] [example-query]
 
@@ -105,7 +125,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.2.0-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.3.0-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat

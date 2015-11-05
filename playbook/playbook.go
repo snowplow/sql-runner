@@ -35,7 +35,18 @@ type Query struct {
 }
 
 // Dispatch to format-specific parser
-func ParsePlaybook(filepath string) (Playbook, error) {
+func ParsePlaybook(filepath string, variables map[string]string) (Playbook, error) {
 	// TODO: Add TOML support?
-	return parsePlaybookYaml(filepath)
+	playbook, err := parsePlaybookYaml(filepath)
+	if err == nil {
+		playbook = MergeCLIVariables(playbook, variables)
+	}
+	return playbook, err
+}
+
+func MergeCLIVariables(playbook Playbook, variables map[string]string) Playbook {
+	for k, v := range variables {
+		playbook.Variables[k] = v
+	}
+	return playbook
 }

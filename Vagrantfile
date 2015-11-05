@@ -1,6 +1,7 @@
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "sql-runner"
   config.ssh.forward_agent = true
 
   config.vm.provider :virtualbox do |vb|

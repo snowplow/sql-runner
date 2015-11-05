@@ -25,7 +25,7 @@ import (
 const (
 	CLI_NAME        = "sql-runner"
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift and Postgres`
-	CLI_VERSION     = "0.2.0"
+	CLI_VERSION     = "0.3.0"
 
 	SQLROOT_BINARY   = "BINARY"
 	SQLROOT_PLAYBOOK = "PLAYBOOK"
@@ -35,12 +35,12 @@ func main() {
 
 	options := processFlags()
 
-	pb, err := playbook.ParsePlaybook(options.playbook)
+	pb, err := playbook.ParsePlaybook(options.playbook, options.variables)
 	if err != nil {
 		log.Fatalf("Could not parse playbook (YAML): %s", err.Error())
 	}
 
-	statuses := run.Run(pb, options.sqlroot)
+	statuses := run.Run(pb, options.sqlroot, options.fromStep)
 	code, message := review(statuses)
 
 	log.Printf(message)
@@ -51,7 +51,7 @@ func main() {
 // required flag
 func processFlags() Options {
 
-	var options Options
+	var options Options = NewOptions()
 	var fs = options.GetFlagSet()
 	fs.Parse(os.Args[1:])
 

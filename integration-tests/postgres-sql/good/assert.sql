@@ -7,9 +7,9 @@ DECLARE
   expected_average_age CONSTANT integer := 25;
 BEGIN
   {{/* Update view names to today's date or Travis will error */}}
-  IF (SELECT average_age <> expected_average_age FROM {{.test_schema}}.view_2015_09_13) THEN
+  IF (SELECT average_age <> expected_average_age FROM {{.test_schema}}.view_{{.test_date}}) THEN
     RAISE EXCEPTION 'Average_age % does not match expected age %',
-    	(SELECT average_age FROM {{.test_schema}}.view_2015_09_13),
+    	(SELECT average_age FROM {{.test_schema}}.view_{{.test_date}}),
     	expected_average_age;
   END IF;
 END;

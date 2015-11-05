@@ -20,6 +20,10 @@
   :test_schema: sql_runner_tests
   :timeFormat: "2006_01_02"
 :steps:
+  - :name: Failing
+    :queries:
+      - :name: Corrupted script
+        :file: postgres-sql/bad/1.sql
   - :name: Create schema and table
     :queries:
       - :name: Create schema and table

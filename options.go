@@ -15,13 +15,37 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 )
 
+type CLIVariables map[string]string
+
+// Implement the Value interface
+func (i *CLIVariables) String() string {
+	return fmt.Sprintf("%s", *i)
+}
+
+func (i *CLIVariables) Set(value string) error {
+	var split = strings.SplitN(value, "=", 2)
+	if len(split) > 1 {
+		key := split[0]
+		val := split[1]
+		(*i)[key] = val
+	}
+	return nil
+}
+
 type Options struct {
-	help     bool
-	version  bool
-	playbook string
-	sqlroot  string
+	help      bool
+	version   bool
+	playbook  string
+	sqlroot   string
+	fromStep  string
+	variables CLIVariables
+}
+
+func NewOptions() Options {
+	return Options{variables: make(map[string]string)}
 }
 
 func (o *Options) GetFlagSet() *flag.FlagSet {
@@ -31,6 +55,8 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.BoolVar(&(o.version), "version", false, "Shows the program version")
 	fs.StringVar(&(o.playbook), "playbook", "", "Playbook of SQL scripts to execute")
 	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY))
+	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
+	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

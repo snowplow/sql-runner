@@ -26,6 +26,7 @@ const (
 	POSTGRESQL_TYPE = "postgresql"
 
 	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
+	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
 )
 
 // Reports on any errors from running the
@@ -55,7 +56,34 @@ type QueryStatus struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb playbook.Playbook, sqlroot string) []TargetStatus {
+func Run(pb playbook.Playbook, sqlroot string, fromStep string) []TargetStatus {
+
+	// Check fromStep argument to ensure that it actually matches a step and to get the
+	// index to start from
+	stepIndex := 0
+	if fromStep != "" {
+		exists := false
+		for i := 0; i < len(pb.Steps); i++ {
+			if pb.Steps[i].Name == fromStep {
+				exists = true
+				stepIndex = i
+				break
+			}
+		}
+
+		// Process failure case
+		if exists == false {
+			allStatuses := make([]TargetStatus, 0)
+			for _, tgt := range pb.Targets {
+				status := fromStepNotFound(tgt.Name, fromStep)
+				allStatuses = append(allStatuses, status)
+			}
+			return allStatuses
+		}
+	}
+
+	// Trim skippable steps from the array
+	pb.Steps = pb.Steps[stepIndex:]
 
 	targetChan := make(chan TargetStatus, len(pb.Targets))
 
@@ -75,6 +103,16 @@ func Run(pb playbook.Playbook, sqlroot string) []TargetStatus {
 	}
 
 	return allStatuses
+}
+
+// Helper for a fromStep not found error
+func fromStepNotFound(targetName string, fromStep string) TargetStatus {
+	errs := []error{fmt.Errorf("%s: %s", ERROR_FROM_STEP_NOT_FOUND, fromStep)}
+	return TargetStatus{
+		Name:   targetName,
+		Errors: errs,
+		Steps:  nil,
+	}
 }
 
 // Route to correct database client and run
