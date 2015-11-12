@@ -16,9 +16,9 @@ import (
 	"bytes"
 	"github.com/snowplow/sql-runner/playbook"
 	"io/ioutil"
+	"os"
 	"text/template"
 	"time"
-	"os"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(playbook.Query, string, map[string]interface{}) QueryStatus
+	RunQuery(playbook.Query, string, map[string]interface{}, bool) QueryStatus
 	GetTarget() playbook.Target
 }
 
