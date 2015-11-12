@@ -18,12 +18,16 @@ import (
 	"io/ioutil"
 	"text/template"
 	"time"
+	"os"
 )
 
 var (
 	templFuncs = template.FuncMap{
 		"nowWithFormat": func(format string) string {
 			return time.Now().Format(format)
+		},
+		"systemEnv": func(env string) string {
+			return os.Getenv(env)
 		},
 		"awsChainCredentials":   awsChainCredentials,
 		"awsEC2RoleCredentials": awsEC2RoleCredentials,
