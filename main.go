@@ -40,7 +40,7 @@ func main() {
 		log.Fatalf("Could not parse playbook (YAML): %s", err.Error())
 	}
 
-	statuses := run.Run(pb, options.sqlroot, options.fromStep)
+	statuses := run.Run(pb, options.sqlroot, options.fromStep, options.dryRun)
 	code, message := review(statuses)
 
 	log.Printf(message)

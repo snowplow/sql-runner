@@ -41,6 +41,7 @@ type Options struct {
 	playbook  string
 	sqlroot   string
 	fromStep  string
+	dryRun    bool
 	variables CLIVariables
 }
 
@@ -57,6 +58,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY))
 	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
 	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
+	fs.BoolVar(&(o.dryRun), "dryRun", false, "Runs through a playbook without executing any of the SQL")
 	// TODO: add format flag if/when we support TOML
 
 	return fs
