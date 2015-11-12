@@ -34,6 +34,11 @@ type Query struct {
 	Template   bool
 }
 
+// Initialize properly the YAML
+func NewPlaybook() Playbook {
+	return Playbook{Variables: make(map[string]interface{})}
+}
+
 // Dispatch to format-specific parser
 func ParsePlaybook(filepath string, variables map[string]string) (Playbook, error) {
 	// TODO: Add TOML support?

@@ -29,12 +29,14 @@ var (
 // to execute against and the steps to execute
 func parsePlaybookYaml(filepath string) (Playbook, error) {
 
+	// Define and initialize the Playbook struct
+	var playbook Playbook = NewPlaybook()
+
 	lines, err := loadRubyYaml(filepath)
 	if err != nil {
 		return Playbook{}, err
 	}
 
-	var playbook Playbook
 	err = yaml.Unmarshal(lines, &playbook)
 	if err != nil {
 		return Playbook{}, err
