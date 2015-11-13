@@ -69,6 +69,23 @@ There are several command line arguments that can be used:
 * `-sqlroot`  : Optional argument to change where we look for the sql statements to run, defaults to the directory of your playbook.
 * `-var`      : Optional argument which allows you to pass a dictionary of key-value pairs which will be used to flesh out your templates.
 * `-consul`   : Optional argument which allows you to fetch playbooks and SQL files from a Consul server.
+* `-dryRun`   : Optional argument which allows you to run through your playbook without executing any SQL against your target(s)
+
+#### More on Consul
+
+Using the `-consul` argument results in the following changes:
+
+* The `-playbook` argument becomes the key that is used to look for the playbook in Consul.
+* The `-sqlroot` argument also becomes a key argument for Consul.
+
+Say for example you pass the following command in:
+
+* `./sql-runner -consul "localhost:8500" -playbook "sql-runner/playbook/1" -sqlroot CONSUL`
+
+This results in:
+
+* Looking for your playbook file at this key `sql-runner/playbook/1`
+* Expecting all your SQL file keys to begin with `sql-runner/playbook/1/<SQL path from playbook>`
 
 ### Playbooks
 
@@ -93,6 +110,7 @@ Templates are run through Golang's [text template processor] [go-text-template].
 The following custom functions are also supported:
 
 * `nowWithFormat [timeFormat]`: where `timeFormat` is a valid Golang [time format] [go-time-format]
+* `systemEnv "ENV_VAR"`: where `ENV_VAR` is a key for a valid environment variable
 * `awsEnvCredentials`: supports passing credentials through environment variables, such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 * `awsProfileCredentials`: supports getting credentials from a credentials file, also used by boto/awscli
 * `awsEC2RoleCredentials`: supports getting role-based credentials, i.e. getting the automatically generated credentials in EC2 instances
