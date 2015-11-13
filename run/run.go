@@ -56,7 +56,7 @@ type QueryStatus struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb playbook.Playbook, sqlroot string, fromStep string, dryRun bool) []TargetStatus {
+func Run(pb playbook.Playbook, consulAddress string, sqlroot string, fromStep string, dryRun bool) []TargetStatus {
 
 	// Check fromStep argument to ensure that it actually matches a step and to get the
 	// index to start from
@@ -89,7 +89,7 @@ func Run(pb playbook.Playbook, sqlroot string, fromStep string, dryRun bool) []T
 
 	// Route each target to the right db client and run
 	for _, tgt := range pb.Targets {
-		routeAndRun(tgt, sqlroot, pb.Steps, pb.Variables, targetChan, dryRun)
+		routeAndRun(tgt, consulAddress, sqlroot, pb.Steps, pb.Variables, targetChan, dryRun)
 	}
 
 	// Compose statuses from each target run
@@ -116,12 +116,12 @@ func fromStepNotFound(targetName string, fromStep string) TargetStatus {
 }
 
 // Route to correct database client and run
-func routeAndRun(target playbook.Target, sqlroot string, steps []playbook.Step, variables map[string]interface{}, targetChan chan TargetStatus, dryRun bool) {
+func routeAndRun(target playbook.Target, consulAddress string, sqlroot string, steps []playbook.Step, variables map[string]interface{}, targetChan chan TargetStatus, dryRun bool) {
 	switch strings.ToLower(target.Type) {
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
 		go func(tgt playbook.Target) {
 			pg := NewPostgresTarget(tgt)
-			targetChan <- runSteps(pg, sqlroot, steps, variables, dryRun)
+			targetChan <- runSteps(pg, consulAddress, sqlroot, steps, variables, dryRun)
 		}(target)
 	default:
 		targetChan <- unsupportedDbType(target.Name, target.Type)
@@ -143,14 +143,14 @@ func unsupportedDbType(targetName string, targetType string) TargetStatus {
 //
 // runSteps fails fast - we stop executing SQL on
 // this target when a step fails.
-func runSteps(database Db, sqlroot string, steps []playbook.Step, variables map[string]interface{}, dryRun bool) TargetStatus {
+func runSteps(database Db, consulAddress string, sqlroot string, steps []playbook.Step, variables map[string]interface{}, dryRun bool) TargetStatus {
 
 	allStatuses := make([]StepStatus, len(steps))
 
 FailFast:
 	for i, stp := range steps {
 		stpIndex := i + 1
-		status := runQueries(database, sqlroot, stpIndex, stp.Name, stp.Queries, variables, dryRun)
+		status := runQueries(database, consulAddress, sqlroot, stpIndex, stp.Name, stp.Queries, variables, dryRun)
 		allStatuses = append(allStatuses, status)
 
 		for _, qry := range status.Queries {
@@ -171,7 +171,7 @@ FailFast:
 // runQueries composes failures across the queries
 // for a given step: if one query fails, the others
 // will still complete.
-func runQueries(database Db, sqlroot string, stepIndex int, stepName string, queries []playbook.Query, variables map[string]interface{}, dryRun bool) StepStatus {
+func runQueries(database Db, consulAddress string, sqlroot string, stepIndex int, stepName string, queries []playbook.Query, variables map[string]interface{}, dryRun bool) StepStatus {
 
 	queryChan := make(chan QueryStatus, len(queries))
 	dbName := database.GetTarget().Name
@@ -181,7 +181,7 @@ func runQueries(database Db, sqlroot string, stepIndex int, stepName string, que
 		go func(qry playbook.Query) {
 			queryPath := path.Join(sqlroot, qry.File)
 			log.Printf("EXECUTING %s (in step %s @ %s): %s", qry.Name, stepName, dbName, queryPath)
-			queryChan <- database.RunQuery(qry, queryPath, variables, dryRun)
+			queryChan <- database.RunQuery(qry, queryPath, consulAddress, variables, dryRun)
 		}(query)
 	}
 

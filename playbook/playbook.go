@@ -40,9 +40,9 @@ func NewPlaybook() Playbook {
 }
 
 // Dispatch to format-specific parser
-func ParsePlaybook(filepath string, variables map[string]string) (Playbook, error) {
+func ParsePlaybook(playbookPath string, consulAddress string, variables map[string]string) (Playbook, error) {
 	// TODO: Add TOML support?
-	playbook, err := parsePlaybookYaml(filepath)
+	playbook, err := parsePlaybookYaml(playbookPath, consulAddress)
 	if err == nil {
 		playbook = MergeCLIVariables(playbook, variables)
 	}
