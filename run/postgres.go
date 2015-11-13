@@ -14,7 +14,7 @@ package run
 
 import (
 	"github.com/snowplow/sql-runner/playbook"
-	"gopkg.in/pg.v2"
+	"gopkg.in/pg.v3"
 	"time"
 )
 
