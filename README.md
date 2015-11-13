@@ -69,6 +69,7 @@ There are several command line arguments that can be used:
 * `-sqlroot`  : Optional argument to change where we look for the sql statements to run, defaults to the directory of your playbook.
 * `-var`      : Optional argument which allows you to pass a dictionary of key-value pairs which will be used to flesh out your templates.
 * `-consul`   : Optional argument which allows you to fetch playbooks and SQL files from a Consul server.
+* `-dryRun`   : Optional argument which allows you to run through your playbook without executing any SQL against your target(s)
 
 #### More on Consul
 
