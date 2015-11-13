@@ -18,6 +18,7 @@ import (
 	"gopkg.in/yaml.v1"
 	"os"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -27,14 +28,29 @@ var (
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(filepath string) (Playbook, error) {
+func parsePlaybookYaml(playbookPath string, consulAddress string) (Playbook, error) {
 
 	// Define and initialize the Playbook struct
 	var playbook Playbook = NewPlaybook()
+	var lines []byte
+	var err error
 
-	lines, err := loadRubyYaml(filepath)
-	if err != nil {
-		return Playbook{}, err
+	if consulAddress == "" {
+		// Load the playbook from a local file
+		lines, err = loadRubyYaml(playbookPath)
+		if err != nil {
+			return Playbook{}, err
+		}
+	} else {
+		// Load the playbook from a consul value
+		// - Use the playbookPath as the key
+		var pbStr string
+
+		pbStr, err = GetStringValueFromConsul(consulAddress, playbookPath)
+		if err != nil {
+			return Playbook{}, err
+		}
+		lines = cleanRubyYaml(strings.Split(pbStr, "\n"))
 	}
 
 	err = yaml.Unmarshal(lines, &playbook)

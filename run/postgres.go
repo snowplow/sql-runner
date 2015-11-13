@@ -49,9 +49,9 @@ func (pt PostgresTarget) GetTarget() playbook.Target {
 }
 
 // Run a query against the target
-func (pt PostgresTarget) RunQuery(query playbook.Query, queryPath string, variables map[string]interface{}, dryRun bool) QueryStatus {
+func (pt PostgresTarget) RunQuery(query playbook.Query, queryPath string, consulAddress string, variables map[string]interface{}, dryRun bool) QueryStatus {
 
-	script, err := prepareQuery(queryPath, query.Template, variables)
+	script, err := prepareQuery(queryPath, consulAddress, query.Template, variables)
 	if err != nil {
 		return QueryStatus{query, queryPath, 0, err}
 	}

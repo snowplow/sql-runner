@@ -38,14 +38,21 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(playbook.Query, string, map[string]interface{}, bool) QueryStatus
+	RunQuery(playbook.Query, string, string, map[string]interface{}, bool) QueryStatus
 	GetTarget() playbook.Target
 }
 
 // Reads the script and fills in the template
-func prepareQuery(queryPath string, template bool, variables map[string]interface{}) (string, error) {
+func prepareQuery(queryPath string, consulAddress string, template bool, variables map[string]interface{}) (string, error) {
 
-	script, err := readScript(queryPath)
+	var script string
+	var err error
+
+	if consulAddress == "" {
+		script, err = readScript(queryPath)
+	} else {
+		script, err = playbook.GetStringValueFromConsul(consulAddress, queryPath)
+	}
 	if err != nil {
 		return "", err
 	}
