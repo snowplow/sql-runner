@@ -1,3 +1,12 @@
+Version 0.4.0 (2015-11-13)
+--------------------------
+Bump gopkg.in/pg.v2 to v3 (#48)
+Initialize the variables map inside the playbook properly, thanks @andrioni! (#47)
+Add -dryRun mode (#45)
+Add ability for SQL files to be read from Consul (#44)
+Add ability to read playbook from Consul (#43)
+Add an environment variable function (#30)
+
 Version 0.3.0 (2015-11-05)
 --------------------------
 Hardened push script (#8)
