@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-// Attempts to return the string value
-// of a key stored in a consul server
-func GetStringValueFromConsul(address string, key string) (string, error) {
+// Attempts to return the bytes
+// of a key stored in a Consul server
+func GetBytesFromConsul(address string, key string) ([]byte, error) {
 	// Add address to config
 	conf := api.DefaultConfig()
 	conf.Address = address
@@ -27,7 +27,7 @@ func GetStringValueFromConsul(address string, key string) (string, error) {
 	// Connect to consul
 	client, err := api.NewClient(conf)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	kv := client.KV()
@@ -35,17 +35,24 @@ func GetStringValueFromConsul(address string, key string) (string, error) {
 	// Get the KV Pair from consul
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if pair != nil {
-		return byteArrayToString(pair.Value), nil
+		return pair.Value, nil
 	} else {
-		return "", fmt.Errorf("The key '%s' returned a nil value from the consul server", key)
+		return nil, fmt.Errorf("The key '%s' returned a nil value from the consul server", key)
 	}
 }
 
-// Converts a byte array into a string
-func byteArrayToString(byteArray []byte) string {
-	return string(byteArray[:])
+// Attempts to return the string value
+// of a key stored in a Consul server
+func GetStringValueFromConsul(address string, key string) (string, error) {
+	bytes, err := GetBytesFromConsul(address, key)
+
+	if err != nil {
+		return "", err
+	} else {
+		return string(bytes), nil
+	}
 }
