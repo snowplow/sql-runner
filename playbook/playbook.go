@@ -34,7 +34,7 @@ type Query struct {
 	Template   bool
 }
 
-// Initialize properly the YAML
+// Initialize properly the Playbook
 func NewPlaybook() Playbook {
 	return Playbook{Variables: make(map[string]interface{})}
 }
@@ -42,14 +42,14 @@ func NewPlaybook() Playbook {
 // Dispatch to format-specific parser
 func ParsePlaybook(playbookPath string, consulAddress string, variables map[string]string) (Playbook, error) {
 	// TODO: Add TOML support?
-	playbook, err := parsePlaybookYaml(playbookPath, consulAddress)
+	playbook, err := getAndParsePlaybookYaml(playbookPath, consulAddress)
 	if err == nil {
-		playbook = MergeCLIVariables(playbook, variables)
+		playbook = mergeCLIVariables(playbook, variables)
 	}
 	return playbook, err
 }
 
-func MergeCLIVariables(playbook Playbook, variables map[string]string) Playbook {
+func mergeCLIVariables(playbook Playbook, variables map[string]string) Playbook {
 	for k, v := range variables {
 		playbook.Variables[k] = v
 	}
