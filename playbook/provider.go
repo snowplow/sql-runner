@@ -13,41 +13,45 @@
 package playbook
 
 import (
-	"bytes"
-	"gopkg.in/yaml.v1"
-	"regexp"
-	"strings"
+	"io/ioutil"
+	"os"
 )
 
-var (
-	// Remove the prepended :s
-	rubyYamlRegex = regexp.MustCompile("^(\\s*-?\\s*):?(.*)$")
-)
+// Get a playbook from the adequate source
+func getPlaybook(playbookPath string, consulAddress string) ([]byte, error) {
+	if consulAddress == "" {
+		// Load the playbook from a local file
+		return loadLocalFile(playbookPath)
+	} else {
+		// Load the playbook from a consul value
+		// - Use the playbookPath as the key
+		return GetBytesFromConsul(consulAddress, playbookPath)
+	}
+}
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(playbookBytes []byte) (Playbook, error) {
+func getAndParsePlaybookYaml(playbookPath string, consulAddress string) (Playbook, error) {
+
 	// Define and initialize the Playbook struct
 	var playbook Playbook = NewPlaybook()
 
-	// Clean up the YAML
-	cleaned := cleanYaml(playbookBytes)
-	err := yaml.Unmarshal(cleaned, &playbook)
+	lines, err := getPlaybook(playbookPath, consulAddress)
+	if err != nil {
+		return playbook, err
+	}
 
-	return playbook, err
+	return parsePlaybookYaml(lines)
 }
 
-// Because our StorageLoader's YAML file has elements with
-// : prepended (bad decision to make things easier from
-// our Ruby code).
-func cleanYaml(rawYaml []byte) []byte {
-	var lines []string
-	var buffer bytes.Buffer
-
-	lines = strings.Split(string(rawYaml), "\n")
-
-	for _, line := range lines {
-		buffer.WriteString(rubyYamlRegex.ReplaceAllString(line, "${1}${2}\n"))
+// readLines reads a whole file into memory
+// and returns a slice of its lines.
+func loadLocalFile(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
 	}
-	return buffer.Bytes()
+	defer file.Close()
+
+	return ioutil.ReadAll(file)
 }
