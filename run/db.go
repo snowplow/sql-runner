@@ -38,7 +38,7 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(playbook.Query, string, string, map[string]interface{}, bool) QueryStatus
+	RunQuery(ReadyQuery, bool) QueryStatus
 	GetTarget() playbook.Target
 }
 
