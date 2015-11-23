@@ -38,7 +38,7 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(playbook.Query, string, string, map[string]interface{}, bool) QueryStatus
+	RunQuery(ReadyQuery, bool) QueryStatus
 	GetTarget() playbook.Target
 }
 
@@ -53,6 +53,7 @@ func prepareQuery(queryPath string, consulAddress string, template bool, variabl
 	} else {
 		script, err = playbook.GetStringValueFromConsul(consulAddress, queryPath)
 	}
+
 	if err != nil {
 		return "", err
 	}
