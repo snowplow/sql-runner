@@ -56,7 +56,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.BoolVar(&(o.help), "help", false, "Shows this message")
 	fs.BoolVar(&(o.version), "version", false, "Shows the program version")
 	fs.StringVar(&(o.playbook), "playbook", "", "Playbook of SQL scripts to execute")
-	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s, %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY, SQLROOT_CONSUL))
+	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s, %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY, SQLROOT_PLAYBOOK_CHILD))
 	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
 	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
 	fs.BoolVar(&(o.dryRun), "dryRun", false, "Runs through a playbook without executing any of the SQL")
