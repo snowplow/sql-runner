@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -27,9 +28,9 @@ const (
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift and Postgres`
 	CLI_VERSION     = "0.3.0"
 
-	SQLROOT_BINARY   = "BINARY"
-	SQLROOT_PLAYBOOK = "PLAYBOOK"
-	SQLROOT_CONSUL   = "CONSUL"
+	SQLROOT_BINARY         = "BINARY"
+	SQLROOT_PLAYBOOK       = "PLAYBOOK"
+	SQLROOT_PLAYBOOK_CHILD = "PLAYBOOK_CHILD"
 )
 
 func main() {
@@ -86,22 +87,33 @@ func processFlags() Options {
 
 // Resolve the path to our SQL scripts
 func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string) (string, error) {
-	consulErr := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
+	consulErr1 := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
+	consulErr2 := fmt.Errorf("Cannot use %s option without -consul argument", sqlroot)
 
 	switch sqlroot {
 	case SQLROOT_BINARY:
 		if consulAddress != "" {
-			return "", consulErr
+			return "", consulErr1
 		}
 		return osext.ExecutableFolder()
 	case SQLROOT_PLAYBOOK:
 		if consulAddress != "" {
-			return "", consulErr
+			return getAbsConsulPath(playbookPath), nil
 		}
 		return filepath.Abs(filepath.Dir(playbookPath))
-	case SQLROOT_CONSUL:
-		return playbookPath, nil
+	case SQLROOT_PLAYBOOK_CHILD:
+		if consulAddress != "" {
+			return playbookPath, nil
+		}
+		return "", consulErr2
 	default:
 		return sqlroot, nil
 	}
+}
+
+// Gets an absolute path for Consul one directory up
+func getAbsConsulPath(path string) string {
+	strSpl := strings.Split(path, "/")
+	trimSpl := strSpl[:len(strSpl)-1]
+	return strings.Join(trimSpl, "/")
 }
