@@ -20,27 +20,29 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
 	CLI_NAME        = "sql-runner"
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift and Postgres`
-	CLI_VERSION     = "0.3.0"
+	CLI_VERSION     = "0.4.0"
 
-	SQLROOT_BINARY   = "BINARY"
-	SQLROOT_PLAYBOOK = "PLAYBOOK"
+	SQLROOT_BINARY         = "BINARY"
+	SQLROOT_PLAYBOOK       = "PLAYBOOK"
+	SQLROOT_PLAYBOOK_CHILD = "PLAYBOOK_CHILD"
 )
 
 func main() {
 
 	options := processFlags()
 
-	pb, err := playbook.ParsePlaybook(options.playbook, options.variables)
+	pb, err := playbook.ParsePlaybook(options.playbook, options.consul, options.variables)
 	if err != nil {
 		log.Fatalf("Could not parse playbook (YAML): %s", err.Error())
 	}
 
-	statuses := run.Run(pb, options.sqlroot, options.fromStep)
+	statuses := run.Run(pb, options.consul, options.sqlroot, options.fromStep, options.dryRun)
 	code, message := review(statuses)
 
 	log.Printf(message)
@@ -73,9 +75,9 @@ func processFlags() Options {
 		os.Exit(2)
 	}
 
-	sr, err := resolveSqlRoot(options.sqlroot, options.playbook)
+	sr, err := resolveSqlRoot(options.sqlroot, options.playbook, options.consul)
 	if err != nil {
-		fmt.Printf("Error resolving -sqlroot: %s\n", options.sqlroot)
+		fmt.Printf("Error resolving -sqlroot: %s\n%s\n", options.sqlroot, err)
 		os.Exit(2)
 	}
 	options.sqlroot = sr // Yech, mutate in place
@@ -84,14 +86,34 @@ func processFlags() Options {
 }
 
 // Resolve the path to our SQL scripts
-func resolveSqlRoot(sqlroot string, playbookPath string) (string, error) {
+func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string) (string, error) {
+	consulErr1 := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
+	consulErr2 := fmt.Errorf("Cannot use %s option without -consul argument", sqlroot)
 
 	switch sqlroot {
 	case SQLROOT_BINARY:
+		if consulAddress != "" {
+			return "", consulErr1
+		}
 		return osext.ExecutableFolder()
 	case SQLROOT_PLAYBOOK:
+		if consulAddress != "" {
+			return getAbsConsulPath(playbookPath), nil
+		}
 		return filepath.Abs(filepath.Dir(playbookPath))
+	case SQLROOT_PLAYBOOK_CHILD:
+		if consulAddress != "" {
+			return playbookPath, nil
+		}
+		return "", consulErr2
 	default:
 		return sqlroot, nil
 	}
+}
+
+// Gets an absolute path for Consul one directory up
+func getAbsConsulPath(path string) string {
+	strSpl := strings.Split(path, "/")
+	trimSpl := strSpl[:len(strSpl)-1]
+	return strings.Join(trimSpl, "/")
 }

@@ -14,7 +14,7 @@ package run
 
 import (
 	"github.com/snowplow/sql-runner/playbook"
-	"gopkg.in/pg.v2"
+	"gopkg.in/pg.v3"
 	"time"
 )
 
@@ -49,18 +49,17 @@ func (pt PostgresTarget) GetTarget() playbook.Target {
 }
 
 // Run a query against the target
-func (pt PostgresTarget) RunQuery(query playbook.Query, queryPath string, variables map[string]interface{}) QueryStatus {
+func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 
-	script, err := prepareQuery(queryPath, query.Template, variables)
-	if err != nil {
-		return QueryStatus{query, queryPath, 0, err}
+	if dryRun {
+		return QueryStatus{query, query.Path, 0, nil}
 	}
 
-	res, err := pt.Client.Exec(script)
+	res, err := pt.Client.Exec(query.Script)
 	affected := 0
 	if err == nil {
 		affected = res.Affected()
 	}
 
-	return QueryStatus{query, queryPath, affected, err}
+	return QueryStatus{query, query.Path, affected, err}
 }

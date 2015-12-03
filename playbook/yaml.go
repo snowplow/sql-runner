@@ -13,11 +13,10 @@
 package playbook
 
 import (
-	"bufio"
 	"bytes"
 	"gopkg.in/yaml.v1"
-	"os"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -27,56 +26,28 @@ var (
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(filepath string) (Playbook, error) {
+func parsePlaybookYaml(playbookBytes []byte) (Playbook, error) {
+	// Define and initialize the Playbook struct
+	var playbook Playbook = NewPlaybook()
 
-	lines, err := loadRubyYaml(filepath)
-	if err != nil {
-		return Playbook{}, err
-	}
+	// Clean up the YAML
+	cleaned := cleanYaml(playbookBytes)
+	err := yaml.Unmarshal(cleaned, &playbook)
 
-	var playbook Playbook
-	err = yaml.Unmarshal(lines, &playbook)
-	if err != nil {
-		return Playbook{}, err
-	}
-
-	return playbook, nil
-}
-
-// Load a Ruby-format YAML file into a byte slice.
-// (Supports vanilla YAMLs too).
-func loadRubyYaml(path string) ([]byte, error) {
-	lines, err := readLines(path)
-	if err != nil {
-		return nil, err
-	}
-	return cleanRubyYaml(lines), nil
+	return playbook, err
 }
 
 // Because our StorageLoader's YAML file has elements with
 // : prepended (bad decision to make things easier from
 // our Ruby code).
-func cleanRubyYaml(lines []string) []byte {
+func cleanYaml(rawYaml []byte) []byte {
+	var lines []string
 	var buffer bytes.Buffer
+
+	lines = strings.Split(string(rawYaml), "\n")
+
 	for _, line := range lines {
 		buffer.WriteString(rubyYamlRegex.ReplaceAllString(line, "${1}${2}\n"))
 	}
 	return buffer.Bytes()
-}
-
-// readLines reads a whole file into memory
-// and returns a slice of its lines.
-func readLines(path string) ([]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, scanner.Err()
 }

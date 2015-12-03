@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"github.com/snowplow/sql-runner/playbook"
 	"io/ioutil"
+	"os"
 	"text/template"
 	"time"
 )
@@ -24,6 +25,9 @@ var (
 	templFuncs = template.FuncMap{
 		"nowWithFormat": func(format string) string {
 			return time.Now().Format(format)
+		},
+		"systemEnv": func(env string) string {
+			return os.Getenv(env)
 		},
 		"awsChainCredentials":   awsChainCredentials,
 		"awsEC2RoleCredentials": awsEC2RoleCredentials,
@@ -34,14 +38,22 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(playbook.Query, string, map[string]interface{}) QueryStatus
+	RunQuery(ReadyQuery, bool) QueryStatus
 	GetTarget() playbook.Target
 }
 
 // Reads the script and fills in the template
-func prepareQuery(queryPath string, template bool, variables map[string]interface{}) (string, error) {
+func prepareQuery(queryPath string, consulAddress string, template bool, variables map[string]interface{}) (string, error) {
 
-	script, err := readScript(queryPath)
+	var script string
+	var err error
+
+	if consulAddress == "" {
+		script, err = readScript(queryPath)
+	} else {
+		script, err = playbook.GetStringValueFromConsul(consulAddress, queryPath)
+	}
+
 	if err != nil {
 		return "", err
 	}
