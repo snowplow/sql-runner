@@ -15,7 +15,6 @@ package run
 import (
 	"bytes"
 	"github.com/snowplow/sql-runner/playbook"
-	"io/ioutil"
 	"os"
 	"text/template"
 	"time"
@@ -43,16 +42,12 @@ type Db interface {
 }
 
 // Reads the script and fills in the template
-func prepareQuery(queryPath string, consulAddress string, template bool, variables map[string]interface{}) (string, error) {
+func prepareQuery(queryPath string, sp playbook.SQLProvider, template bool, variables map[string]interface{}) (string, error) {
 
 	var script string
 	var err error
 
-	if consulAddress == "" {
-		script, err = readScript(queryPath)
-	} else {
-		script, err = playbook.GetStringValueFromConsul(consulAddress, queryPath)
-	}
+	script, err = sp.GetSQL(queryPath)
 
 	if err != nil {
 		return "", err
@@ -67,14 +62,8 @@ func prepareQuery(queryPath string, consulAddress string, template bool, variabl
 	return script, nil
 }
 
-// Reads the file ready for executing
-func readScript(file string) (string, error) {
-
-	scriptBytes, err := ioutil.ReadFile(file)
-	if err != nil {
-		return "", err
-	}
-	return string(scriptBytes), nil
+func readScript(f string) (string, error) {
+	return "", nil
 }
 
 // Fills in a script which is a template

@@ -17,31 +17,8 @@ import (
 	"os"
 )
 
-// Get a playbook from the adequate source
-func getPlaybook(playbookPath string, consulAddress string) ([]byte, error) {
-	if consulAddress == "" {
-		// Load the playbook from a local file
-		return loadLocalFile(playbookPath)
-	} else {
-		// Load the playbook from a consul value
-		// - Use the playbookPath as the key
-		return GetBytesFromConsul(consulAddress, playbookPath)
-	}
-}
-
-// Parses a playbook.yml to return the targets
-// to execute against and the steps to execute
-func getAndParsePlaybookYaml(playbookPath string, consulAddress string) (Playbook, error) {
-
-	// Define and initialize the Playbook struct
-	var playbook Playbook = NewPlaybook()
-
-	lines, err := getPlaybook(playbookPath, consulAddress)
-	if err != nil {
-		return playbook, err
-	}
-
-	return parsePlaybookYaml(lines)
+type PlaybookProvider interface {
+	GetPlaybook() (*Playbook, error)
 }
 
 // readLines reads a whole file into memory

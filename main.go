@@ -13,6 +13,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kardianos/osext"
 	"github.com/snowplow/sql-runner/playbook"
@@ -37,12 +38,25 @@ func main() {
 
 	options := processFlags()
 
-	pb, err := playbook.ParsePlaybook(options.playbook, options.consul, options.variables)
-	if err != nil {
-		log.Fatalf("Could not parse playbook (YAML): %s", err.Error())
+	// pb, err := playbook.ParsePlaybook(options.playbook, options.consul, options.variables)
+	pbp, pbpErr := PlaybookProviderFromOptions(options)
+	if pbpErr != nil {
+		log.Fatalf("Could not determine playbook source: %s", pbpErr.Error())
 	}
 
-	statuses := run.Run(pb, options.consul, options.sqlroot, options.fromStep, options.dryRun)
+	pb, err := pbp.GetPlaybook()
+
+	if err != nil {
+		log.Fatalf("Error getting playbook: %s", err.Error())
+	}
+
+	sp, spErr := SQLProviderFromOptions(options)
+
+	if spErr != nil {
+		log.Fatalf("Could not determine sql source: %s", spErr.Error())
+	}
+
+	statuses := run.Run(*pb, sp, options.fromStep, options.dryRun)
 	code, message := review(statuses)
 
 	log.Printf(message)
@@ -83,6 +97,26 @@ func processFlags() Options {
 	options.sqlroot = sr // Yech, mutate in place
 
 	return options
+}
+
+func PlaybookProviderFromOptions(options Options) (playbook.PlaybookProvider, error) {
+	if options.consul != "" {
+		return playbook.NewConsulPlaybookProvider(options.consul, options.playbook), nil
+	} else if options.playbook != "" {
+		return playbook.NewYAMLFilePlaybookProvider(options.playbook), nil
+	} else {
+		return nil, errors.New("Cannot determine provider for playbook")
+	}
+}
+
+func SQLProviderFromOptions(options Options) (playbook.SQLProvider, error) {
+	if options.consul != "" {
+		return playbook.NewConsulSQLProvider(options.consul, options.sqlroot), nil
+	} else if options.playbook != "" {
+		return playbook.NewFileSQLProvider(options.sqlroot), nil
+	} else {
+		return nil, errors.New("Cannot determine provider for sql")
+	}
 }
 
 // Resolve the path to our SQL scripts

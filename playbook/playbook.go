@@ -39,15 +39,15 @@ func NewPlaybook() Playbook {
 	return Playbook{Variables: make(map[string]interface{})}
 }
 
-// Dispatch to format-specific parser
-func ParsePlaybook(playbookPath string, consulAddress string, variables map[string]string) (Playbook, error) {
-	// TODO: Add TOML support?
-	playbook, err := getAndParsePlaybookYaml(playbookPath, consulAddress)
-	if err == nil {
-		playbook = mergeCLIVariables(playbook, variables)
-	}
-	return playbook, err
-}
+// // Dispatch to format-specific parser
+// func ParsePlaybook(playbookPath string, consulAddress string, variables map[string]string) (Playbook, error) {
+// 	// TODO: Add TOML support?
+// 	playbook, err := getAndParsePlaybookYaml(playbookPath, consulAddress)
+// 	if err == nil {
+// 		playbook = mergeCLIVariables(playbook, variables)
+// 	}
+// 	return playbook, err
+// }
 
 func mergeCLIVariables(playbook Playbook, variables map[string]string) Playbook {
 	for k, v := range variables {
