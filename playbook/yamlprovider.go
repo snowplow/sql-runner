@@ -12,23 +12,22 @@
 //
 package playbook
 
-import (
-	"io/ioutil"
-	"os"
-)
-
-type PlaybookProvider interface {
-	GetPlaybook() (*Playbook, error)
+type YAMLFilePlaybookProvider struct {
+	playbookPath string
 }
 
-// readLines reads a whole file into memory
-// and returns a slice of its lines.
-func loadLocalFile(path string) ([]byte, error) {
-	file, err := os.Open(path)
+func NewYAMLFilePlaybookProvider(playbookPath string) *YAMLFilePlaybookProvider {
+	return &YAMLFilePlaybookProvider{
+		playbookPath: playbookPath,
+	}
+}
+
+func (p YAMLFilePlaybookProvider) GetPlaybook() (*Playbook, error) {
+	lines, err := loadLocalFile(p.playbookPath)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
 
-	return ioutil.ReadAll(file)
+	playbook, pbErr := parsePlaybookYaml(lines)
+	return &playbook, pbErr
 }

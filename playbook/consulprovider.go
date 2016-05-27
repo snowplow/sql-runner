@@ -12,23 +12,24 @@
 //
 package playbook
 
-import (
-	"io/ioutil"
-	"os"
-)
-
-type PlaybookProvider interface {
-	GetPlaybook() (*Playbook, error)
+type ConsulPlaybookProvider struct {
+	consulAddress string
+	consulKey     string
 }
 
-// readLines reads a whole file into memory
-// and returns a slice of its lines.
-func loadLocalFile(path string) ([]byte, error) {
-	file, err := os.Open(path)
+func NewConsulPlaybookProvider(consulAddress, consulKey string) *ConsulPlaybookProvider {
+	return &ConsulPlaybookProvider{
+		consulAddress: consulAddress,
+		consulKey:     consulKey,
+	}
+}
+
+func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
+	lines, err := GetBytesFromConsul(p.consulAddress, p.consulKey)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
 
-	return ioutil.ReadAll(file)
+	playbook, pbErr := parsePlaybookYaml(lines)
+	return &playbook, pbErr
 }
