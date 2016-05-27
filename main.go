@@ -50,6 +50,8 @@ func main() {
 		log.Fatalf("Error getting playbook: %s", err.Error())
 	}
 
+	pb.MergeCLIVariables(options.variables)
+
 	sp, spErr := SQLProviderFromOptions(options)
 
 	if spErr != nil {
