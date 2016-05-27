@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"github.com/snowplow/sql-runner/playbook"
 	"log"
-	"path"
 	"strings"
 )
 
@@ -70,7 +69,7 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb playbook.Playbook, consulAddress string, sqlroot string, fromStep string, dryRun bool) []TargetStatus {
+func Run(pb playbook.Playbook, sp playbook.SQLProvider, fromStep string, dryRun bool) []TargetStatus {
 
 	// Trim skippable steps from the array
 	steps, trimErr := trimSteps(pb.Steps, fromStep, pb.Targets)
@@ -79,7 +78,7 @@ func Run(pb playbook.Playbook, consulAddress string, sqlroot string, fromStep st
 	}
 
 	// Prepare all SQL queries
-	readySteps, readyErr := loadSteps(steps, sqlroot, consulAddress, pb.Variables, pb.Targets)
+	readySteps, readyErr := loadSteps(steps, sp, pb.Variables, pb.Targets)
 	if readyErr != nil {
 		return readyErr
 	}
@@ -140,7 +139,7 @@ func fromStepNotFound(targetName string, fromStep string) TargetStatus {
 
 // Loads all SQL files for all Steps in the playbook ahead of time
 // Fails as soon as a bad query is found
-func loadSteps(steps []playbook.Step, sqlroot string, consulAddress string, variables map[string]interface{}, targets []playbook.Target) ([]ReadyStep, []TargetStatus) {
+func loadSteps(steps []playbook.Step, sp playbook.SQLProvider, variables map[string]interface{}, targets []playbook.Target) ([]ReadyStep, []TargetStatus) {
 	sCount := len(steps)
 	readySteps := make([]ReadyStep, sCount)
 
@@ -151,8 +150,8 @@ func loadSteps(steps []playbook.Step, sqlroot string, consulAddress string, vari
 
 		for j := 0; j < qCount; j++ {
 			query := step.Queries[j]
-			queryPath := path.Join(sqlroot, query.File)
-			queryText, err := prepareQuery(queryPath, consulAddress, query.Template, variables)
+			queryText, err := prepareQuery(query.File, sp, query.Template, variables)
+			queryPath := sp.ResolveKey(query.File)
 
 			if err != nil {
 				allStatuses := make([]TargetStatus, 0)
