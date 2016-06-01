@@ -38,7 +38,6 @@ func main() {
 
 	options := processFlags()
 
-	// pb, err := playbook.ParsePlaybook(options.playbook, options.consul, options.variables)
 	pbp, pbpErr := PlaybookProviderFromOptions(options)
 	if pbpErr != nil {
 		log.Fatalf("Could not determine playbook source: %s", pbpErr.Error())

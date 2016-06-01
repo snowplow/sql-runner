@@ -62,10 +62,6 @@ func prepareQuery(queryPath string, sp playbook.SQLProvider, template bool, vari
 	return script, nil
 }
 
-func readScript(f string) (string, error) {
-	return "", nil
-}
-
 // Fills in a script which is a template
 func fillTemplate(script string, variables map[string]interface{}) (string, error) {
 
