@@ -9,9 +9,9 @@ Used with **[Snowplow] [snowplow]** for scheduled SQL-based transformations of e
 
 ## Find out more
 
-- [User Quickstart](https://github.com/snowplow/sql-runner/wiki#user-quickstart)
-- [Developer Quickstart](https://github.com/snowplow/sql-runner/wiki#developer-quickstart)
-- [User guide](https://github.com/snowplow/sql-runner/wiki#user-guide)
+- [GUIDE FOR ANALYSTS](https://github.com/snowplow/sql-runner/wiki/Guide-for-analysts)
+- [GUIDE FOR DEVOPS](https://github.com/snowplow/sql-runner/wiki/Guide-for-devops)
+- [GUIDE FOR DEVELOPERS](https://github.com/snowplow/sql-runner/wiki/Guide-for-developers)
 
 ## Copyright and license
 
