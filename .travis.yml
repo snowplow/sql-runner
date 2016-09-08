@@ -1,29 +1,22 @@
 language: go
 go:
   - 1.4
-  - 1.5
+
 install:
   - export PATH=$PATH:$HOME/gopath/bin
   - go get -v -u github.com/kr/godep
   - godep get
   - godep go build -v ./...
+
 before_script:
-  - wget 'https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip'
-  - unzip "consul_0.5.2_linux_amd64.zip"
-  - ./consul --version
-  - psql -c 'create database sql_runner_tests_1' -U postgres
-  - psql -c 'create database sql_runner_tests_2' -U postgres
+  - ./integration/setup_travis.sh
+
 script:
-  - ./consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul &
-  - sleep 5
-  - ./integration-tests/consul_travis.bash
   - godep go test -i ./...
   - godep go test ./...
   - test -z "$(go fmt ./...)"
   - godep go build -v
-  - sql-runner -playbook integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep "Create schema and table" -consul localhost:8500
-  - sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep "Create schema and table"
-  - test "7" = "$(sql-runner -playbook ./integration-tests/bad-mixed.yml &>/dev/null; echo $?)"
-  - test "6" = "$(sql-runner -playbook ./integration-tests/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` &>/dev/null; echo $?)"
+  - ./integration/run_tests.sh
+
 addons:
   postgresql: "9.3"
