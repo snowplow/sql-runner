@@ -13,8 +13,8 @@ Used with **[Snowplow] [snowplow]** for scheduled SQL-based transformations of e
 Assuming you are running on **64bit Linux**:
 
 ```bash
-> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.1.0_linux_amd64.zip
-> unzip sql_runner_0.1.0_linux_amd64.zip
+> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.4.0_linux_amd64.zip
+> unzip sql_runner_0.4.0_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
