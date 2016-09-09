@@ -36,17 +36,18 @@ func (i *CLIVariables) Set(value string) error {
 }
 
 type Options struct {
-	help      bool
-	version   bool
-	playbook  string
-	sqlroot   string
-	fromStep  string
-	dryRun    bool
-	consul    string
-	lock      string
-	softLock  string
-	checkLock string
-	variables CLIVariables
+	help       bool
+	version    bool
+	playbook   string
+	sqlroot    string
+	fromStep   string
+	dryRun     bool
+	consul     string
+	lock       string
+	softLock   string
+	checkLock  string
+	deleteLock string
+	variables  CLIVariables
 }
 
 func NewOptions() Options {
@@ -67,6 +68,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.lock), "lock", "", "Optional argument which checks and sets a lockfile to ensure this run is a singleton. Deletes lock on run completing successfully")
 	fs.StringVar(&(o.softLock), "softLock", "", "Optional argument, like '-lock' but the lockfile will be deleted even if the run fails")
 	fs.StringVar(&(o.checkLock), "checkLock", "", "Checks whether the lockfile already exists")
+	fs.StringVar(&(o.deleteLock), "deleteLock", "", "Will attempt to delete a lockfile if it exists")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

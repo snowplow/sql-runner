@@ -70,7 +70,7 @@ func main() {
 			log.Fatalf("Error making lock: %s", lockErr2.Error())
 		}
 	}
-	
+
 	statuses := run.Run(*pb, sp, options.fromStep, options.dryRun)
 	code, message := review(statuses)
 
@@ -114,6 +114,23 @@ func processFlags() Options {
 		} else {
 			log.Printf("Success: %s does not exist", lockFile.Path)
 			os.Exit(0)
+		}
+	}
+
+	if options.deleteLock != "" {
+		lockFile, lockErr := LockFileFromOptions(options)
+		if lockErr != nil {
+			unlockErr := lockFile.Unlock()
+			if unlockErr != nil {
+				log.Printf("Error: %s found but could not delete: %s", lockFile.Path, unlockErr.Error())
+				os.Exit(1)
+			} else {
+				log.Printf("Success: %s found and deleted", lockFile.Path)
+				os.Exit(0)
+			}
+		} else {
+			log.Printf("Error: %s does not exist, nothing to delete", lockFile.Path)
+			os.Exit(1)
 		}
 	}
 
@@ -174,6 +191,9 @@ func LockFileFromOptions(options Options) (*LockFile, error) {
 		isSoftLock = true
 	} else if options.checkLock != "" {
 		lockPath = options.checkLock
+		isSoftLock = false
+	} else if options.deleteLock != "" {
+		lockPath = options.deleteLock
 		isSoftLock = false
 	} else {
 		// no-op
