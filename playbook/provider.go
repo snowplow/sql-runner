@@ -21,7 +21,7 @@ type PlaybookProvider interface {
 	GetPlaybook() (*Playbook, error)
 }
 
-// readLines reads a whole file into memory
+// loadLocalFile reads a whole file into memory
 // and returns a slice of its lines.
 func loadLocalFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
