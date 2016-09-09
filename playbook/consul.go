@@ -17,15 +17,19 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-// Attempts to return the bytes
-// of a key stored in a Consul server
-func GetBytesFromConsul(address string, key string) ([]byte, error) {
+func GetConsulClient(address string) (*api.Client, error) {
 	// Add address to config
 	conf := api.DefaultConfig()
 	conf.Address = address
 
 	// Connect to consul
-	client, err := api.NewClient(conf)
+	return api.NewClient(conf)
+}
+
+// GetBytesFromConsul attempts to return the bytes
+// of a key stored in a Consul server
+func GetBytesFromConsul(address string, key string) ([]byte, error) {
+	client, err := GetConsulClient(address)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +49,8 @@ func GetBytesFromConsul(address string, key string) ([]byte, error) {
 	}
 }
 
-// Attempts to return the string value
-// of a key stored in a Consul server
+// GetStringValueFromConsul attempts to return
+// the string value of a key stored in a Consul server
 func GetStringValueFromConsul(address string, key string) (string, error) {
 	bytes, err := GetBytesFromConsul(address, key)
 
@@ -55,4 +59,41 @@ func GetStringValueFromConsul(address string, key string) (string, error) {
 	} else {
 		return string(bytes), nil
 	}
+}
+
+// PutBytesToConsul attempts to push a new
+// KV pair to a Consul Server
+func PutBytesToConsul(address string, key string, value []byte) error {
+	client, err := GetConsulClient(address)
+	if err != nil {
+		return err
+	}
+
+	kv := client.KV()
+
+	// Put a new KV pair to consul
+	p := &api.KVPair{Key: key, Value: value}
+	_, err = kv.Put(p, nil)
+	return err
+}
+
+// PutStringValueToConsul attempts to push a new
+// KV pair to a Consul Server
+func PutStringValueToConsul(address string, key string, value string) error {
+	return PutBytesToConsul(address, key, []byte(value))
+}
+
+// DeleteValueFromConsul attempts to delete a
+// KV pair from a Consul Server
+func DeleteValueFromConsul(address string, key string) error {
+	client, err := GetConsulClient(address)
+	if err != nil {
+		return err
+	}
+
+	kv := client.KV()
+
+	// Delete the KV pair
+	_, err = kv.Delete(key, nil)
+	return err
 }

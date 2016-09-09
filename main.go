@@ -38,6 +38,12 @@ func main() {
 
 	options := processFlags()
 
+	lockFile, lockErr := LockFileFromOptions(options)
+	if lockErr != nil {
+		log.Printf("Could not get LockFile: %s", lockErr.Error())
+		os.Exit(3)
+	}
+
 	pbp, pbpErr := PlaybookProviderFromOptions(options)
 	if pbpErr != nil {
 		log.Fatalf("Could not determine playbook source: %s", pbpErr.Error())
@@ -57,8 +63,23 @@ func main() {
 		log.Fatalf("Could not determine sql source: %s", spErr.Error())
 	}
 
+	// Lock it up...
+	if lockFile != nil {
+		lockErr2 := lockFile.Lock()
+		if lockErr2 != nil {
+			log.Fatalf("Error making lock: %s", lockErr2.Error())
+		}
+	}
+	
 	statuses := run.Run(*pb, sp, options.fromStep, options.dryRun)
 	code, message := review(statuses)
+
+	// Unlock on success and soft-lock
+	if lockFile != nil {
+		if code == 0 || lockFile.SoftLock {
+			lockFile.Unlock()
+		}
+	}
 
 	log.Printf(message)
 	os.Exit(code)
@@ -118,6 +139,36 @@ func SQLProviderFromOptions(options Options) (playbook.SQLProvider, error) {
 	} else {
 		return nil, errors.New("Cannot determine provider for sql")
 	}
+}
+
+// LockFileFromOptions will check if a LockFile already
+// exists and will then either:
+// 1. Raise an error
+// 2. Set a new lock
+func LockFileFromOptions(options Options) (*LockFile, error) {
+
+	// Do nothing if dry-run
+	if options.dryRun == true {
+		return nil, nil
+	}
+
+	var lockPath string
+	var isSoftLock bool
+
+	if options.lock != "" {
+		lockPath = options.lock
+		isSoftLock = false
+	} else if options.softLock != "" {
+		lockPath = options.softLock
+		isSoftLock = true
+	} else {
+		// no-op
+		return nil, nil
+	}
+
+	lockFile, err := InitLockFile(lockPath, isSoftLock, options.consul)
+
+	return &lockFile, err
 }
 
 // Resolve the path to our SQL scripts
