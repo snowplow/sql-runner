@@ -45,6 +45,7 @@ type Options struct {
 	consul    string
 	lock      string
 	softLock  string
+	checkLock string
 	variables CLIVariables
 }
 
@@ -65,6 +66,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.consul), "consul", "", "The address of a consul server with playbooks and SQL files stored in KV pairs")
 	fs.StringVar(&(o.lock), "lock", "", "Optional argument which checks and sets a lockfile to ensure this run is a singleton. Deletes lock on run completing successfully")
 	fs.StringVar(&(o.softLock), "softLock", "", "Optional argument, like '-lock' but the lockfile will be deleted even if the run fails")
+	fs.StringVar(&(o.checkLock), "checkLock", "", "Checks whether the lockfile already exists")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

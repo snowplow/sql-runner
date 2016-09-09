@@ -40,7 +40,7 @@ func main() {
 
 	lockFile, lockErr := LockFileFromOptions(options)
 	if lockErr != nil {
-		log.Printf("Could not get LockFile: %s", lockErr.Error())
+		log.Printf("Error: %s", lockErr.Error())
 		os.Exit(3)
 	}
 
@@ -106,6 +106,17 @@ func processFlags() Options {
 		os.Exit(0)
 	}
 
+	if options.checkLock != "" {
+		lockFile, lockErr := LockFileFromOptions(options)
+		if lockErr != nil {
+			log.Printf("Error: %s found, previous run failed or is ongoing", lockFile.Path)
+			os.Exit(3)
+		} else {
+			log.Printf("Success: %s does not exist", lockFile.Path)
+			os.Exit(0)
+		}
+	}
+
 	if options.playbook == "" {
 		fmt.Println("required flag not defined: -playbook")
 		os.Exit(2)
@@ -161,6 +172,9 @@ func LockFileFromOptions(options Options) (*LockFile, error) {
 	} else if options.softLock != "" {
 		lockPath = options.softLock
 		isSoftLock = true
+	} else if options.checkLock != "" {
+		lockPath = options.checkLock
+		isSoftLock = false
 	} else {
 		// no-op
 		return nil, nil
