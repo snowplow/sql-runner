@@ -1,0 +1,35 @@
+---
+local:
+  root_dir : <%= ENV['TRAVIS_BUILD_DIR'] %>
+targets:
+  - type     : "bintray"
+    user     : <%= ENV['BINTRAY_SNOWPLOW_GENERIC_USER'] %>
+    password : <%= ENV['BINTRAY_SNOWPLOW_GENERIC_API_KEY'] %>
+packages:
+  - repo     : "snowplow-generic"
+    name     : "sql-runner"
+    user_org : "snowplow"
+    publish  : true
+    override : false
+    version  : "0.5.0-rc1"
+    build_version : <%= ENV['TRAVIS_TAG'] %>
+    build_commands:
+      - gox -osarch=linux/amd64 -output=dist/linux/sql-runner
+      - gox -osarch=darwin/amd64 -output=dist/darwin/sql-runner
+      - gox -osarch=windows/amd64 -output=dist/windows/sql-runner
+    artifacts:
+      - prefix : "sql_runner_"
+        suffix : "_linux_amd64"
+        type   : "zip"
+        binary_paths:
+          - dist/linux/sql-runner
+      - prefix : "sql_runner_"
+        suffix : "_darwin_amd64"
+        type   : "zip"
+        binary_paths:
+          - dist/darwin/sql-runner
+      - prefix : "sql_runner_"
+        suffix : "_windows_amd64"
+        type   : "zip"
+        binary_paths:
+          - dist/windows/sql-runner.exe
