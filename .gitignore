@@ -25,6 +25,7 @@ _testmain.go
 
 # This project's binaries
 sql-runner
+*.tmp
 
 # Vagrant
 .vagrant/
