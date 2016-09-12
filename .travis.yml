@@ -1,21 +1,34 @@
 language: go
 go:
-- 1.4
-install:
-- export PATH=$PATH:$HOME/gopath/bin
-- go get -v -u github.com/kr/godep
-- godep get
-- godep go build -v ./...
+  - 1.4
+  - 1.5
+  - 1.6
+
 before_script:
-- ./integration/setup_travis.sh
+  - ./integration/setup_travis.sh
+
 script:
-- godep go test -i ./...
-- godep go test ./...
-- test -z "$(go fmt ./...)"
-- godep go build -v
-- ./integration/run_tests.sh
+  - go test -i ./...
+  - go test ./...
+  - test -z "$(go fmt ./...)"
+  - go build
+  - ./integration/run_tests.sh
+
+before_deploy:
+  - go get github.com/mitchellh/gox
+  - pip install --user release-manager==0.1.0rc1
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: release-manager --config .release.yml --check-version --make-version --make-artifact --upload-artifact
+  on:
+    condition: '"${TRAVIS_GO_VERSION}" == "1.6"' 
+    tags: true
+
 addons:
   postgresql: '9.3'
+
 env:
   global:
   - secure: eP2CEhjE6YEgajudRcW6Lsyy92IxAB1KS5Cw0p/defwpouSuZS4NF8+YjcUhfI9sbkobL6KGaL12CYqLWToepQpiDHJ1eRaH+/8HQ+kgqwLxmHptVlqEXhkQPVJL04MvxZqeXocuOluGlWHOHMdlmDTA7eI/tKJtyykIRKyXFAc=
