@@ -47,6 +47,7 @@ type Options struct {
 	softLock   string
 	checkLock  string
 	deleteLock string
+	runQuery   string
 	variables  CLIVariables
 }
 
@@ -69,6 +70,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.softLock), "softLock", "", "Optional argument, like '-lock' but the lockfile will be deleted even if the run fails")
 	fs.StringVar(&(o.checkLock), "checkLock", "", "Checks whether the lockfile already exists")
 	fs.StringVar(&(o.deleteLock), "deleteLock", "", "Will attempt to delete a lockfile if it exists")
+	fs.StringVar(&(o.runQuery), "runQuery", "", "Will run a single query in the playbook")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

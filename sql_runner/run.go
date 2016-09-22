@@ -26,6 +26,7 @@ const (
 	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
 	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
 	ERROR_QUERY_FAILED_INIT   = "An error occured loading the SQL file"
+	ERROR_RUN_QUERY_NOT_FOUND = "The runQuery argument did not match any available queries"
 )
 
 // Reports on any errors from running the
@@ -68,10 +69,16 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb Playbook, sp SQLProvider, fromStep string, dryRun bool) []TargetStatus {
+func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool) []TargetStatus {
 
-	// Trim skippable steps from the array
-	steps, trimErr := trimSteps(pb.Steps, fromStep, pb.Targets)
+	var steps []Step
+	var trimErr []TargetStatus
+
+	if runQuery != "" {
+		steps, trimErr = trimToQuery(pb.Steps, runQuery, pb.Targets)
+	} else {
+		steps, trimErr = trimSteps(pb.Steps, fromStep, pb.Targets)
+	}
 	if trimErr != nil {
 		return trimErr
 	}
@@ -102,6 +109,49 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, dryRun bool) []TargetStat
 	return allStatuses
 }
 
+// --- Pre-run processors
+
+// Trims down to an indivdual query
+func trimToQuery(steps []Step, runQuery string, targets []Target) ([]Step, []TargetStatus) {
+	runQueryParts := strings.Split(runQuery, "::")
+
+	steps, trimErr := trimSteps(steps, runQueryParts[0], targets)
+	if trimErr != nil {
+		return nil, trimErr
+	}
+	step := steps[0]
+
+	queries := []Query{}
+	for _, query := range step.Queries {
+		if query.Name == runQueryParts[1] {
+			queries = append(queries, query)
+			break
+		}
+	}
+
+	if len(queries) == 0 {
+		return nil, runQueryNotFound(targets, runQuery)
+	}
+	step.Queries = queries
+
+	return []Step{step}, nil
+}
+
+// Helper for a runQuery not found error
+func runQueryNotFound(targets []Target, runQuery string) []TargetStatus {
+	allStatuses := make([]TargetStatus, 0)
+	for _, tgt := range targets {
+		errs := []error{fmt.Errorf("%s: '%s'", ERROR_RUN_QUERY_NOT_FOUND, runQuery)}
+		status := TargetStatus{
+			Name:   tgt.Name,
+			Errors: errs,
+			Steps:  nil,
+		}
+		allStatuses = append(allStatuses, status)
+	}
+	return allStatuses
+}
+
 // Trims skippable steps
 func trimSteps(steps []Step, fromStep string, targets []Target) ([]Step, []TargetStatus) {
 	stepIndex := 0
@@ -115,25 +165,25 @@ func trimSteps(steps []Step, fromStep string, targets []Target) ([]Step, []Targe
 			}
 		}
 		if exists == false {
-			allStatuses := make([]TargetStatus, 0)
-			for _, tgt := range targets {
-				status := fromStepNotFound(tgt.Name, fromStep)
-				allStatuses = append(allStatuses, status)
-			}
-			return nil, allStatuses
+			return nil, fromStepNotFound(targets, fromStep)
 		}
 	}
 	return steps[stepIndex:], nil
 }
 
 // Helper for a fromStep not found error
-func fromStepNotFound(targetName string, fromStep string) TargetStatus {
-	errs := []error{fmt.Errorf("%s: %s", ERROR_FROM_STEP_NOT_FOUND, fromStep)}
-	return TargetStatus{
-		Name:   targetName,
-		Errors: errs,
-		Steps:  nil,
+func fromStepNotFound(targets []Target, fromStep string) []TargetStatus {
+	allStatuses := make([]TargetStatus, 0)
+	for _, tgt := range targets {
+		errs := []error{fmt.Errorf("%s: %s", ERROR_FROM_STEP_NOT_FOUND, fromStep)}
+		status := TargetStatus{
+			Name:   tgt.Name,
+			Errors: errs,
+			Steps:  nil,
+		}
+		allStatuses = append(allStatuses, status)
 	}
+	return allStatuses
 }
 
 // Loads all SQL files for all Steps in the playbook ahead of time
@@ -177,6 +227,8 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 		Steps:  nil,
 	}
 }
+
+// --- Running
 
 // Route to correct database client and run
 func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool) {
