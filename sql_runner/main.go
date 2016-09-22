@@ -16,8 +16,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kardianos/osext"
-	"github.com/snowplow/sql-runner/playbook"
-	"github.com/snowplow/sql-runner/run"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,6 +32,7 @@ const (
 	SQLROOT_PLAYBOOK_CHILD = "PLAYBOOK_CHILD"
 )
 
+// main is the entry point for the application
 func main() {
 
 	options := processFlags()
@@ -71,7 +70,7 @@ func main() {
 		}
 	}
 
-	statuses := run.Run(*pb, sp, options.fromStep, options.dryRun)
+	statuses := Run(*pb, sp, options.fromStep, options.dryRun)
 	code, message := review(statuses)
 
 	// Unlock on success and soft-lock
@@ -85,8 +84,8 @@ func main() {
 	os.Exit(code)
 }
 
-// Parse our flags. Enforces -playbook as a
-// required flag
+// processFlags parses the arguments provided to
+// the main function.
 func processFlags() Options {
 
 	var options Options = NewOptions()
@@ -149,21 +148,27 @@ func processFlags() Options {
 	return options
 }
 
-func PlaybookProviderFromOptions(options Options) (playbook.PlaybookProvider, error) {
+// --- Options resolvers
+
+// PlaybookProviderFromOptions returns a provider of the Playbook
+// based on flags passed in
+func PlaybookProviderFromOptions(options Options) (PlaybookProvider, error) {
 	if options.consul != "" {
-		return playbook.NewConsulPlaybookProvider(options.consul, options.playbook), nil
+		return NewConsulPlaybookProvider(options.consul, options.playbook), nil
 	} else if options.playbook != "" {
-		return playbook.NewYAMLFilePlaybookProvider(options.playbook), nil
+		return NewYAMLFilePlaybookProvider(options.playbook), nil
 	} else {
 		return nil, errors.New("Cannot determine provider for playbook")
 	}
 }
 
-func SQLProviderFromOptions(options Options) (playbook.SQLProvider, error) {
+// SQLProviderFromOptions returns a provider of SQL files
+// based on flags passed in
+func SQLProviderFromOptions(options Options) (SQLProvider, error) {
 	if options.consul != "" {
-		return playbook.NewConsulSQLProvider(options.consul, options.sqlroot), nil
+		return NewConsulSQLProvider(options.consul, options.sqlroot), nil
 	} else if options.playbook != "" {
-		return playbook.NewFileSQLProvider(options.sqlroot), nil
+		return NewFileSQLProvider(options.sqlroot), nil
 	} else {
 		return nil, errors.New("Cannot determine provider for sql")
 	}
@@ -205,7 +210,9 @@ func LockFileFromOptions(options Options) (*LockFile, error) {
 	return &lockFile, err
 }
 
-// Resolve the path to our SQL scripts
+// --- SQLRoot resolvers
+
+// resolveSqlRoot returns the path to our SQL scripts
 func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string) (string, error) {
 	consulErr1 := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
 	consulErr2 := fmt.Errorf("Cannot use %s option without -consul argument", sqlroot)
@@ -231,7 +238,8 @@ func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string) (
 	}
 }
 
-// Gets an absolute path for Consul one directory up
+// getAbsConsulPath returns an absolute path for Consul
+// one directory up
 func getAbsConsulPath(path string) string {
 	strSpl := strings.Split(path, "/")
 	trimSpl := strSpl[:len(strSpl)-1]

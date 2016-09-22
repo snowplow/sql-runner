@@ -10,10 +10,9 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 //
-package run
+package main
 
 import (
-	"github.com/snowplow/sql-runner/playbook"
 	"gopkg.in/pg.v3"
 	"time"
 )
@@ -25,11 +24,11 @@ const (
 )
 
 type PostgresTarget struct {
-	playbook.Target
+	Target
 	Client *pg.DB
 }
 
-func NewPostgresTarget(target playbook.Target) *PostgresTarget {
+func NewPostgresTarget(target Target) *PostgresTarget {
 	db := pg.Connect(&pg.Options{
 		Host:        target.Host,
 		Port:        target.Port,
@@ -44,7 +43,7 @@ func NewPostgresTarget(target playbook.Target) *PostgresTarget {
 	return &PostgresTarget{target, db}
 }
 
-func (pt PostgresTarget) GetTarget() playbook.Target {
+func (pt PostgresTarget) GetTarget() Target {
 	return pt.Target
 }
 

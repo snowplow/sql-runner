@@ -23,9 +23,9 @@ packages:
     build_version : <%= ENV['TRAVIS_TAG'] %>
 
     build_commands:
-      - gox -osarch=linux/amd64 -output={{ output_paths.linux }}
-      - gox -osarch=darwin/amd64 -output={{ output_paths.darwin }}
-      - gox -osarch=windows/amd64 -output={{ output_paths.windows }}
+      - gox -osarch=linux/amd64 -output={{ output_paths.linux }} ./sql_runner/
+      - gox -osarch=darwin/amd64 -output={{ output_paths.darwin }} ./sql_runner/
+      - gox -osarch=windows/amd64 -output={{ output_paths.windows }} ./sql_runner/
 
     artifacts:
       - prefix : "sql_runner_"

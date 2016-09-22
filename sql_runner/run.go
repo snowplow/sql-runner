@@ -10,11 +10,10 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 //
-package run
+package main
 
 import (
 	"fmt"
-	"github.com/snowplow/sql-runner/playbook"
 	"log"
 	"strings"
 )
@@ -69,7 +68,7 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb playbook.Playbook, sp playbook.SQLProvider, fromStep string, dryRun bool) []TargetStatus {
+func Run(pb Playbook, sp SQLProvider, fromStep string, dryRun bool) []TargetStatus {
 
 	// Trim skippable steps from the array
 	steps, trimErr := trimSteps(pb.Steps, fromStep, pb.Targets)
@@ -104,7 +103,7 @@ func Run(pb playbook.Playbook, sp playbook.SQLProvider, fromStep string, dryRun 
 }
 
 // Trims skippable steps
-func trimSteps(steps []playbook.Step, fromStep string, targets []playbook.Target) ([]playbook.Step, []TargetStatus) {
+func trimSteps(steps []Step, fromStep string, targets []Target) ([]Step, []TargetStatus) {
 	stepIndex := 0
 	if fromStep != "" {
 		exists := false
@@ -139,7 +138,7 @@ func fromStepNotFound(targetName string, fromStep string) TargetStatus {
 
 // Loads all SQL files for all Steps in the playbook ahead of time
 // Fails as soon as a bad query is found
-func loadSteps(steps []playbook.Step, sp playbook.SQLProvider, variables map[string]interface{}, targets []playbook.Target) ([]ReadyStep, []TargetStatus) {
+func loadSteps(steps []Step, sp SQLProvider, variables map[string]interface{}, targets []Target) ([]ReadyStep, []TargetStatus) {
 	sCount := len(steps)
 	readySteps := make([]ReadyStep, sCount)
 
@@ -180,10 +179,10 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 }
 
 // Route to correct database client and run
-func routeAndRun(target playbook.Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool) {
+func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool) {
 	switch strings.ToLower(target.Type) {
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
-		go func(tgt playbook.Target) {
+		go func(tgt Target) {
 			pg := NewPostgresTarget(tgt)
 			targetChan <- runSteps(pg, readySteps, dryRun)
 		}(target)

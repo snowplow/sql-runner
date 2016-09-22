@@ -14,7 +14,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/snowplow/sql-runner/playbook"
 	"log"
 	"os"
 	"path/filepath"
@@ -80,7 +79,7 @@ func (lf *LockFile) Lock() error {
 		return nil
 	} else {
 		// Create the KV pair
-		err := playbook.PutStringValueToConsul(lf.ConsulAddress, lf.Path, value)
+		err := PutStringValueToConsul(lf.ConsulAddress, lf.Path, value)
 		if err != nil {
 			return err
 		}
@@ -106,7 +105,7 @@ func (lf *LockFile) Unlock() error {
 		return nil
 	} else {
 		// Delete the KV pair
-		err := playbook.DeleteValueFromConsul(lf.ConsulAddress, lf.Path)
+		err := DeleteValueFromConsul(lf.ConsulAddress, lf.Path)
 		if err != nil {
 			return err
 		}
@@ -126,7 +125,7 @@ func (lf *LockFile) LockExists() bool {
 			return true
 		}
 	} else {
-		value, err := playbook.GetStringValueFromConsul(lf.ConsulAddress, lf.Path)
+		value, err := GetStringValueFromConsul(lf.ConsulAddress, lf.Path)
 
 		if err != nil && value == "" {
 			return false

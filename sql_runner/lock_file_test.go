@@ -36,7 +36,7 @@ func TestInitLockFileLocal(t *testing.T) {
 func TestLockUnlockFileLocal(t *testing.T) {
 	assert := assert.New(t)
 
-	lockFile, err := InitLockFile("dist/lock.lockfile", false, "")
+	lockFile, err := InitLockFile("../dist/lock.lockfile", false, "")
 	assert.Nil(err)
 	assert.False(lockFile.LockExists())
 
@@ -49,9 +49,9 @@ func TestLockUnlockFileLocal(t *testing.T) {
 	assert.Equal("LockFile is already locked!", err.Error())
 	assert.True(lockFile.LockExists())
 
-	_, err2 := InitLockFile("dist/lock.lockfile", false, "")
+	_, err2 := InitLockFile("../dist/lock.lockfile", false, "")
 	assert.NotNil(err2)
-	assert.Equal("dist/lock.lockfile found on start, previous run failed or is ongoing. Cannot start", err2.Error())
+	assert.Equal("../dist/lock.lockfile found on start, previous run failed or is ongoing. Cannot start", err2.Error())
 
 	err = lockFile.Unlock()
 	assert.Nil(err)
@@ -59,7 +59,7 @@ func TestLockUnlockFileLocal(t *testing.T) {
 
 	err = lockFile.Unlock()
 	assert.NotNil(err)
-	assert.Equal("remove dist/lock.lockfile: no such file or directory", err.Error())
+	assert.Equal("remove ../dist/lock.lockfile: no such file or directory", err.Error())
 	assert.False(lockFile.LockExists())
 }
 

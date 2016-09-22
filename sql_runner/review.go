@@ -15,7 +15,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/snowplow/sql-runner/run"
 	"text/template"
 )
 
@@ -34,7 +33,7 @@ QUERY FAILURES:{{range $status := .}}{{range $step := $status.Steps}}{{range $qu
 `))
 }
 
-func review(statuses []run.TargetStatus) (int, string) {
+func review(statuses []TargetStatus) (int, string) {
 	exitCode, queryCount := getExitCodeAndQueryCount(statuses)
 
 	if exitCode == 0 {
@@ -50,7 +49,7 @@ func getSuccessMessage(queryCount int, targetCount int) string {
 }
 
 // TODO: maybe would be cleaner to bubble up error from this function
-func getFailureMessage(statuses []run.TargetStatus) string {
+func getFailureMessage(statuses []TargetStatus) string {
 
 	var message bytes.Buffer
 	if err := failureTemplate.Execute(&message, statuses); err != nil {
@@ -60,13 +59,13 @@ func getFailureMessage(statuses []run.TargetStatus) string {
 	return message.String()
 }
 
-// Exit codes:
+// getExitCodeAndQueryCount processes statuses and returns:
 // - 0 for no errors
 // - 5 for target initialization errors
 // - 6 for query errors
 // - 7 for both types of error
 // Also return the total count of query statuses we have
-func getExitCodeAndQueryCount(statuses []run.TargetStatus) (int, int) {
+func getExitCodeAndQueryCount(statuses []TargetStatus) (int, int) {
 
 	initErrors := false
 	queryErrors := false
