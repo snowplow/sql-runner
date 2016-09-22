@@ -10,16 +10,12 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 //
-package playbook
+package main
 
 import (
 	"io/ioutil"
 	"os"
 )
-
-type PlaybookProvider interface {
-	GetPlaybook() (*Playbook, error)
-}
 
 // loadLocalFile reads a whole file into memory
 // and returns a slice of its lines.

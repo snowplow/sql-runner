@@ -10,26 +10,9 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 //
-package playbook
+package main
 
-type ConsulPlaybookProvider struct {
-	consulAddress string
-	consulKey     string
-}
-
-func NewConsulPlaybookProvider(consulAddress, consulKey string) *ConsulPlaybookProvider {
-	return &ConsulPlaybookProvider{
-		consulAddress: consulAddress,
-		consulKey:     consulKey,
-	}
-}
-
-func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
-	lines, err := GetBytesFromConsul(p.consulAddress, p.consulKey)
-	if err != nil {
-		return nil, err
-	}
-
-	playbook, pbErr := parsePlaybookYaml(lines)
-	return &playbook, pbErr
+// Defines an interface for different providers
+type PlaybookProvider interface {
+	GetPlaybook() (*Playbook, error)
 }

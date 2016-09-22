@@ -11,7 +11,7 @@ script:
   - go test -i ./...
   - go test ./...
   - test -z "$(go fmt ./...)"
-  - go build
+  - go build -o sql-runner ./sql_runner/
   - ./integration/run_tests.sh
 
 before_deploy:

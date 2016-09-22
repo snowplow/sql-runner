@@ -10,11 +10,10 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 //
-package run
+package main
 
 import (
 	"bytes"
-	"github.com/snowplow/sql-runner/playbook"
 	"os"
 	"text/template"
 	"time"
@@ -38,11 +37,11 @@ var (
 // Generalized interface to a database client
 type Db interface {
 	RunQuery(ReadyQuery, bool) QueryStatus
-	GetTarget() playbook.Target
+	GetTarget() Target
 }
 
 // Reads the script and fills in the template
-func prepareQuery(queryPath string, sp playbook.SQLProvider, template bool, variables map[string]interface{}) (string, error) {
+func prepareQuery(queryPath string, sp SQLProvider, template bool, variables map[string]interface{}) (string, error) {
 
 	var script string
 	var err error
