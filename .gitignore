@@ -26,6 +26,8 @@ _testmain.go
 # This project's binaries
 sql-runner
 *.tmp
+coverage.out
+coverage.html
 
 # Vagrant
 .vagrant/

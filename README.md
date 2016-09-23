@@ -1,6 +1,6 @@
 # SQL Runner
 
-[ ![Build Status] [travis-image] ] [travis] [ ![Release] [release-image] ] [releases] [ ![License] [license-image] ] [license]
+[![Build Status] [travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Release][release-image]][releases] [![License][license-image]][license]
 
 ## Overview
 
@@ -43,6 +43,9 @@ limitations under the License.
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
 [license]: http://www.apache.org/licenses/LICENSE-2.0
+
+[coveralls-image]: https://coveralls.io/repos/github/snowplow/sql-runner/badge.svg?branch=master
+[coveralls]: https://coveralls.io/github/snowplow/sql-runner?branch=master
 
 [snowplow]: https://github.com/snowplow/snowplow
 

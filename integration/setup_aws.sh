@@ -19,7 +19,9 @@ set -e
 #  CONSTANTS
 # -----------------------------------------------------------------------------
 
-root=${TRAVIS_BUILD_DIR}
+home=${HOME}
+aws_dir=${home}/.aws
+creds_file=${aws_dir}/credentials
 
 
 
@@ -27,14 +29,9 @@ root=${TRAVIS_BUILD_DIR}
 #  EXECUTION
 # -----------------------------------------------------------------------------
 
-cd ${root}
+mkdir -p ${aws_dir}
+touch ${creds_file}
 
-printf "Setting up environment for integration tests...\n"
-
-psql -c 'create database sql_runner_tests_1' -U postgres
-psql -c 'create database sql_runner_tests_2' -U postgres
-
-./integration/setup_consul.sh
-./integration/setup_aws.sh
-
-printf "Ready for integration tests!\n"
+echo "[default]" >> ${creds_file}
+echo "aws_access_key_id=some-aws-key" >> ${creds_file}
+echo "aws_secret_access_key=some-aws-secret" >> ${creds_file}
