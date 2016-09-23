@@ -5,15 +5,19 @@ go:
   - 1.7
   - tip
 
+before_install:
+  - go get github.com/mattn/goveralls
+  - go get golang.org/x/tools/cmd/cover
+
 before_script:
   - ./integration/setup_travis.sh
 
 script:
-  - go test -i ./...
-  - go test ./...
   - test -z "$(go fmt ./...)"
   - go build -o sql-runner ./sql_runner/
   - ./integration/run_tests.sh
+  - go test ./sql_runner/ -v -covermode=count -coverprofile=coverage.out
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 
 before_deploy:
   - go get github.com/mitchellh/gox

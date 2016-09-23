@@ -17,9 +17,9 @@ import (
 	"testing"
 )
 
-// TestInitLockFile tests setting up a lockfile
+// TestInitLockFile_Local tests setting up a lockfile
 // on the local file system
-func TestInitLockFileLocal(t *testing.T) {
+func TestInitLockFile_Local(t *testing.T) {
 	assert := assert.New(t)
 
 	lockFile, err := InitLockFile("../dist/lock.lockfile", false, "")
@@ -31,9 +31,9 @@ func TestInitLockFileLocal(t *testing.T) {
 	assert.False(lockFile.LockExists())
 }
 
-// TestLockUnlockFileConsul asserts that we can
+// TestLockUnlockFile_Local asserts that we can
 // lock and unlock using a local file server
-func TestLockUnlockFileLocal(t *testing.T) {
+func TestLockUnlockFile_Local(t *testing.T) {
 	assert := assert.New(t)
 
 	lockFile, err := InitLockFile("../dist/lock.lockfile", false, "")
@@ -63,9 +63,38 @@ func TestLockUnlockFileLocal(t *testing.T) {
 	assert.False(lockFile.LockExists())
 }
 
-// TestInitLockFile tests setting up a lockfile
+// TestInitLockFile_LocalFailure tests setting up a lockfile
+// on the local file system that does not exist
+func TestInitLockFile_LocalFailure(t *testing.T) {
+	assert := assert.New(t)
+
+	lockFile, err := InitLockFile("dist/lock.lockfile", false, "")
+
+	assert.Nil(err)
+	assert.Equal("dist/lock.lockfile", lockFile.Path)
+	assert.False(lockFile.SoftLock)
+	assert.Equal("", lockFile.ConsulAddress)
+	assert.False(lockFile.LockExists())
+}
+
+// TestLockUnlockFile_LocalFailure asserts that we can
+// lock and unlock using a local file server that does not exist
+func TestLockUnlockFile_LocalFailure(t *testing.T) {
+	assert := assert.New(t)
+
+	lockFile, err := InitLockFile("dist/lock.lockfile", false, "")
+	assert.Nil(err)
+	assert.False(lockFile.LockExists())
+
+	err = lockFile.Lock()
+	assert.NotNil(err)
+	assert.Equal("directory for key does not exist", err.Error())
+	assert.False(lockFile.LockExists())
+}
+
+// TestInitLockFile_Consul tests setting up a lockfile
 // on a remote consul server
-func TestInitLockFileConsul(t *testing.T) {
+func TestInitLockFile_Consul(t *testing.T) {
 	assert := assert.New(t)
 
 	lockFile, err := InitLockFile("dist/lock.lockfile", false, "localhost:8500")
@@ -77,9 +106,9 @@ func TestInitLockFileConsul(t *testing.T) {
 	assert.False(lockFile.LockExists())
 }
 
-// TestLockUnlockFileConsul asserts that we can
+// TestLockUnlockFile_Consul asserts that we can
 // lock and unlock using a consul server
-func TestLockUnlockFileConsul(t *testing.T) {
+func TestLockUnlockFile_Consul(t *testing.T) {
 	assert := assert.New(t)
 
 	lockFile, err := InitLockFile("dist/lock.lockfile", false, "localhost:8500")
@@ -105,4 +134,48 @@ func TestLockUnlockFileConsul(t *testing.T) {
 
 	err = lockFile.Unlock()
 	assert.Nil(err)
+}
+
+// TestInitLockFile_ConsulFailure tests setting up a lockfile
+// on a remote consul server that does not exist
+func TestInitLockFile_ConsulFailure(t *testing.T) {
+	assert := assert.New(t)
+
+	lockFile, err := InitLockFile("dist/lock.lockfile", false, "localhost")
+
+	assert.Nil(err)
+	assert.Equal("dist/lock.lockfile", lockFile.Path)
+	assert.False(lockFile.SoftLock)
+	assert.Equal("localhost", lockFile.ConsulAddress)
+	assert.False(lockFile.LockExists())
+}
+
+// TestLockUnlockFile_ConsulFailure asserts that we can
+// lock and unlock using a consul server that does not exist
+func TestLockUnlockFile_ConsulFailure(t *testing.T) {
+	assert := assert.New(t)
+
+	lockFile, err := InitLockFile("dist/lock.lockfile", false, "localhost")
+	assert.Nil(err)
+	assert.False(lockFile.LockExists())
+
+	err = lockFile.Lock()
+	assert.NotNil(err)
+	assert.False(lockFile.LockExists())
+
+	err = lockFile.Lock()
+	assert.NotNil(err)
+	assert.False(lockFile.LockExists())
+
+	_, err2 := InitLockFile("dist/lock.lockfile", false, "localhost")
+	assert.Nil(err2)
+	assert.False(lockFile.LockExists())
+
+	err = lockFile.Unlock()
+	assert.NotNil(err)
+	assert.False(lockFile.LockExists())
+
+	err = lockFile.Unlock()
+	assert.NotNil(err)
+	assert.False(lockFile.LockExists())
 }

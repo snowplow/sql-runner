@@ -40,5 +40,6 @@ psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'sql_runner_test
 psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'sql_runner_tests_2'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE sql_runner_tests_2"
 
 ${root}/integration/setup_consul.sh
+${root}/integration/setup_aws.sh
 
 printf "Ready for integration tests!\n"

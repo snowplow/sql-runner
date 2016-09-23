@@ -29,11 +29,7 @@ func GetConsulClient(address string) (*api.Client, error) {
 // GetBytesFromConsul attempts to return the bytes
 // of a key stored in a Consul server
 func GetBytesFromConsul(address string, key string) ([]byte, error) {
-	client, err := GetConsulClient(address)
-	if err != nil {
-		return nil, err
-	}
-
+	client, _ := GetConsulClient(address)
 	kv := client.KV()
 
 	// Get the KV Pair from consul
@@ -64,16 +60,12 @@ func GetStringValueFromConsul(address string, key string) (string, error) {
 // PutBytesToConsul attempts to push a new
 // KV pair to a Consul Server
 func PutBytesToConsul(address string, key string, value []byte) error {
-	client, err := GetConsulClient(address)
-	if err != nil {
-		return err
-	}
-
+	client, _ := GetConsulClient(address)
 	kv := client.KV()
 
 	// Put a new KV pair to consul
 	p := &api.KVPair{Key: key, Value: value}
-	_, err = kv.Put(p, nil)
+	_, err := kv.Put(p, nil)
 	return err
 }
 
@@ -86,14 +78,10 @@ func PutStringValueToConsul(address string, key string, value string) error {
 // DeleteValueFromConsul attempts to delete a
 // KV pair from a Consul Server
 func DeleteValueFromConsul(address string, key string) error {
-	client, err := GetConsulClient(address)
-	if err != nil {
-		return err
-	}
-
+	client, _ := GetConsulClient(address)
 	kv := client.KV()
 
 	// Delete the KV pair
-	_, err = kv.Delete(key, nil)
+	_, err := kv.Delete(key, nil)
 	return err
 }
