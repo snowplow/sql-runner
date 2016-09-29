@@ -13,8 +13,9 @@
 package main
 
 import (
-	"gopkg.in/pg.v5"
 	"crypto/tls"
+	"gopkg.in/pg.v5"
+	"net"
 	"time"
 )
 
@@ -32,7 +33,9 @@ type PostgresTarget struct {
 func NewPostgresTarget(target Target) *PostgresTarget {
 	var tlsConfig *tls.Config
 	if target.Ssl == true {
-		// TODO: Add TLSConfig setup
+		tlsConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
 	}
 
 	db := pg.Connect(&pg.Options{
@@ -43,6 +46,13 @@ func NewPostgresTarget(target Target) *PostgresTarget {
 		TLSConfig:   tlsConfig,
 		DialTimeout: dialTimeout,
 		ReadTimeout: readTimeout,
+		Dialer: func(network, addr string) (net.Conn, error) {
+			cn, err := net.DialTimeout(network, addr, dialTimeout)
+			if err != nil {
+				return nil, err
+			}
+			return cn, cn.(*net.TCPConn).SetKeepAlive(true)
+		},
 	})
 
 	return &PostgresTarget{target, db}
