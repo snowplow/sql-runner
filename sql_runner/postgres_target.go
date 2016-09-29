@@ -13,7 +13,8 @@
 package main
 
 import (
-	"gopkg.in/pg.v3"
+	"gopkg.in/pg.v5"
+	"crypto/tls"
 	"time"
 )
 
@@ -29,13 +30,17 @@ type PostgresTarget struct {
 }
 
 func NewPostgresTarget(target Target) *PostgresTarget {
+	var tlsConfig *tls.Config
+	if target.Ssl == true {
+		// TODO: Add TLSConfig setup
+	}
+
 	db := pg.Connect(&pg.Options{
-		Host:        target.Host,
-		Port:        target.Port,
+		Addr:        target.Host + ":" + target.Port,
 		User:        target.Username,
 		Password:    target.Password,
 		Database:    target.Database,
-		SSL:         target.Ssl,
+		TLSConfig:   tlsConfig,
 		DialTimeout: dialTimeout,
 		ReadTimeout: readTimeout,
 	})
@@ -57,7 +62,7 @@ func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 	res, err := pt.Client.Exec(query.Script)
 	affected := 0
 	if err == nil {
-		affected = res.Affected()
+		affected = res.RowsAffected()
 	}
 
 	return QueryStatus{query, query.Path, affected, err}

@@ -2,6 +2,9 @@
 	"ImportPath": "github.com/snowplow/sql-runner",
 	"GoVersion": "go1.5",
 	"GodepVersion": "v74",
+	"Packages": [
+		"./sql_runner/"
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/aws/aws-sdk-go/aws",
@@ -59,10 +62,6 @@
 			"Rev": "6e4869b434bd001f6983749881c7ead3545887d8"
 		},
 		{
-			"ImportPath": "github.com/golang/glog",
-			"Rev": "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
-		},
-		{
 			"ImportPath": "github.com/hashicorp/consul/api",
 			"Comment": "v0.7.0-rc2-31-g0a34741",
 			"Rev": "0a34741d7266af34eed36048d1a8e8880a7b17a1"
@@ -75,6 +74,10 @@
 			"ImportPath": "github.com/hashicorp/serf/coordinate",
 			"Comment": "v0.7.0-97-g9432bc0",
 			"Rev": "9432bc08aa8d486e497e27f84878ebbe8c1eab66"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "74387dc39a75e970e7a3ae6a3386b5bd2e5c5cff"
 		},
 		{
 			"ImportPath": "github.com/jmespath/go-jmespath",
@@ -100,19 +103,34 @@
 			"Rev": "db14e161995a5177acef654cb0dd785e8ee8bc22"
 		},
 		{
-			"ImportPath": "gopkg.in/bufio.v1",
-			"Comment": "v1",
-			"Rev": "567b2bfa514e796916c4747494d6ff5132a1dfce"
+			"ImportPath": "gopkg.in/pg.v5",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
 		},
 		{
-			"ImportPath": "gopkg.in/pg.v3",
-			"Comment": "v3.5.6",
-			"Rev": "76e63febeb3f6a6573bd21ca64c4a141c04905b3"
+			"ImportPath": "gopkg.in/pg.v5/internal",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
 		},
 		{
-			"ImportPath": "gopkg.in/pg.v3/pgutil",
-			"Comment": "v3.5.6",
-			"Rev": "76e63febeb3f6a6573bd21ca64c4a141c04905b3"
+			"ImportPath": "gopkg.in/pg.v5/internal/parser",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
+		},
+		{
+			"ImportPath": "gopkg.in/pg.v5/internal/pool",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
+		},
+		{
+			"ImportPath": "gopkg.in/pg.v5/orm",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
+		},
+		{
+			"ImportPath": "gopkg.in/pg.v5/types",
+			"Comment": "v4.9.4-36-g1065c65",
+			"Rev": "1065c653f9edd4035545201ab62c40e0bbaea851"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v1",
