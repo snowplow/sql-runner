@@ -1,3 +1,23 @@
+Version 0.5.0 (2016-12-12)
+--------------------------
+Add ability to set a lockfile for a run (#54)
+Add command to check lockfile (#67)
+Add command to delete lockfile (#66)
+Add integration test suite (#71)
+Add tcpKeepAlive=true for long-running queries via NAT (#57)
+Add test suite (#63)
+Refactor: Playbook and SQL loading interface (#62)
+Refactor code structure (#72)
+Add ability to run a single query, -runQuery (#55)
+Change default for template from false to true (#53)
+Update copyright year to 2015-2016 (#69)
+Update README to direct users to wiki (#65)
+Update Postgres library to pg.v5 (#73)
+Fix SQL Runner download link pointing to old version (#58)
+Stop testing travis on tip (#68)
+Add Bintray credentials to .travis.yml (#70)
+Add CI/CD (#64)
+
 Version 0.4.0 (2015-12-03)
 --------------------------
 Bump gopkg.in/pg.v2 to v3 (#48)

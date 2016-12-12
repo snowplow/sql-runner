@@ -19,10 +19,10 @@ steps:
     queries:
       - name: ADD HERE
         file: ADD REL/ABS PATH
-        template: false
+        template: true
       - name: ADD HERE
         file: ADD REL/ABS PATH
-        template: false
+        template: true
   - name: ADD HERE
     queries:
       - name: ADD HERE
