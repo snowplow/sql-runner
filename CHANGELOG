@@ -1,3 +1,7 @@
+Version 0.5.1 (2016-12-19)
+--------------------------
+Update travis to deploy on Go 1.7 (#76)
+
 Version 0.5.0 (2016-12-12)
 --------------------------
 Add ability to set a lockfile for a run (#54)
