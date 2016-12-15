@@ -28,7 +28,7 @@ deploy:
   provider: script
   script: release-manager --config .release.yml --check-version --make-version --make-artifact --upload-artifact
   on:
-    condition: '"${TRAVIS_GO_VERSION}" == "1.6"' 
+    condition: '"${TRAVIS_GO_VERSION}" == "1.7"' 
     tags: true
 
 addons:
