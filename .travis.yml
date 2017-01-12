@@ -1,8 +1,10 @@
+dist: trusty
+sudo: false
+
 language: go
 go:
-  - 1.5
-  - 1.6
-  - 1.7
+  - 1.6.4
+  - 1.7.4
   - tip
 
 before_install:
@@ -13,7 +15,6 @@ before_script:
   - ./integration/setup_travis.sh
 
 script:
-  - test -z "$(go fmt ./...)"
   - go build -o sql-runner ./sql_runner/
   - ./integration/run_tests.sh
   - go test ./sql_runner/ -v -covermode=count -coverprofile=coverage.out
@@ -28,7 +29,7 @@ deploy:
   provider: script
   script: release-manager --config .release.yml --check-version --make-version --make-artifact --upload-artifact
   on:
-    condition: '"${TRAVIS_GO_VERSION}" == "1.7"' 
+    condition: '"${TRAVIS_GO_VERSION}" == "1.7.4"' 
     tags: true
 
 addons:
