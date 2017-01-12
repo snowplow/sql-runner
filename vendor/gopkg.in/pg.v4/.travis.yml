@@ -1,0 +1,36 @@
+sudo: required
+language: go
+
+go:
+  - 1.6
+  - 1.7
+  - tip
+
+matrix:
+  allow_failures:
+    - go: tip
+
+before_install:
+  - sudo /etc/init.d/postgresql stop
+  - sudo apt-get -y remove --purge postgresql-9.1
+  - sudo apt-get -y remove --purge postgresql-9.2
+  - sudo apt-get -y remove --purge postgresql-9.3
+  - sudo apt-get -y remove --purge postgresql-9.4
+  - sudo apt-get -y autoremove
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 7FCC7D46ACCC4CF8
+  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main 9.5" >> /etc/apt/sources.list.d/postgresql.list'
+  - sudo apt-get update
+  - sudo apt-get -y install postgresql-9.5
+  - sudo sh -c 'echo "local all postgres trust" > /etc/postgresql/9.5/main/pg_hba.conf'
+  - sudo sh -c 'echo -n "host all all 0.0.0.0/0 trust" >> /etc/postgresql/9.5/main/pg_hba.conf'
+  - sudo /etc/init.d/postgresql restart
+  - sudo -u postgres psql -c "CREATE EXTENSION hstore"
+
+install:
+  - go get gopkg.in/bsm/ratelimit.v1
+  - go get github.com/jinzhu/inflection
+  - go get gopkg.in/check.v1
+  - go get github.com/onsi/ginkgo
+  - go get github.com/onsi/gomega
+  - mkdir -p $HOME/gopath/src/gopkg.in
+  - mv `pwd` $HOME/gopath/src/gopkg.in/pg.v4

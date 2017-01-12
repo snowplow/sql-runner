@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2016 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -25,7 +25,7 @@ import (
 const (
 	CLI_NAME        = "sql-runner"
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift and Postgres`
-	CLI_VERSION     = "0.5.1"
+	CLI_VERSION     = "0.5.2-rc1"
 
 	SQLROOT_BINARY         = "BINARY"
 	SQLROOT_PLAYBOOK       = "PLAYBOOK"

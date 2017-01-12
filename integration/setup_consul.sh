@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2015-2016 Snowplow Analytics Ltd. All rights reserved.
+# Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
 #
 # This program is licensed to you under the Apache License Version 2.0,
 # and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -33,8 +33,8 @@ root_key=${root}/integration/resources
 
 cd ${dist_dir}
 
-wget -N 'https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip'
-unzip -o "consul_0.5.2_linux_amd64.zip"
+wget -N 'https://releases.hashicorp.com/consul/0.7.2/consul_0.7.2_linux_amd64.zip'
+unzip -o "consul_0.7.2_linux_amd64.zip"
 ./consul --version
 ./consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul >> ${consul_log_path} 2>&1 & 
 sleep 5
