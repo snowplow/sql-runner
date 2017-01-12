@@ -33,8 +33,8 @@ root_key=${root}/integration/resources
 
 cd ${dist_dir}
 
-wget -N 'https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip'
-unzip -o "consul_0.5.2_linux_amd64.zip"
+wget -N 'https://releases.hashicorp.com/consul/0.7.2/consul_0.7.2_linux_amd64.zip'
+unzip -o "consul_0.7.2_linux_amd64.zip"
 ./consul --version
 ./consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul >> ${consul_log_path} 2>&1 & 
 sleep 5
