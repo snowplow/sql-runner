@@ -1,3 +1,9 @@
+Version 0.5.2 (2017-01-13)
+--------------------------
+Update Copyright to 2015-2017 (#83)
+Bump Consul version to 0.7.2 (#82)
+Bump GoLang version to 1.7.4 (#84)
+
 Version 0.5.1 (2016-12-19)
 --------------------------
 Update travis to deploy on Go 1.7 (#76)
