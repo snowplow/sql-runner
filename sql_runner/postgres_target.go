@@ -14,8 +14,7 @@ package main
 
 import (
 	"crypto/tls"
-	"gopkg.in/pg.v5"
-	"net"
+	"gopkg.in/pg.v4"
 	"time"
 )
 
@@ -46,13 +45,6 @@ func NewPostgresTarget(target Target) *PostgresTarget {
 		TLSConfig:   tlsConfig,
 		DialTimeout: dialTimeout,
 		ReadTimeout: readTimeout,
-		Dialer: func(network, addr string) (net.Conn, error) {
-			cn, err := net.DialTimeout(network, addr, dialTimeout)
-			if err != nil {
-				return nil, err
-			}
-			return cn, cn.(*net.TCPConn).SetKeepAlive(true)
-		},
 	})
 
 	return &PostgresTarget{target, db}
@@ -72,7 +64,7 @@ func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 	res, err := pt.Client.Exec(query.Script)
 	affected := 0
 	if err == nil {
-		affected = res.RowsAffected()
+		affected = res.Affected()
 	}
 
 	return QueryStatus{query, query.Path, affected, err}
