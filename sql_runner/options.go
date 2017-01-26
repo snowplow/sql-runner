@@ -70,7 +70,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.softLock), "softLock", "", "Optional argument, like '-lock' but the lockfile will be deleted even if the run fails")
 	fs.StringVar(&(o.checkLock), "checkLock", "", "Checks whether the lockfile already exists")
 	fs.StringVar(&(o.deleteLock), "deleteLock", "", "Will attempt to delete a lockfile if it exists")
-	fs.StringVar(&(o.runQuery), "runQuery", "", "Will run a single query in the playbook")
+	fs.StringVar(&(o.runQuery), "runQuery", "", "Will run a single query in the playbook. The query should be specified in the argument as: -runQuery <STEP_NAME>::<QUERY_NAME> e.g. -runQuery 00-setup::01-do_it)
 	// TODO: add format flag if/when we support TOML
 
 	return fs
