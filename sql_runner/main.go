@@ -25,7 +25,7 @@ import (
 const (
 	CLI_NAME        = "sql-runner"
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift and Postgres`
-	CLI_VERSION     = "0.5.2"
+	CLI_VERSION     = "0.6.0"
 
 	SQLROOT_BINARY         = "BINARY"
 	SQLROOT_PLAYBOOK       = "PLAYBOOK"
@@ -70,7 +70,7 @@ func main() {
 		}
 	}
 
-	statuses := Run(*pb, sp, options.fromStep, options.runQuery, options.dryRun)
+	statuses := Run(*pb, sp, options.fromStep, options.runQuery, options.dryRun, options.continueOnError)
 	code, message := review(statuses)
 
 	// Unlock on success and soft-lock
