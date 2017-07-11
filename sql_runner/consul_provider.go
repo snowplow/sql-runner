@@ -15,12 +15,14 @@ package main
 type ConsulPlaybookProvider struct {
 	consulAddress string
 	consulKey     string
+	variables 		CLIVariables
 }
 
-func NewConsulPlaybookProvider(consulAddress, consulKey string) *ConsulPlaybookProvider {
+func NewConsulPlaybookProvider(options Options) *ConsulPlaybookProvider {
 	return &ConsulPlaybookProvider{
-		consulAddress: consulAddress,
-		consulKey:     consulKey,
+		consulAddress: options.consul,
+		consulKey:     options.playbook,
+		variables: 		 options.variables,
 	}
 }
 
@@ -30,6 +32,6 @@ func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
 		return nil, err
 	}
 
-	playbook, pbErr := parsePlaybookYaml(lines)
+	playbook, pbErr := parsePlaybookYaml(lines, p.variables)
 	return &playbook, pbErr
 }
