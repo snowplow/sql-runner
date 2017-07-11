@@ -26,11 +26,12 @@ func (i *CLIVariables) String() string {
 }
 
 func (i *CLIVariables) Set(value string) error {
-	var split = strings.SplitN(value, "=", 2)
-	if len(split) > 1 {
-		key := split[0]
-		val := split[1]
-		(*i)[key] = val
+	var split = strings.Split(value, ",")
+
+	for value := range split {
+		kv := strings.SplitN(split[value], "=", 2)
+
+		(*i)[kv[0]] = kv[1]
 	}
 	return nil
 }
