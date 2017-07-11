@@ -127,6 +127,12 @@ assert_ExitCodeForCommand "0" "${root}/sql-runner -checkLock ${root}/dist/integr
 assert_ExitCodeForCommand "5" "${root}/sql-runner -playbook ${root_key}/bad-mixed.yml -lock ${root}/dist/integration-lock -dryRun"
 assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock -dryRun"
 
+# Test: Valid playbook which uses playbook template variables
+assert_ExitCodeForCommand "6" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml -var password=,host=localhost"
+assert_ExitCodeForCommand "6" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml"
+assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"
+
+
 printf "==========================================================\n"
 printf " INTEGRATION TESTS SUCCESSFUL\n"
 printf "==========================================================\n"
