@@ -15,14 +15,14 @@ package main
 type ConsulPlaybookProvider struct {
 	consulAddress string
 	consulKey     string
-	variables 		CLIVariables
+	variables     map[string]string
 }
 
-func NewConsulPlaybookProvider(options Options) *ConsulPlaybookProvider {
+func NewConsulPlaybookProvider(consulAddress, consulKey string, variables map[string]string) *ConsulPlaybookProvider {
 	return &ConsulPlaybookProvider{
-		consulAddress: options.consul,
-		consulKey:     options.playbook,
-		variables: 		 options.variables,
+		consulAddress: consulAddress,
+		consulKey:     consulKey,
+		variables:     variables,
 	}
 }
 

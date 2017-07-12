@@ -14,13 +14,13 @@ package main
 
 type YAMLFilePlaybookProvider struct {
 	playbookPath string
-	variables CLIVariables
+	variables    map[string]string
 }
 
-func NewYAMLFilePlaybookProvider(options Options) *YAMLFilePlaybookProvider {
+func NewYAMLFilePlaybookProvider(playbookPath string, variables map[string]string) *YAMLFilePlaybookProvider {
 	return &YAMLFilePlaybookProvider{
-		playbookPath: options.playbook,
-		variables: options.variables,
+		playbookPath: playbookPath,
+		variables:    variables,
 	}
 }
 

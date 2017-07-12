@@ -27,7 +27,7 @@ var (
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(playbookBytes []byte, variables CLIVariables) (Playbook, error) {
+func parsePlaybookYaml(playbookBytes []byte, variables map[string]string) (Playbook, error) {
 	// Define and initialize the Playbook struct
 	var playbook Playbook = NewPlaybook()
 
@@ -69,5 +69,5 @@ func fillPlaybookTemplate(playbookStr string, variables CLIVariables) (string, e
 		return "", err
 	}
 
-	return string(filled.String()), err
+	return filled.String(), err
 }

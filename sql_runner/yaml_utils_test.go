@@ -52,7 +52,6 @@ func TestCleanYaml(t *testing.T) {
 	assert.Equal("\n", cleanYamlStr)
 }
 
-
 func TestTemplateYaml(t *testing.T) {
 	assert := assert.New(t)
 
