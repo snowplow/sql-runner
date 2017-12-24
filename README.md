@@ -1,24 +1,24 @@
 # SQL Runner
 
-[![Build Status] [travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Release][release-image]][releases] [![License][license-image]][license]
+[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Release][release-image]][releases] [![License][license-image]][license]
 
 ## Overview
 
 Run playbooks of SQL scripts in series and parallel on Amazon Redshift and PostgreSQL.
 
-Used with **[Snowplow] [snowplow]** for scheduled SQL-based transformations of event stream data.
+Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of event stream data.
 
-|  **[Devops Guide] [devops-guide]**     | **[Analysts Guide] [analysts-guide]**     | **[Developers Guide] [developers-guide]**     |
+|  **[Devops Guide][devops-guide]**     | **[Analysts Guide][analysts-guide]**     | **[Developers Guide][developers-guide]**     |
 |:--------------------------------------:|:-----------------------------------------:|:---------------------------------------------:|
-|  [![i1] [devops-image]] [devops-guide] | [![i2] [analysts-image]] [analysts-guide] | [![i3] [developers-image]] [developers-guide] |
+|  [![i1][devops-image]][devops-guide] | [![i2][analysts-image]][analysts-guide] | [![i3][developers-image]][developers-guide] |
 
 ## Quickstart
 
 Assuming you are running on **64bit Linux**:
 
 ```bash
-> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.5.2_linux_amd64.zip
-> unzip sql_runner_0.5.2_linux_amd64.zip
+> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.6.0_linux_amd64.zip
+> unzip sql_runner_0.6.0_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
@@ -26,7 +26,7 @@ Assuming you are running on **64bit Linux**:
 
 SQL Runner is copyright 2015-2017 Snowplow Analytics Ltd.
 
-Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
+Licensed under the **[Apache License, Version 2.0][license]** (the "License");
 you may not use this software except in compliance with the License.
 
 Unless required by applicable law or agreed to in writing, software
@@ -38,7 +38,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.5.2-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.6.0-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
