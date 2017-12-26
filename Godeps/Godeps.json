@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/snowplow/sql-runner",
-	"GoVersion": "go1.7",
-	"GodepVersion": "v76",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
 	"Packages": [
 		"./sql_runner/"
 	],
