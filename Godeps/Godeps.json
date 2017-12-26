@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/snowplow/sql-runner",
-	"GoVersion": "go1.7",
-	"GodepVersion": "v76",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
 	"Packages": [
 		"./sql_runner/"
 	],
@@ -67,6 +67,10 @@
 			"Rev": "6f66b0e091edb3c7b380f7c4f0f884274d550b67"
 		},
 		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+		},
+		{
 			"ImportPath": "github.com/hashicorp/consul/api",
 			"Comment": "v0.7.2-59-gcae8480",
 			"Rev": "cae84804ec9625f46e7e941e680c79da334bd076"
@@ -99,9 +103,23 @@
 			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Comment": "v1.1.0-8-g5bf94b6",
+			"Rev": "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
+		},
+		{
+			"ImportPath": "github.com/snowflakedb/gosnowflake",
+			"Comment": "v1.1.0-2-gc17860b",
+			"Rev": "c17860b29c1fb723ed4ab0548d0e0e0376c8413a"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.1.4-25-g2402e8e",
 			"Rev": "2402e8e7a02fc811447d11f881aa9746cdc57983"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ocsp",
+			"Rev": "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 		},
 		{
 			"ImportPath": "gopkg.in/pg.v5",
