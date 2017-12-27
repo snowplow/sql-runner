@@ -22,6 +22,7 @@ const (
 	REDSHIFT_TYPE   = "redshift"
 	POSTGRES_TYPE   = "postgres"
 	POSTGRESQL_TYPE = "postgresql"
+	SNOWFLAKE_TYPE  = "snowflake"
 
 	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
 	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
@@ -237,6 +238,11 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 		go func(tgt Target) {
 			pg := NewPostgresTarget(tgt)
 			targetChan <- runSteps(pg, readySteps, dryRun)
+		}(target)
+	case SNOWFLAKE_TYPE:
+		go func(tgt Target) {
+			snfl := NewSnowflakeTarget(tgt)
+			targetChan <- runSteps(snfl, readySteps, dryRun)
 		}(target)
 	default:
 		targetChan <- unsupportedDbType(target.Name, target.Type)

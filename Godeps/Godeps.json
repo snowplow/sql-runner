@@ -72,6 +72,10 @@
 			"Rev": "32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a"
 		},
 		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+		},
+		{
 			"ImportPath": "github.com/hashicorp/consul/api",
 			"Comment": "v1.0.1-30-gd12e818",
 			"Rev": "d12e81860fc68956c87e3b1e88df098937a750ee"
@@ -103,14 +107,32 @@
 			"Rev": "ae77be60afb1dcacde03767a8c37337fad28ac14"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/go-homedir",
+			"Rev": "b8bc1bf767474819792c23f32d8286a45736f1c6"
+		},
+		{
 			"ImportPath": "github.com/pmezard/go-difflib/difflib",
 			"Comment": "v1.0.0",
 			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Comment": "v1.1.0-8-g5bf94b6",
+			"Rev": "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
+		},
+		{
+			"ImportPath": "github.com/snowflakedb/gosnowflake",
+			"Comment": "v1.1.0-2-gc17860b",
+			"Rev": "c17860b29c1fb723ed4ab0548d0e0e0376c8413a"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Comment": "v1.1.4-72-g2aa2c17",
 			"Rev": "2aa2c176b9dab406a6970f6a55f513e8a8c8b18f"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ocsp",
+			"Rev": "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 		},
 		{
 			"ImportPath": "gopkg.in/pg.v5",
