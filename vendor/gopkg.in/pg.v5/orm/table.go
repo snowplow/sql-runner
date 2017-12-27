@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"strings"
@@ -10,6 +11,11 @@ import (
 
 	"github.com/jinzhu/inflection"
 )
+
+var nullBool = reflect.TypeOf((*sql.NullBool)(nil)).Elem()
+var nullFloat = reflect.TypeOf((*sql.NullFloat64)(nil)).Elem()
+var nullInt = reflect.TypeOf((*sql.NullInt64)(nil)).Elem()
+var nullString = reflect.TypeOf((*sql.NullString)(nil)).Elem()
 
 type Table struct {
 	Type       reflect.Type
@@ -265,7 +271,7 @@ func (t *Table) newField(f reflect.StructField, index []int) *Field {
 		append: appender,
 		scan:   scanner,
 
-		isEmpty: isEmptier(f.Type),
+		isEmpty: isEmptyFunc(f.Type),
 	}
 
 	if _, ok := sqlOpt.Get("notnull"); ok {
@@ -373,8 +379,17 @@ func sqlType(field *Field, sqlOpt tagOptions) string {
 		return v
 	}
 
-	if field.Type == timeType {
+	switch field.Type {
+	case timeType:
 		return "timestamptz"
+	case nullBool:
+		return "boolean"
+	case nullFloat:
+		return "double precision"
+	case nullInt:
+		return "bigint"
+	case nullString:
+		return "text"
 	}
 
 	switch field.Type.Kind() {
@@ -403,6 +418,8 @@ func sqlType(field *Field, sqlOpt tagOptions) string {
 		return "boolean"
 	case reflect.String:
 		return "text"
+	case reflect.Map, reflect.Slice, reflect.Struct:
+		return "jsonb"
 	default:
 		return field.Type.Kind().String()
 	}
