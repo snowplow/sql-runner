@@ -4,7 +4,7 @@
 
 ## Overview
 
-Run playbooks of SQL scripts in series and parallel on Amazon Redshift and PostgreSQL.
+Run playbooks of SQL scripts in series and parallel on Snowflake DB, Amazon Redshift and PostgreSQL.
 
 Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of event stream data.
 
