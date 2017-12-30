@@ -17,8 +17,8 @@ Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of ev
 Assuming you are running on **64bit Linux**:
 
 ```bash
-> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.5.2_linux_amd64.zip
-> unzip sql_runner_0.5.2_linux_amd64.zip
+> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.6.0_linux_amd64.zip
+> unzip sql_runner_0.6.0_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
