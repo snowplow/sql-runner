@@ -1,0 +1,30 @@
+targets:
+  - name: "My Postgres database"
+    type: postgres
+    host: ADD HERE
+    database: ADD HERE # Name of database
+    port: 5432 # Default Postgres port
+    username: ADD HERE
+    password: ADD HERE
+    ssl: false # SSL disabled by default
+variables:
+  foo: bar
+steps:
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
