@@ -1,0 +1,33 @@
+targets:
+  - name: "My Snowflake database"
+    type: snowflake
+    account: ADD HERE # Your Snowflake account name
+    region: ADD HERE # Leave blank for default us-east-1
+    database: ADD HERE # Name of database
+    warehouse: ADD HERE # Name of warehouse to run the queries
+    username: ADD HERE
+    password: ADD HERE
+    host: # Leave blank
+    port: # Leave blank
+    ssl: true # Snowflake connection is always secured by TLS
+variables:
+  foo: bar
+steps:
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
