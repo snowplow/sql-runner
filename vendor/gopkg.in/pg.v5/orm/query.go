@@ -122,11 +122,11 @@ func (q *Query) With(name string, subq *Query) *Query {
 // WrapWith creates new Query and adds to it current query as
 // common table expression with the given name.
 func (q *Query) WrapWith(name string) *Query {
-	topq := q.New()
-	topq.with = q.with
+	wrapper := q.New()
+	wrapper.with = q.with
 	q.with = nil
-	topq = topq.With(name, q)
-	return topq
+	wrapper = wrapper.With(name, q)
+	return wrapper
 }
 
 func (q *Query) Table(tables ...string) *Query {
@@ -146,7 +146,9 @@ func (q *Query) TableExpr(expr string, params ...interface{}) *Query {
 func (q *Query) Column(columns ...string) *Query {
 	for _, column := range columns {
 		if column == "_" {
-			q.columns = make([]FormatAppender, 0)
+			if q.columns == nil {
+				q.columns = make([]FormatAppender, 0)
+			}
 			continue
 		}
 
@@ -200,6 +202,13 @@ func (q *Query) Where(where string, params ...interface{}) *Query {
 func (q *Query) WhereOr(where string, params ...interface{}) *Query {
 	q.where = append(q.where, &whereAppender{"OR", where, params})
 	return q
+}
+
+// WhereIn is a shortcut for Where and pg.In to work with IN operator:
+//
+//    WhereIn("id IN (?)", 1, 2, 3)
+func (q *Query) WhereIn(where string, params ...interface{}) *Query {
+	return q.Where(where, types.In(params))
 }
 
 func (q *Query) Join(join string, params ...interface{}) *Query {
@@ -292,15 +301,12 @@ func (q *Query) Count() (int, error) {
 	}
 
 	var count int
-	_, err := q.db.QueryOne(Scan(&count), q.countSelectQuery("count(*)"), q.model)
+	_, err := q.db.QueryOne(
+		Scan(&count),
+		q.countQuery().countSelectQuery("count(*)"),
+		q.model,
+	)
 	return count, err
-}
-
-func (q *Query) countSelectQuery(query string) selectQuery {
-	return selectQuery{
-		Query: q.countQuery(),
-		count: queryParamsAppender{query: query},
-	}
 }
 
 func (q *Query) countQuery() *Query {
@@ -308,6 +314,13 @@ func (q *Query) countQuery() *Query {
 		return q.Copy().WrapWith("wrapper").Table("wrapper")
 	}
 	return q
+}
+
+func (q *Query) countSelectQuery(column string) selectQuery {
+	return selectQuery{
+		Query: q,
+		count: column,
+	}
 }
 
 // First selects the first row.
@@ -401,16 +414,16 @@ func (q *Query) forEachHasOneJoin(fn func(*join)) {
 	if q.model == nil {
 		return
 	}
-	q._forEachHasOneJoin(q.model.GetJoins(), fn)
+	q._forEachHasOneJoin(fn, q.model.GetJoins())
 }
 
-func (q *Query) _forEachHasOneJoin(joins []join, fn func(*join)) {
+func (q *Query) _forEachHasOneJoin(fn func(*join), joins []join) {
 	for i := range joins {
 		j := &joins[i]
 		switch j.Rel.Type {
 		case HasOneRelation, BelongsToRelation:
 			fn(j)
-			q._forEachHasOneJoin(j.JoinModel.GetJoins(), fn)
+			q._forEachHasOneJoin(fn, j.JoinModel.GetJoins())
 		}
 	}
 }
@@ -692,19 +705,25 @@ func (q *Query) appendReturning(b []byte) []byte {
 	return b
 }
 
-func (q *Query) appendWith(b []byte) ([]byte, error) {
+func (q *Query) appendWith(b []byte, count string) ([]byte, error) {
 	var err error
 	b = append(b, "WITH "...)
-	for i, withq := range q.with {
+	for i, with := range q.with {
 		if i > 0 {
 			b = append(b, ", "...)
 		}
-		b = types.AppendField(b, withq.name, 1)
+		b = types.AppendField(b, with.name, 1)
 		b = append(b, " AS ("...)
-		b, err = selectQuery{Query: withq.query}.AppendQuery(b)
+
+		if count != "" {
+			b, err = with.query.countSelectQuery("*").AppendQuery(b)
+		} else {
+			b, err = selectQuery{Query: with.query}.AppendQuery(b)
+		}
 		if err != nil {
 			return nil, err
 		}
+
 		b = append(b, ')')
 	}
 	b = append(b, ' ')
