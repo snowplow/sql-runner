@@ -20,7 +20,7 @@ import (
 func TestParsePlaybookYaml(t *testing.T) {
 	assert := assert.New(t)
 
-	playbook, err := parsePlaybookYaml(nil)
+	playbook, err := parsePlaybookYaml(nil, nil)
 	assert.Nil(err)
 	assert.NotNil(playbook)
 	assert.Equal(0, len(playbook.Targets))
@@ -30,7 +30,7 @@ func TestParsePlaybookYaml(t *testing.T) {
 	assert.Nil(err1)
 	assert.NotNil(playbookBytes)
 
-	playbook, err = parsePlaybookYaml(playbookBytes)
+	playbook, err = parsePlaybookYaml(playbookBytes, nil)
 	assert.Nil(err)
 	assert.NotNil(playbook)
 	assert.Equal(2, len(playbook.Targets))
@@ -50,4 +50,25 @@ func TestCleanYaml(t *testing.T) {
 
 	cleanYamlStr = string(cleanYaml(nil))
 	assert.Equal("\n", cleanYamlStr)
+}
+
+func TestTemplateYaml(t *testing.T) {
+	assert := assert.New(t)
+
+	playbookBytes, err1 := loadLocalFile("../integration/resources/good-postgres-with-template.yml")
+	assert.Nil(err1)
+
+	var m map[string]string = make(map[string]string)
+
+	m["password"] = "qwerty123"
+	m["username"] = "animoto"
+	m["host"] = "theinternetz"
+
+	playbook, err := parsePlaybookYaml(playbookBytes, CLIVariables(m))
+
+	assert.Nil(err)
+
+	assert.Equal("qwerty123", playbook.Targets[0].Password)
+	assert.Equal("animoto", playbook.Targets[0].Username)
+	assert.Equal("theinternetz", playbook.Targets[0].Host)
 }

@@ -154,9 +154,9 @@ func processFlags() Options {
 // based on flags passed in
 func PlaybookProviderFromOptions(options Options) (PlaybookProvider, error) {
 	if options.consul != "" {
-		return NewConsulPlaybookProvider(options.consul, options.playbook), nil
+		return NewConsulPlaybookProvider(options.consul, options.playbook, options.variables), nil
 	} else if options.playbook != "" {
-		return NewYAMLFilePlaybookProvider(options.playbook), nil
+		return NewYAMLFilePlaybookProvider(options.playbook, options.variables), nil
 	} else {
 		return nil, errors.New("Cannot determine provider for playbook")
 	}
