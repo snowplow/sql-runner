@@ -14,7 +14,9 @@ package main
 
 import (
 	"bytes"
+	"math/rand"
 	"os"
+	"strconv"
 	"text/template"
 	"time"
 )
@@ -26,6 +28,10 @@ var (
 		},
 		"systemEnv": func(env string) string {
 			return os.Getenv(env)
+		},
+		"randomInt": func() (string, error) {
+			r := rand.NewSource(time.Now().UnixNano())
+			return strconv.FormatInt(r.Int63(), 10), nil
 		},
 		"awsChainCredentials":   awsChainCredentials,
 		"awsEC2RoleCredentials": awsEC2RoleCredentials,
