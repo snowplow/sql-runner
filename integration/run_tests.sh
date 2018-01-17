@@ -64,6 +64,31 @@ function assert_ExitCodeForCommand() {
 }
 
 
+function assert_MessageForCommand() {
+    [ "$#" -eq 2 ] || die "2 argument required, $# provided"
+    local __command="$2"
+    local __message="$1"
+
+    let "assert_counter+=1"
+
+    printf "RUNNING: Assertion ${assert_counter}:\n - ${__command}\n\n"
+
+    set +e
+    stdout=$(eval ${__command} 2>&1)
+    echo -e "${stdout}"
+    echo "${stdout}" | grep "${__message}" -q
+
+    retval=`echo $?`
+
+    if [[ ${retval} -eq 0 ]]; then
+        printf "\nSUCCESS: Test finished and message ${__message} was found\n\n"
+    else
+        printf "\nFAIL: Expected message ${__message} but did not find\n\n"
+        exit 1
+    fi
+}
+
+
 
 # -----------------------------------------------------------------------------
 #  TEST EXECUTION
@@ -126,6 +151,11 @@ assert_ExitCodeForCommand "0" "${root}/sql-runner -checkLock ${root}/dist/integr
 # Test: Invalid playbook which creates a hard/soft-lock but is run using -dryRun should return exit code 0
 assert_ExitCodeForCommand "5" "${root}/sql-runner -playbook ${root_key}/bad-mixed.yml -lock ${root}/dist/integration-lock -dryRun"
 assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock -dryRun"
+
+
+# Test: Playbook with failed step should continue its exexcution
+assert_MessageForCommand  "SUCCESS: Assertions" "${root}/sql-runner -playbook ${root_key}/good-postgres-fail-later.yml -var test_date=`date "+%Y_%m_%d"` -continueOnError"
+assert_MessageForCommand  "Query Badone /vagrant/integration/resources/postgres-sql/bad/2.sql (in step Run failed query @ target My Postgres database 1), ERROR:" "${root}/sql-runner -playbook ${root_key}/good-postgres-fail-later.yml -var test_date=`date "+%Y_%m_%d"` -continueOnError"
 
 printf "==========================================================\n"
 printf " INTEGRATION TESTS SUCCESSFUL\n"

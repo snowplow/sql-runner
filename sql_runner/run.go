@@ -70,7 +70,7 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool) []TargetStatus {
+func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool, continueOnError bool) []TargetStatus {
 
 	var steps []Step
 	var trimErr []TargetStatus
@@ -94,7 +94,7 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 
 	// Route each target to the right db client and run
 	for _, tgt := range pb.Targets {
-		routeAndRun(tgt, readySteps, targetChan, dryRun)
+		routeAndRun(tgt, readySteps, targetChan, dryRun, continueOnError)
 	}
 
 	// Compose statuses from each target run
@@ -232,12 +232,12 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 // --- Running
 
 // Route to correct database client and run
-func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool) {
+func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool, continueOnError bool) {
 	switch strings.ToLower(target.Type) {
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
 		go func(tgt Target) {
 			pg := NewPostgresTarget(tgt)
-			targetChan <- runSteps(pg, readySteps, dryRun)
+			targetChan <- runSteps(pg, readySteps, dryRun, continueOnError)
 		}(target)
 	case SNOWFLAKE_TYPE:
 		go func(tgt Target) {
@@ -264,7 +264,7 @@ func unsupportedDbType(targetName string, targetType string) TargetStatus {
 //
 // runSteps fails fast - we stop executing SQL on
 // this target when a step fails.
-func runSteps(database Db, steps []ReadyStep, dryRun bool) TargetStatus {
+func runSteps(database Db, steps []ReadyStep, dryRun bool, continueOnError bool) TargetStatus {
 
 	allStatuses := make([]StepStatus, len(steps))
 
@@ -274,9 +274,11 @@ FailFast:
 		status := runQueries(database, stpIndex, stp.Name, stp.Queries, dryRun)
 		allStatuses = append(allStatuses, status)
 
-		for _, qry := range status.Queries {
-			if qry.Error != nil {
-				break FailFast
+		if !continueOnError {
+			for _, qry := range status.Queries {
+				if qry.Error != nil {
+					break FailFast
+				}
 			}
 		}
 	}

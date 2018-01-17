@@ -36,19 +36,20 @@ func (i *CLIVariables) Set(value string) error {
 }
 
 type Options struct {
-	help       bool
-	version    bool
-	playbook   string
-	sqlroot    string
-	fromStep   string
-	dryRun     bool
-	consul     string
-	lock       string
-	softLock   string
-	checkLock  string
-	deleteLock string
-	runQuery   string
-	variables  CLIVariables
+	help            bool
+	version         bool
+	playbook        string
+	sqlroot         string
+	fromStep        string
+	dryRun          bool
+	consul          string
+	lock            string
+	softLock        string
+	checkLock       string
+	deleteLock      string
+	runQuery        string
+	continueOnError bool
+	variables       CLIVariables
 }
 
 func NewOptions() Options {
@@ -65,6 +66,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
 	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
 	fs.BoolVar(&(o.dryRun), "dryRun", false, "Runs through a playbook without executing any of the SQL")
+	fs.BoolVar(&(o.continueOnError), "continueOnError", false, "Continues execution even a step fails, the exit code will still be different than 0")
 	fs.StringVar(&(o.consul), "consul", "", "The address of a consul server with playbooks and SQL files stored in KV pairs")
 	fs.StringVar(&(o.lock), "lock", "", "Optional argument which checks and sets a lockfile to ensure this run is a singleton. Deletes lock on run completing successfully")
 	fs.StringVar(&(o.softLock), "softLock", "", "Optional argument, like '-lock' but the lockfile will be deleted even if the run fails")
