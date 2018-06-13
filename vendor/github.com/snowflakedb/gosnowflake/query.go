@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -54,6 +54,7 @@ type execResponseData struct {
 	Version            int64                 `json:"version,omitempty"`         // java:long
 	Chunks             []execResponseChunk   `json:"chunks,omitempty"`
 	Qrmk               string                `json:"qrmk,omitempty"`
+	ChunkHeaders       map[string]string     `json:"chunkHeaders,omitempty"`
 
 	// ping pong response data
 	GetResultURL         string        `json:"getResultUrl,omitempty"`

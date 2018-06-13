@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -7,7 +7,6 @@ import (
 	"database/sql/driver"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // SnowflakeDriver is a context of Go Driver
@@ -39,7 +38,7 @@ func (d SnowflakeDriver) Open(dsn string) (driver.Conn, error) {
 		Port:     sc.cfg.Port,
 		Protocol: sc.cfg.Protocol,
 		Client: &http.Client{
-			Timeout:   60 * time.Second, // each request timeout
+			Timeout:   defaultLoginTimeout, // each request timeout
 			Transport: st,
 		},
 		Authenticator:       sc.cfg.Authenticator,
@@ -59,30 +58,45 @@ func (d SnowflakeDriver) Open(dsn string) (driver.Conn, error) {
 	}
 	var authData *authResponseMain
 	var samlResponse []byte
-	if sc.cfg.Authenticator != "snowflake" {
-		samlResponse, err = authenticateBySAML(sc.rest, sc.cfg.Authenticator, sc.cfg.Application, sc.cfg.Account, sc.cfg.User, sc.cfg.Password)
+	var proofKey []byte
+
+	authenticator := strings.ToUpper(sc.cfg.Authenticator)
+	glog.V(2).Infof("Authenticating via %v", authenticator)
+	switch authenticator {
+	case authenticatorExternalBrowser:
+		samlResponse, proofKey, err = authenticateByExternalBrowser(
+			sc.rest,
+			sc.cfg.Authenticator,
+			sc.cfg.Application,
+			sc.cfg.Account,
+			sc.cfg.User,
+			sc.cfg.Password)
+		if err != nil {
+			sc.cleanup()
+			return nil, err
+		}
+	case authenticatorOAuth:
+	case authenticatorSnowflake:
+		// Nothing to do, parameters needed for auth should be already set in sc.cfg
+		break
+	default:
+		// this is actually okta, which is something misleading
+		samlResponse, err = authenticateBySAML(
+			sc.rest,
+			sc.cfg.Authenticator,
+			sc.cfg.Application,
+			sc.cfg.Account,
+			sc.cfg.User,
+			sc.cfg.Password)
 		if err != nil {
 			sc.cleanup()
 			return nil, err
 		}
 	}
 	authData, err = authenticate(
-		sc.rest,
-		sc.cfg.User,
-		sc.cfg.Password,
-		sc.cfg.Account,
-		sc.cfg.Database,
-		sc.cfg.Schema,
-		sc.cfg.Warehouse,
-		sc.cfg.Role,
-		sc.cfg.Passcode,
-		sc.cfg.PasscodeInPassword,
-		sc.cfg.Application,
-		sc.cfg.Params,
+		sc,
 		samlResponse,
-		"",
-		"",
-	)
+		proofKey)
 	if err != nil {
 		sc.cleanup()
 		return nil, err

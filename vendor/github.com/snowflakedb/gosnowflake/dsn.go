@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -33,7 +33,7 @@ type Config struct {
 	Host     string // hostname (optional)
 	Port     int    // port (optional)
 
-	Authenticator      string // snowflake or okta
+	Authenticator      string // snowflake, okta URL, oauth or externalbrowser
 	Passcode           string
 	PasscodeInPassword bool
 
@@ -42,11 +42,15 @@ type Config struct {
 
 	Application  string // application name.
 	InsecureMode bool   // driver doesn't check certificate revocation status
+
+	Token string // Token to use for OAuth / JWT / other forms of token based auth
 }
 
 // DSN constructs a DSN for Snowflake db.
 func DSN(cfg *Config) (dsn string, err error) {
+	hasHost := true
 	if cfg.Host == "" {
+		hasHost = false
 		if cfg.Region == "" {
 			cfg.Host = cfg.Account + defaultDomain
 		} else {
@@ -65,6 +69,10 @@ func DSN(cfg *Config) (dsn string, err error) {
 		return "", err
 	}
 	params := &url.Values{}
+	if hasHost && cfg.Account != "" {
+		// account may not be included in a Host string
+		params.Add("account", cfg.Account)
+	}
 	if cfg.Database != "" {
 		params.Add("database", cfg.Database)
 	}
@@ -81,7 +89,7 @@ func DSN(cfg *Config) (dsn string, err error) {
 		params.Add("region", cfg.Region)
 	}
 	if cfg.Authenticator != defaultAuthenticator {
-		params.Add("authenticator", cfg.Authenticator)
+		params.Add("authenticator", strings.ToLower(cfg.Authenticator))
 	}
 	if cfg.Passcode != "" {
 		params.Add("passcode", cfg.Passcode)
@@ -98,12 +106,18 @@ func DSN(cfg *Config) (dsn string, err error) {
 	if cfg.Application != clientType {
 		params.Add("application", cfg.Application)
 	}
+	if cfg.Protocol != "" && cfg.Protocol != "https" {
+		params.Add("protocol", cfg.Protocol)
+	}
+	if cfg.Token != "" {
+		params.Add("token", cfg.Token)
+	}
 	if cfg.Params != nil {
 		for k, v := range cfg.Params {
 			params.Add(k, *v)
 		}
 	}
-	dsn = fmt.Sprintf("%v:%v@%v:%v", cfg.User, cfg.Password, cfg.Host, cfg.Port)
+	dsn = fmt.Sprintf("%v:%v@%v:%v", url.QueryEscape(cfg.User), url.QueryEscape(cfg.Password), cfg.Host, cfg.Port)
 	if params.Encode() != "" {
 		dsn += "?" + params.Encode()
 	}
@@ -122,6 +136,8 @@ func ParseDSN(dsn string) (cfg *Config, err error) {
 	// user[:password]@account/database[?param1=value1&paramN=valueN]
 	// or
 	// user[:password]@host:port/database/schema?account=user_account[?param1=value1&paramN=valueN]
+	// or
+	// host:port/database/schema?account=user_account[?param1=value1&paramN=valueN]
 
 	foundSlash := false
 	secondSlash := false
@@ -169,7 +185,6 @@ func ParseDSN(dsn string) (cfg *Config, err error) {
 				cfg.Schema = dsn[i+1 : posQuestion]
 			} else {
 				cfg.Database = dsn[posSecondSlash+1 : posQuestion]
-				cfg.Schema = "public"
 			}
 			done = true
 		case dsn[i] == '?':
@@ -216,6 +231,16 @@ func ParseDSN(dsn string) (cfg *Config, err error) {
 
 	// unescape parameters
 	var s string
+	s, err = url.QueryUnescape(cfg.User)
+	if err != nil {
+		return nil, err
+	}
+	cfg.User = s
+	s, err = url.QueryUnescape(cfg.Password)
+	if err != nil {
+		return nil, err
+	}
+	cfg.Password = s
 	s, err = url.QueryUnescape(cfg.Database)
 	if err != nil {
 		return nil, err
@@ -240,13 +265,21 @@ func ParseDSN(dsn string) (cfg *Config, err error) {
 }
 
 func fillMissingConfigParameters(cfg *Config) error {
+	if strings.Trim(cfg.Authenticator, " ") == "" {
+		cfg.Authenticator = defaultAuthenticator
+	}
 	if strings.Trim(cfg.Account, " ") == "" {
 		return ErrEmptyAccount
 	}
-	if strings.Trim(cfg.User, " ") == "" {
+	authenticator := strings.ToUpper(cfg.Authenticator)
+
+	if authenticator != authenticatorOAuth && strings.Trim(cfg.User, " ") == "" {
+		// oauth does not require a username
 		return ErrEmptyUsername
 	}
-	if strings.Trim(cfg.Password, " ") == "" {
+
+	if authenticator != authenticatorExternalBrowser && authenticator != authenticatorOAuth && strings.Trim(cfg.Password, " ") == "" {
+		// no password parameter is required for EXTERNALBROWSER and OAUTH.
 		return ErrEmptyPassword
 	}
 	if strings.Trim(cfg.Protocol, " ") == "" {
@@ -275,9 +308,6 @@ func fillMissingConfigParameters(cfg *Config) error {
 	}
 	if strings.Trim(cfg.Application, " ") == "" {
 		cfg.Application = clientType
-	}
-	if strings.Trim(cfg.Authenticator, " ") == "" {
-		cfg.Authenticator = defaultAuthenticator
 	}
 	if strings.HasSuffix(cfg.Host, defaultDomain) && len(cfg.Host) == len(defaultDomain) {
 		return &SnowflakeError{
@@ -327,7 +357,7 @@ func parseAccountHostPort(cfg *Config, posAt, posSlash int, dsn string) (err err
 	return transformAccountToHost(cfg)
 }
 
-// parseUserPassword pases the DSN string for username and password
+// parseUserPassword parses the DSN string for username and password
 func parseUserPassword(posAt int, dsn string) (user, password string) {
 	var k int
 	for k = 0; k < posAt; k++ {
@@ -401,7 +431,7 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 		case "application":
 			cfg.Application = value
 		case "authenticator":
-			cfg.Authenticator = value
+			cfg.Authenticator = strings.ToLower(value)
 		case "insecureMode":
 			var vv bool
 			vv, err = strconv.ParseBool(value)
@@ -409,6 +439,8 @@ func parseDSNParams(cfg *Config, params string) (err error) {
 				return
 			}
 			cfg.InsecureMode = vv
+		case "token":
+			cfg.Token = value
 		default:
 			if cfg.Params == nil {
 				cfg.Params = make(map[string]*string)
