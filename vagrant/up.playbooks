@@ -1,3 +1,4 @@
 oss-playbooks/golang.yml
 oss-playbooks/postgres.yml
 oss-playbooks/consul.yml
+oss-playbooks/golang-dep.yml
