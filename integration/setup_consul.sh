@@ -47,6 +47,7 @@ declare -a consul_keys=(
   "${root_key}/postgres-sql/good/2b.sql"
   "${root_key}/postgres-sql/good/3.sql"
   "${root_key}/postgres-sql/good/assert.sql"
+  "${root_key}/postgres-sql/good/output.sql"
 )
 
 for i in "${!consul_keys[@]}"
