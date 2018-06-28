@@ -42,10 +42,9 @@ function die() {
 # 1. exit_code
 # 2. command
 function assert_ExitCodeForCommand() {
-   [ "$#" -eq 2 ] || die "2 argument required, $# provided"
+   [ "$#" -eq 2 ] || die "2 arguments required, $# provided"
    local __exit_code="$1"
    local __command="$2"
-
    let "assert_counter+=1"
 
    printf "RUNNING: Assertion ${assert_counter}:\n - ${__command}\n\n"
@@ -62,8 +61,6 @@ function assert_ExitCodeForCommand() {
       exit 1
    fi
 }
-
-
 
 # -----------------------------------------------------------------------------
 #  TEST EXECUTION
@@ -129,7 +126,6 @@ assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-pos
 
 # Test: Valid playbook outputs proper results from playbooks using -dropOutput
 assert_ExitCodeForCommand "6" "${root}/sql-runner -dropOutput -playbook ${root_key}/good-postgres.yml"
-assert_OutputForCommand "25 32 18" "${root}/sql-runner -dropOutput -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\""
 
 # Test: Valid playbook which uses playbook template variables
 assert_ExitCodeForCommand "6" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml -var password=,host=localhost"

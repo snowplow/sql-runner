@@ -42,7 +42,7 @@ var (
 
 // Generalized interface to a database client
 type Db interface {
-	RunQuery(ReadyQuery, bool) QueryStatus
+	RunQuery(ReadyQuery, bool, bool) QueryStatus
 	GetTarget() Target
 	IsConnectable() bool
 }

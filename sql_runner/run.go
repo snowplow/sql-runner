@@ -71,7 +71,7 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool, fillTemplates bool) []TargetStatus {
+func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool, fillTemplates bool, dropOutput bool) []TargetStatus {
 
 	var steps []Step
 	var trimErr []TargetStatus
@@ -110,7 +110,7 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 
 	// Route each target to the right db client and run
 	for _, tgt := range pb.Targets {
-		routeAndRun(tgt, readySteps, targetChan, dryRun)
+		routeAndRun(tgt, readySteps, targetChan, dryRun, dropOutput)
 	}
 
 	// Compose statuses from each target run
@@ -248,17 +248,17 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 // --- Running
 
 // Route to correct database client and run
-func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool) {
+func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool, dropOutput bool) {
 	switch strings.ToLower(target.Type) {
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
 		go func(tgt Target) {
 			pg := NewPostgresTarget(tgt)
-			targetChan <- runSteps(pg, readySteps, dryRun)
+			targetChan <- runSteps(pg, readySteps, dryRun, dropOutput)
 		}(target)
 	case SNOWFLAKE_TYPE:
 		go func(tgt Target) {
 			snfl := NewSnowflakeTarget(tgt)
-			targetChan <- runSteps(snfl, readySteps, dryRun)
+			targetChan <- runSteps(snfl, readySteps, dryRun, dropOutput)
 		}(target)
 	default:
 		targetChan <- unsupportedDbType(target.Name, target.Type)
@@ -280,14 +280,14 @@ func unsupportedDbType(targetName string, targetType string) TargetStatus {
 //
 // runSteps fails fast - we stop executing SQL on
 // this target when a step fails.
-func runSteps(database Db, steps []ReadyStep, dryRun bool) TargetStatus {
+func runSteps(database Db, steps []ReadyStep, dryRun bool, dropOutput bool) TargetStatus {
 
 	allStatuses := make([]StepStatus, len(steps))
 
 FailFast:
 	for i, stp := range steps {
 		stpIndex := i + 1
-		status := runQueries(database, stpIndex, stp.Name, stp.Queries, dryRun)
+		status := runQueries(database, stpIndex, stp.Name, stp.Queries, dryRun, dropOutput)
 		allStatuses = append(allStatuses, status)
 
 		for _, qry := range status.Queries {
@@ -308,7 +308,7 @@ FailFast:
 // runQueries composes failures across the queries
 // for a given step: if one query fails, the others
 // will still complete.
-func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuery, dryRun bool) StepStatus {
+func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuery, dryRun bool, dropOutput bool) StepStatus {
 
 	queryChan := make(chan QueryStatus, len(queries))
 	dbName := database.GetTarget().Name
@@ -317,7 +317,7 @@ func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuer
 	for _, query := range queries {
 		go func(qry ReadyQuery) {
 			log.Printf("EXECUTING %s (in step %s @ %s): %s", qry.Name, stepName, dbName, qry.Path)
-			queryChan <- database.RunQuery(qry, dryRun)
+			queryChan <- database.RunQuery(qry, dryRun, dropOutput)
 		}(query)
 	}
 

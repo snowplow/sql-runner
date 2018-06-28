@@ -14,9 +14,14 @@ package main
 
 import (
 	"crypto/tls"
-	"gopkg.in/pg.v5"
+	"github.com/go-pg/pg"
 	"net"
 	"time"
+	"log"
+	"github.com/go-pg/pg/orm"
+	"github.com/olekukonko/tablewriter"
+	"os"
+	"errors"
 )
 
 // For Redshift queries
@@ -70,8 +75,9 @@ func (pt PostgresTarget) GetTarget() Target {
 }
 
 // Run a query against the target
-func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
-
+func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool, dropOutput bool) QueryStatus {
+	var err error = nil
+	var res orm.Result
 	if dryRun {
 		options := pt.Client.Options()
 		address := options.Addr
@@ -83,11 +89,60 @@ func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 
-	res, err := pt.Client.Exec(query.Script)
 	affected := 0
-	if err == nil {
-		affected = res.RowsAffected()
+	if dropOutput {
+		var results Results
+		res, err = pt.Client.Query(&results, query.Script)
+		if err == nil {
+			affected = res.RowsAffected()
+		} else {
+			log.Printf("ERROR: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+
+		err = printTable(&results)
+		if err != nil {
+			log.Printf("ERROR: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+	} else {
+		res, err = pt.Client.Exec(query.Script)
+		if err == nil {
+			affected = res.RowsAffected()
+		}
 	}
 
 	return QueryStatus{query, query.Path, affected, err}
+}
+
+func printTable(results *Results) error {
+	columns := make([]string, len(results.columns))
+	for k := range results.columns {
+		columns[k] = results.columns[k]
+	}
+
+	if results.elements == 1 {
+		if results.results[0][0] == "" {
+			return nil // blank output, edge case for asserts
+		}
+	} else if results.elements == 0 {
+		return nil // break for no output
+	}
+
+	log.Printf("QUERY OUTPUT:\n")
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(columns)
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+
+	if len(results.columns) == 0 {
+		return errors.New("Unable to read columns")
+	}
+
+	for _, row := range results.results {
+		table.Append(row)
+	}
+
+	table.Render() // Send output
+	return nil
 }
