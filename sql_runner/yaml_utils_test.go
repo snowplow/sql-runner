@@ -34,7 +34,7 @@ func TestParsePlaybookYaml(t *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(playbook)
 	assert.Equal(2, len(playbook.Targets))
-	assert.Equal(5, len(playbook.Steps))
+	assert.Equal(6, len(playbook.Steps))
 }
 
 func TestCleanYaml(t *testing.T) {

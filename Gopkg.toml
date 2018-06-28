@@ -30,8 +30,8 @@
   version = "1.14.21"
 
 [[constraint]]
-  name = "github.com/go-pg/pg"
-  version = "6.14.2"
+  branch = "v5"
+  name = "gopkg.in/pg.v5"
 
 [[constraint]]
   name = "github.com/hashicorp/consul"

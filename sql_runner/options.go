@@ -57,7 +57,7 @@ type Options struct {
 	variables  CLIVariables
 	fillTemplates bool
 	consulOnlyForLock    bool
-	showOutput bool
+	showQueryOutput bool
 }
 
 func NewOptions() Options {
@@ -82,7 +82,7 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.runQuery), "runQuery", "", "Will run a single query in the playbook")
 	fs.BoolVar(&(o.fillTemplates), "fillTemplates", false, "Will print all queries after templates are filled")
 	fs.BoolVar(&(o.consulOnlyForLock), "consulOnlyForLock", false, "Will read playbooks locally, but use Consul for locking.")
-	fs.BoolVar(&(o.showOutput), "showOutput", false, "Will print all output from queries")
+	fs.BoolVar(&(o.showQueryOutput), "showQueryOutput", false, "Will print all output from queries")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

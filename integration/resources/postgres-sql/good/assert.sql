@@ -4,7 +4,7 @@ CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION {{.test_schema}}.assert_average_age() RETURNS VOID AS $$
 DECLARE
-  expected_average_age CONSTANT integer := 25;
+  expected_average_age CONSTANT integer := 23;
 BEGIN
   {{/* Update view names to today's date or Travis will error */}}
   IF (SELECT average_age <> expected_average_age FROM {{.test_schema}}.view_{{.test_date}}) THEN

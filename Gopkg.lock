@@ -17,35 +17,23 @@
     "aws/request",
     "internal/sdkio",
     "internal/sdkrand",
+    "internal/sdkuri",
     "internal/shareddefaults"
   ]
-  revision = "16cb9f62f8a8b7af4f38725567f5ce762e1d562b"
-  version = "v1.14.21"
+  revision = "3e9c4ca8d7fc8d22f0d21d50120186f73d2fdf1a"
+  version = "v1.15.27"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
-  version = "v1.1.0"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "06f5f3d67269ccec1fe5fe4134ba6e982984f7f5"
-  version = "v1.37.0"
-
-[[projects]]
-  name = "github.com/go-pg/pg"
-  packages = [
-    ".",
-    "internal",
-    "internal/parser",
-    "internal/pool",
-    "orm",
-    "types"
-  ]
-  revision = "d4fc7afde3ee9d0a780f9c67daf8a8a3bfd84060"
-  version = "v6.14.2"
+  revision = "5cf292cae48347c2490ac1a58fe36735fb78df7e"
+  version = "v1.38.2"
 
 [[projects]]
   branch = "master"
@@ -54,16 +42,22 @@
   revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
 
 [[projects]]
-  name = "github.com/hashicorp/consul"
-  packages = ["api"]
-  revision = "28141971f966e99916da2c5e461dd968746491cd"
-  version = "v1.2.0"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  revision = "d460ce9f8df2e77fb1ba55ca87fafed96c607494"
+  version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
+  name = "github.com/hashicorp/consul"
+  packages = ["api"]
+  revision = "e716d1b5f8be252b3e53906c6d5632e0228f30fa"
+  version = "v1.2.2"
+
+[[projects]]
   name = "github.com/hashicorp/go-cleanhttp"
   packages = ["."]
-  revision = "d5fe4b57a186c716b0e00b8c301cbd9b4182694d"
+  revision = "e8ab9daed8d1ddd2d3c4efba338fe2eeae2e4f18"
+  version = "v0.5.0"
 
 [[projects]]
   branch = "master"
@@ -95,16 +89,28 @@
   revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
-  branch = "master"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb"
+  version = "v0.0.3"
+
+[[projects]]
   name = "github.com/mitchellh/go-homedir"
   packages = ["."]
-  revision = "3864e76763d94a6df2f9960b16a20a33da9f9a66"
+  revision = "ae18d6b8b3205b561c79e8e5f69bff09736185f4"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "fa473d140ef3c6adf42d6b391fe76707f1f243c8"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
-  name = "github.com/mitchellh/mapstructure"
+  name = "github.com/olekukonko/tablewriter"
   packages = ["."]
-  revision = "bb74f1db0675b241733089d5a1faa5dd8b0ef57b"
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [[projects]]
   branch = "master"
@@ -119,16 +125,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
-
-[[projects]]
   name = "github.com/snowflakedb/gosnowflake"
   packages = ["."]
-  revision = "b41243953b6b5f2887a69c06a95805101f3a7246"
-  version = "v1.1.8"
+  revision = "7d8648cf4957e55009221bc28f507382c08250e4"
+  version = "v1.1.10"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -140,7 +140,20 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ocsp"]
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
+
+[[projects]]
+  branch = "v5"
+  name = "gopkg.in/pg.v5"
+  packages = [
+    ".",
+    "internal",
+    "internal/parser",
+    "internal/pool",
+    "orm",
+    "types"
+  ]
+  revision = "2d0d5f354c99aa3feb5007dabbac02fcbbe06e38"
 
 [[projects]]
   branch = "v1"
@@ -151,6 +164,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6abd0cd8029c883fb625274f75b0ca741f33d18312eef7f503e46e98354f8c3e"
+  inputs-digest = "3781b6228941baa207a041f9ae644d2790d5b3818a4096afda33aa607f55bb80"
   solver-name = "gps-cdcl"
   solver-version = 1
