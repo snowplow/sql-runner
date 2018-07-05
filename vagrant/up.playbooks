@@ -1,4 +1,3 @@
 oss-playbooks/golang.yml
 oss-playbooks/postgres.yml
-oss-playbooks/wine.yml
 oss-playbooks/consul.yml
