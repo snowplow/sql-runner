@@ -1,4 +1,4 @@
-Version 0.6.0 (2017-01-01)
+Version 0.6.0 (2018-01-01)
 --------------------------
 Bump Go version to 1.9.2 (#112)
 Remove Go versions 1.6 and 1.7 from .travis.yml (#110)
