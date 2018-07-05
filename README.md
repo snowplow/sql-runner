@@ -1,6 +1,6 @@
 # SQL Runner
 
-[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Release][release-image]][releases] [![License][license-image]][license]
+[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Go Report Card][goreport-image]][goreport] [![Release][release-image]][releases] [![License][license-image]][license]
 
 ## Overview
 
@@ -46,6 +46,9 @@ limitations under the License.
 
 [coveralls-image]: https://coveralls.io/repos/github/snowplow/sql-runner/badge.svg?branch=master
 [coveralls]: https://coveralls.io/github/snowplow/sql-runner?branch=master
+
+[goreport]: https://goreportcard.com/report/github.com/snowplow/sql-runner
+[goreport-image]: https://goreportcard.com/badge/github.com/snowplow/sql-runner
 
 [snowplow]: https://github.com/snowplow/snowplow
 
