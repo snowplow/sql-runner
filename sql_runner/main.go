@@ -75,7 +75,7 @@ func main() {
 
 	// Unlock on success and soft-lock
 	if lockFile != nil {
-		if code == 0 || lockFile.SoftLock {
+		if code == 0 || code == 8 || lockFile.SoftLock {
 			lockFile.Unlock()
 		}
 	}

@@ -38,10 +38,16 @@ func review(statuses []TargetStatus) (int, string) {
 
 	if exitCode == 0 {
 		return exitCode, getSuccessMessage(queryCount, len(statuses))
+	} else if exitCode == 8 {
+		var message bytes.Buffer
+		message.WriteString("WARNING: No queries to run\n")
+		return exitCode, message.String()
 	} else {
 		return exitCode, getFailureMessage(statuses)
 	}
 }
+
+
 
 // Don't use a template here as executing it could fail
 func getSuccessMessage(queryCount int, targetCount int) string {
@@ -96,6 +102,8 @@ func getExitCodeAndQueryCount(statuses []TargetStatus) (int, int) {
 		exitCode = 5
 	case queryErrors:
 		exitCode = 6
+	case queryCount == 0:
+		exitCode = 8
 	default:
 		exitCode = 0
 	}
