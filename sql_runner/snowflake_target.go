@@ -19,9 +19,15 @@ type SnowFlakeTarget struct {
 }
 
 func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
+	var region string
+	if strings.Contains(target.Region, "us-west") {
+		region = ""
+	} else {
+		region = target.Region
+	}
 
 	configStr, err := sf.DSN(&sf.Config{
-		Region:       target.Region,
+		Region:       region,
 		Account:      target.Account,
 		User:         target.Username,
 		Password:     target.Password,
