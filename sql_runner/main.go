@@ -70,7 +70,7 @@ func main() {
 		}
 	}
 
-	statuses := Run(*pb, sp, options.fromStep, options.runQuery, options.dryRun)
+	statuses := Run(*pb, sp, options.fromStep, options.runQuery, options.dryRun, options.fillTemplates)
 	code, message := review(statuses)
 
 	// Unlock on success and soft-lock

@@ -139,6 +139,9 @@ assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-pos
 # Test: Truncated steps field in playbook should return exit code 8
 assert_ExitCodeForCommand "8" "${root}/sql-runner -playbook ${root_key}/good-postgres-truncated.yml -lock ${root}/dist/integration-lock"
 
+# Test: fillTemplate option should return exit code 8
+assert_ExitCodeForCommand "8" "${root}/sql-runner -fillTemplates -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"
+
 printf "==========================================================\n"
 printf " INTEGRATION TESTS SUCCESSFUL\n"
 printf "==========================================================\n"

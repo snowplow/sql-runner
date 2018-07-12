@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"bytes"
 )
 
 const (
@@ -70,7 +71,7 @@ type ReadyQuery struct {
 //
 // Handles dispatch to the appropriate
 // database engine
-func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool) []TargetStatus {
+func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun bool, fillTemplates bool) []TargetStatus {
 
 	var steps []Step
 	var trimErr []TargetStatus
@@ -88,6 +89,21 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 	readySteps, readyErr := loadSteps(steps, sp, pb.Variables, pb.Targets)
 	if readyErr != nil {
 		return readyErr
+	}
+
+	if fillTemplates {
+		for _, steps := range readySteps {
+			for _, query := range steps.Queries {
+				var message bytes.Buffer
+				message.WriteString(fmt.Sprintf("Step name: %s\n", steps.Name))
+				message.WriteString(fmt.Sprintf("Query name: %s\n", query.Name))
+				message.WriteString(fmt.Sprintf("Query path: %s\n", query.Path))
+				message.WriteString(query.Script)
+				log.Print(message.String())
+			}
+		}
+		allStatuses := make([]TargetStatus, 0)
+		return allStatuses
 	}
 
 	targetChan := make(chan TargetStatus, len(pb.Targets))
