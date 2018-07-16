@@ -138,7 +138,7 @@ func processFlags() Options {
 		os.Exit(2)
 	}
 
-	sr, err := resolveSqlRoot(options.sqlroot, options.playbook, options.consul)
+	sr, err := resolveSqlRoot(options.sqlroot, options.playbook, options.consul, options.consulOnlyForLock)
 	if err != nil {
 		fmt.Printf("Error resolving -sqlroot: %s\n%s\n", options.sqlroot, err)
 		os.Exit(2)
@@ -153,7 +153,9 @@ func processFlags() Options {
 // PlaybookProviderFromOptions returns a provider of the Playbook
 // based on flags passed in
 func PlaybookProviderFromOptions(options Options) (PlaybookProvider, error) {
-	if options.consul != "" {
+	if options.consulOnlyForLock {
+		return NewYAMLFilePlaybookProvider(options.playbook, options.variables), nil
+	} else if options.consul != "" {
 		return NewConsulPlaybookProvider(options.consul, options.playbook, options.variables), nil
 	} else if options.playbook != "" {
 		return NewYAMLFilePlaybookProvider(options.playbook, options.variables), nil
@@ -165,7 +167,9 @@ func PlaybookProviderFromOptions(options Options) (PlaybookProvider, error) {
 // SQLProviderFromOptions returns a provider of SQL files
 // based on flags passed in
 func SQLProviderFromOptions(options Options) (SQLProvider, error) {
-	if options.consul != "" {
+	if options.consulOnlyForLock {
+		return NewFileSQLProvider(options.sqlroot), nil
+	} else if options.consul != "" {
 		return NewConsulSQLProvider(options.consul, options.sqlroot), nil
 	} else if options.playbook != "" {
 		return NewFileSQLProvider(options.sqlroot), nil
@@ -213,9 +217,23 @@ func LockFileFromOptions(options Options) (*LockFile, error) {
 // --- SQLRoot resolvers
 
 // resolveSqlRoot returns the path to our SQL scripts
-func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string) (string, error) {
+func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string, consulOnlyForLock bool) (string, error) {
 	consulErr1 := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
 	consulErr2 := fmt.Errorf("Cannot use %s option without -consul argument", sqlroot)
+	consulErr3 := fmt.Errorf("Cannot use %s option with -consulOnlyForLock argument", sqlroot)
+
+	if consulOnlyForLock {
+		switch sqlroot {
+		case SQLROOT_BINARY:
+			return osext.ExecutableFolder()
+		case SQLROOT_PLAYBOOK:
+			return filepath.Abs(filepath.Dir(playbookPath))
+		case SQLROOT_PLAYBOOK_CHILD:
+			return "", consulErr3
+		default:
+			return sqlroot, nil
+		}
+	}
 
 	switch sqlroot {
 	case SQLROOT_BINARY:
