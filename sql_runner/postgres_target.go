@@ -30,6 +30,13 @@ type PostgresTarget struct {
 	Client *pg.DB
 }
 
+func (pt PostgresTarget) IsConnectable() bool {
+	client := pt.Client
+	var result int
+	_, err := client.QueryOne(&result, "SELECT 1") // empty query to test connection
+	return err == nil && result == 1
+}
+
 func NewPostgresTarget(target Target) *PostgresTarget {
 	var tlsConfig *tls.Config
 	if target.Ssl == true {
@@ -66,6 +73,13 @@ func (pt PostgresTarget) GetTarget() Target {
 func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 
 	if dryRun {
+		options := pt.Client.Options()
+		address := options.Addr
+		if pt.IsConnectable() {
+			log.Printf("SUCCESS: Able to connect to target database, %s\n.", address)
+		} else {
+			log.Printf("ERROR: Cannot connect to target database, %s\n.", address)
+		}
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 
