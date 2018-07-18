@@ -18,6 +18,12 @@ type SnowFlakeTarget struct {
 	Client *sql.DB
 }
 
+func (sft SnowFlakeTarget) IsConnectable() bool {
+	client := sft.Client
+	err := client.Ping()
+	return err == nil
+}
+
 func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
 	var region string
 	if strings.Contains(target.Region, "us-west") {
@@ -60,6 +66,12 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool) QueryStatus {
 	var err error
 
 	if dryRun {
+		if sft.IsConnectable() {
+			log.Printf("SUCCESS: Able to connect to target database, %s\n.", sft.Account)
+		} else {
+			log.Printf("ERROR: Cannot connect to target database, %s\n.", sft.Account)
+		}
+
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 

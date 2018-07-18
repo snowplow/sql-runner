@@ -44,6 +44,7 @@ var (
 type Db interface {
 	RunQuery(ReadyQuery, bool) QueryStatus
 	GetTarget() Target
+	IsConnectable() bool
 }
 
 // Reads the script and fills in the template
