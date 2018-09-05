@@ -13,7 +13,7 @@
 package main
 
 import (
-    "gopkg.in/pg.v5/orm"
+	"github.com/go-pg/pg/orm"
 )
 
 type Results struct {

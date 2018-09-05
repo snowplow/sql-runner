@@ -3,72 +3,60 @@
 package gosnowflake
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/url"
 	"time"
 
-	"context"
-
-	"io/ioutil"
-	"net/http"
-
-	"encoding/json"
-
-	"github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 const (
 	// One hour interval should be good enough to renew tokens for four hours master token validity
-	heartBeatInterval = 60 * time.Minute
+	heartBeatInterval = 3600 * time.Second
 )
 
 type heartbeat struct {
 	restful      *snowflakeRestful
-	ShutdownChan chan int
+	shutdownChan chan bool
 }
 
 func (hc *heartbeat) run() {
-	hbTimer := time.NewTimer(heartBeatInterval)
+	hbTicker := time.NewTicker(heartBeatInterval)
+	defer hbTicker.Stop()
 	for {
-		go func() {
-			<-hbTimer.C
+		select {
+		case <-hbTicker.C:
 			err := hc.heartbeatMain()
 			if err != nil {
 				glog.V(2).Info("failed to heartbeat")
-				return
 			}
-			hbTimer = time.NewTimer(heartBeatInterval)
-		}()
-		select {
-		case <-hc.ShutdownChan:
-			// stop
-			hbTimer.Stop()
-			glog.V(2).Info("stopping")
+		case <-hc.shutdownChan:
+			glog.V(2).Info("stopping heartbeat")
 			return
-		default:
-			// no more download
-			glog.V(2).Info("no shutdown signal")
 		}
-		time.Sleep(1 * time.Second)
 	}
 }
 
 func (hc *heartbeat) start() {
-	hc.ShutdownChan = make(chan int)
+	hc.shutdownChan = make(chan bool)
 	go hc.run()
 	glog.V(2).Info("heartbeat started")
 }
 
 func (hc *heartbeat) stop() {
-	hc.ShutdownChan <- 1
-	close(hc.ShutdownChan)
+	hc.shutdownChan <- true
+	close(hc.shutdownChan)
 	glog.V(2).Info("heartbeat stopped")
 }
 
 func (hc *heartbeat) heartbeatMain() error {
 	glog.V(2).Info("Heartbeating!")
 	params := &url.Values{}
-	params.Add("requestId", uuid.NewV4().String())
+	params.Add("requestId", uuid.New().String())
 	fullURL := fmt.Sprintf(
 		"%s://%s:%d%s", hc.restful.Protocol, hc.restful.Host, hc.restful.Port, "/session/heartbeat?"+params.Encode())
 	headers := make(map[string]string)

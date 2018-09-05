@@ -14,8 +14,8 @@ package main
 
 import (
 	"crypto/tls"
-	"gopkg.in/pg.v5"
-	"gopkg.in/pg.v5/orm"
+	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 	"net"
 	"time"
 	"log"

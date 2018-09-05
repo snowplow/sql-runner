@@ -36,6 +36,19 @@
   version = "v1.38.2"
 
 [[projects]]
+  name = "github.com/go-pg/pg"
+  packages = [
+    ".",
+    "internal",
+    "internal/parser",
+    "internal/pool",
+    "orm",
+    "types"
+  ]
+  revision = "eb1e50689f65a1b60a16af344c3b092cfbe91c18"
+  version = "v6.14.5"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/glog"
   packages = ["."]
@@ -143,19 +156,6 @@
   revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
 
 [[projects]]
-  branch = "v5"
-  name = "gopkg.in/pg.v5"
-  packages = [
-    ".",
-    "internal",
-    "internal/parser",
-    "internal/pool",
-    "orm",
-    "types"
-  ]
-  revision = "2d0d5f354c99aa3feb5007dabbac02fcbbe06e38"
-
-[[projects]]
   branch = "v1"
   name = "gopkg.in/yaml.v1"
   packages = ["."]
@@ -164,6 +164,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3781b6228941baa207a041f9ae644d2790d5b3818a4096afda33aa607f55bb80"
+  inputs-digest = "015082ec73258f381e0ad13afd99483429ca04fcdb507e02b450ba2f73c7c664"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -56,12 +56,12 @@ func (q selectQuery) AppendQuery(b []byte) ([]byte, error) {
 
 	if q.q.hasTables() {
 		b = append(b, " FROM "...)
-		b = q.q.appendTables(b)
+		b = q.appendTables(b)
 	}
 
 	q.q.forEachHasOneJoin(func(j *join) {
 		b = append(b, ' ')
-		b = j.appendHasOneJoin(q.q.db, b)
+		b = j.appendHasOneJoin(q.q, b)
 	})
 	if len(q.q.joins) > 0 {
 		for _, j := range q.q.joins {
@@ -79,7 +79,7 @@ func (q selectQuery) AppendQuery(b []byte) ([]byte, error) {
 		}
 	}
 
-	if len(q.q.where) > 0 {
+	if q.q.hasWhere() {
 		b = append(b, " WHERE "...)
 		b = q.q.appendWhere(b)
 	}
@@ -179,4 +179,23 @@ func (q selectQuery) isDistinct() bool {
 		}
 	}
 	return false
+}
+
+func (q selectQuery) appendTables(b []byte) []byte {
+	if q.q.hasModel() {
+		b = q.q.FormatQuery(b, string(q.q.model.Table().NameForSelects))
+		b = append(b, " AS "...)
+		b = append(b, q.q.model.Table().Alias...)
+
+		if len(q.q.tables) > 0 {
+			b = append(b, ", "...)
+		}
+	}
+	for i, f := range q.q.tables {
+		if i > 0 {
+			b = append(b, ", "...)
+		}
+		b = f.AppendFormat(b, q.q)
+	}
+	return b
 }

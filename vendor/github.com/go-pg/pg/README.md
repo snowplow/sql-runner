@@ -11,6 +11,7 @@
 - Structs, maps and arrays are marshalled as JSON by default.
 - PostgreSQL multidimensional Arrays using [array tag](https://godoc.org/github.com/go-pg/pg#example-DB-Model-PostgresArrayStructTag) and [Array wrapper](https://godoc.org/github.com/go-pg/pg#example-Array).
 - Hstore using [hstore tag](https://godoc.org/github.com/go-pg/pg#example-DB-Model-HstoreStructTag) and [Hstore wrapper](https://godoc.org/github.com/go-pg/pg#example-Hstore).
+- [Composite types](https://godoc.org/github.com/go-pg/pg#example-DB-Model-CompositeType).
 - All struct fields are nullable by default and zero values (empty string, 0, zero time, empty map or slice) are marshalled as SQL `NULL`. `sql:",notnull"` tag is used to reverse this behaviour.
 - [Transactions](http://godoc.org/github.com/go-pg/pg#example-DB-Begin).
 - [Prepared statements](http://godoc.org/github.com/go-pg/pg#example-DB-Prepare).
@@ -27,6 +28,7 @@
 - Common table expressions using [WITH](https://godoc.org/github.com/go-pg/pg#example-DB-Select-With) and [WrapWith](https://godoc.org/github.com/go-pg/pg#example-DB-Select-WrapWith).
 - [CountEstimate](https://godoc.org/github.com/go-pg/pg#example-DB-Model-CountEstimate) using `EXPLAIN` to get [estimated number of matching rows](https://wiki.postgresql.org/wiki/Count_estimate).
 - ORM supports [has one](https://godoc.org/github.com/go-pg/pg#example-DB-Model-HasOne), [belongs to](https://godoc.org/github.com/go-pg/pg#example-DB-Model-BelongsTo), [has many](https://godoc.org/github.com/go-pg/pg#example-DB-Model-HasMany), and [many to many](https://godoc.org/github.com/go-pg/pg#example-DB-Model-ManyToMany) with composite/multi-column primary keys.
+- [Soft deletes](https://godoc.org/github.com/go-pg/pg#example-DB-Model-SoftDelete).
 - [Creating tables from structs](https://godoc.org/github.com/go-pg/pg#example-DB-CreateTable).
 - [Pagination](https://godoc.org/github.com/go-pg/pg/orm#Pagination) and [URL filters](https://godoc.org/github.com/go-pg/pg/orm#URLFilters) helpers.
 - [ForEach](https://godoc.org/github.com/go-pg/pg#example-DB-Model-ForEach) that calls a function for each row returned by the query without loading all rows into the memory.

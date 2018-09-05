@@ -6,7 +6,7 @@ setup:
 	go get -u github.com/golang/dep/cmd/dep
 	go get github.com/golang/lint/golint
 	go get github.com/Songmu/make2help/cmd/make2help
-	go get honnef.co/go/tools/cmd/megacheck
+	[[ $$(go version | awk '{print $3}' | cut -d'.' -f 2) != "8" ]] && go get honnef.co/go/tools/cmd/megacheck || true
 
 ## Install dependencies
 deps: setup
@@ -26,7 +26,7 @@ cfmt: setup
 
 # Lint (internally used)
 clint: setup
-	megacheck
+	[[ $$(go version | awk '{print $3}' | cut -d'.' -f 2) != "8" ]] && echo "Running megacheck" && megacheck || echo "No megacheck run, because Go1.8 is not supported."
 	for pkg in $$(go list ./... | grep -v /vendor/); do \
 		echo "Verifying $$pkg"; \
 		go vet $$pkg; \
