@@ -17,6 +17,7 @@ import (
 	"gopkg.in/yaml.v1"
 	"regexp"
 	"strings"
+	"text/template"
 )
 
 var (
@@ -26,13 +27,18 @@ var (
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(playbookBytes []byte) (Playbook, error) {
+func parsePlaybookYaml(playbookBytes []byte, variables map[string]string) (Playbook, error) {
 	// Define and initialize the Playbook struct
 	var playbook Playbook = NewPlaybook()
 
 	// Clean up the YAML
 	cleaned := cleanYaml(playbookBytes)
-	err := yaml.Unmarshal(cleaned, &playbook)
+
+	// Run the yaml through the template engine
+	str, err := fillPlaybookTemplate(string(cleaned[:]), variables)
+
+	// Unmarshal the yaml into the playbook
+	err = yaml.Unmarshal([]byte(str), &playbook)
 
 	return playbook, err
 }
@@ -50,4 +56,18 @@ func cleanYaml(rawYaml []byte) []byte {
 		buffer.WriteString(rubyYamlRegex.ReplaceAllString(line, "${1}${2}\n"))
 	}
 	return buffer.Bytes()
+}
+
+func fillPlaybookTemplate(playbookStr string, variables map[string]string) (string, error) {
+	t, err := template.New("playbook").Parse(playbookStr)
+	if err != nil {
+		return "", err
+	}
+
+	var filled bytes.Buffer
+	if err := t.Execute(&filled, variables); err != nil {
+		return "", err
+	}
+
+	return filled.String(), err
 }

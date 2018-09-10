@@ -26,12 +26,18 @@ Go
 
 The driver requires the `Go language <https://golang.org/>`_ 1.8 or higher. The supported operating systems are Linux, Mac OS, and Windows, but you may run the driver on other platforms if the Go language works correctly on those platforms.
 
+
 Installation
 ================================================================================
+
+Get Gosnowflake source code and `dep <https://github.com/golang/dep>`_ (dependency managment tool), if not installed, and ensure the dependent libraries are installed.
 
 .. code-block:: bash
 
     go get -u github.com/snowflakedb/gosnowflake
+    go get -u github.com/golang/dep/cmd/dep
+    cd $GOPATH/src/github.com/snowflakedb/gosnowflake/
+    dep ensure
 
 Docs
 ====
@@ -83,7 +89,7 @@ Set the Snowflake connection info in ``parameters.json``:
         }
     }
 
-Run ``make test`` in your Go development environment:
+Install `jq <https://stedolan.github.io/jq/>`_ so that the parameters can get parsed correctly, and run ``make test`` in your Go development environment:
 
 .. code-block:: bash
 
@@ -93,3 +99,10 @@ Submitting Pull Requests
 ----------------------------------------------------------------------
 
 You may use your preferred editor to edit the driver code. Make certain to run ``make fmt lint`` before submitting any pull request to Snowflake. This command formats your source code according to the standard Go style and detects any coding style issues.
+
+Support
+----------------------------------------------------------------------
+
+For official support, contact Snowflake support at:
+https://support.snowflake.net/s/snowflake-support
+

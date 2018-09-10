@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -271,7 +271,7 @@ func retryOCSP(
 	sleepTime := time.Duration(0)
 	for {
 		sleepTime = defaultWaitAlgo.decorr(retryCounter, sleepTime)
-		res, err := retryHTTP(context.TODO(), client, req, "POST", ocspHost, headers, reqBody, httpTimeout)
+		res, err := retryHTTP(context.TODO(), client, req, "POST", ocspHost, headers, reqBody, httpTimeout, false)
 		if err != nil {
 			if ok := retryRevocationStatusCheck(&totalTimeout, sleepTime); ok {
 				retryCounter++
@@ -574,6 +574,7 @@ func init() {
 var snowflakeInsecureTransport = &http.Transport{
 	MaxIdleConns:    10,
 	IdleConnTimeout: 30 * time.Minute,
+	Proxy:           http.ProxyFromEnvironment,
 }
 
 // SnowflakeTransport includes the certificate revocation check with OCSP in parallel. By default, the driver uses
@@ -585,6 +586,7 @@ var SnowflakeTransport = &http.Transport{
 	},
 	MaxIdleConns:    10,
 	IdleConnTimeout: 30 * time.Minute,
+	Proxy:           http.ProxyFromEnvironment,
 }
 
 // SnowflakeTransportSerial includes the certificate revocation check with OCSP in serial.
@@ -595,6 +597,7 @@ var SnowflakeTransportSerial = &http.Transport{
 	},
 	MaxIdleConns:    10,
 	IdleConnTimeout: 30 * time.Minute,
+	Proxy:           http.ProxyFromEnvironment,
 }
 
 // SnowflakeTransportTest includes the certificate revocation check in parallel

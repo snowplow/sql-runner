@@ -47,3 +47,8 @@
       - :name: Assertions
         :file: postgres-sql/good/assert.sql
         :template: true
+  - :name: Output
+    :queries:
+      - :name: Output
+        :file: postgres-sql/good/output.sql
+        :template: true

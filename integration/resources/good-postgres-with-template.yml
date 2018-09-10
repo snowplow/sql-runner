@@ -1,0 +1,18 @@
+:targets:
+  - :name: "My Postgres database 1"
+    :type: postgres
+    :host: {{.host}}
+    :database: sql_runner_tests_1
+    :port: 5432
+    :username: {{.username}}
+    :password: {{.password}}
+    :ssl: false # SSL disabled by default
+:variables:
+  :test_schema: sql_runner_tests
+  :timeFormat: "2006_01_02"
+:steps:
+  - :name: Create schema and table
+    :queries:
+      - :name: Create schema and table
+        :file: postgres-sql/good/1.sql
+        :template: true

@@ -42,10 +42,9 @@ function die() {
 # 1. exit_code
 # 2. command
 function assert_ExitCodeForCommand() {
-   [ "$#" -eq 2 ] || die "2 argument required, $# provided"
+   [ "$#" -eq 2 ] || die "2 arguments required, $# provided"
    local __exit_code="$1"
    local __command="$2"
-
    let "assert_counter+=1"
 
    printf "RUNNING: Assertion ${assert_counter}:\n - ${__command}\n\n"
@@ -62,8 +61,6 @@ function assert_ExitCodeForCommand() {
       exit 1
    fi
 }
-
-
 
 # -----------------------------------------------------------------------------
 #  TEST EXECUTION
@@ -126,6 +123,20 @@ assert_ExitCodeForCommand "0" "${root}/sql-runner -checkLock ${root}/dist/integr
 # Test: Invalid playbook which creates a hard/soft-lock but is run using -dryRun should return exit code 0
 assert_ExitCodeForCommand "5" "${root}/sql-runner -playbook ${root_key}/bad-mixed.yml -lock ${root}/dist/integration-lock -dryRun"
 assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock -dryRun"
+
+# Test: Valid playbook outputs proper results from playbooks using -showQueryOutput
+assert_ExitCodeForCommand "6" "${root}/sql-runner -showQueryOutput -playbook ${root_key}/good-postgres.yml"
+
+# Test: Valid playbook which uses playbook template variables
+assert_ExitCodeForCommand "6" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml -var password=,host=localhost"
+assert_ExitCodeForCommand "6" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml"
+assert_ExitCodeForCommand "0" "${root}/sql-runner -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"
+
+# Test: Truncated steps field in playbook should return exit code 8
+assert_ExitCodeForCommand "8" "${root}/sql-runner -playbook ${root_key}/good-postgres-truncated.yml -lock ${root}/dist/integration-lock"
+
+# Test: fillTemplate option should return exit code 8
+assert_ExitCodeForCommand "8" "${root}/sql-runner -fillTemplates -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"
 
 printf "==========================================================\n"
 printf " INTEGRATION TESTS SUCCESSFUL\n"

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -167,7 +167,7 @@ func extractTimestamp(srcValue *string) (sec int64, nsec int64, err error) {
 func stringToValue(dest *driver.Value, srcColumnMeta execResponseRowType, srcValue *string) error {
 	if srcValue == nil {
 		glog.V(3).Infof("snowflake data type: %v, raw value: nil", srcColumnMeta.Type)
-		dest = nil
+		*dest = nil
 		return nil
 	}
 	glog.V(3).Infof("snowflake data type: %v, raw value: %v", srcColumnMeta.Type, *srcValue)

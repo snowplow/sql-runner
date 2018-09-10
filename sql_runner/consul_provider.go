@@ -15,12 +15,14 @@ package main
 type ConsulPlaybookProvider struct {
 	consulAddress string
 	consulKey     string
+	variables     map[string]string
 }
 
-func NewConsulPlaybookProvider(consulAddress, consulKey string) *ConsulPlaybookProvider {
+func NewConsulPlaybookProvider(consulAddress, consulKey string, variables map[string]string) *ConsulPlaybookProvider {
 	return &ConsulPlaybookProvider{
 		consulAddress: consulAddress,
 		consulKey:     consulKey,
+		variables:     variables,
 	}
 }
 
@@ -30,6 +32,6 @@ func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
 		return nil, err
 	}
 
-	playbook, pbErr := parsePlaybookYaml(lines)
+	playbook, pbErr := parsePlaybookYaml(lines, p.variables)
 	return &playbook, pbErr
 }

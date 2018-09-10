@@ -1,18 +1,20 @@
 ## Setup
+SHELL := /bin/bash
+SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+
 setup:
-	go get golang.org/x/crypto/ocsp
-	go get github.com/Masterminds/glide
+	go get -u github.com/golang/dep/cmd/dep
 	go get github.com/golang/lint/golint
 	go get github.com/Songmu/make2help/cmd/make2help
-	go get honnef.co/go/tools/cmd/megacheck
+	[[ $$(go version | awk '{print $3}' | cut -d'.' -f 2) != "8" ]] && go get honnef.co/go/tools/cmd/megacheck || true
 
 ## Install dependencies
 deps: setup
-	glide install
+	dep ensure
 
 ## Update dependencies
 update: setup
-	glide update
+	dep ensure -update
 
 ## Show help
 help:
@@ -20,13 +22,14 @@ help:
 
 # Format source codes (internally used)
 cfmt: setup
-	gofmt -w $$(glide nv -x)
+	gofmt -l -w $(SRC)
 
 # Lint (internally used)
 clint: setup
-	go vet $$(glide novendor)
-	megacheck
-	for pkg in $$(glide novendor -x); do \
+	[[ $$(go version | awk '{print $3}' | cut -d'.' -f 2) != "8" ]] && echo "Running megacheck" && megacheck || echo "No megacheck run, because Go1.8 is not supported."
+	for pkg in $$(go list ./... | grep -v /vendor/); do \
+		echo "Verifying $$pkg"; \
+		go vet $$pkg; \
 		golint -set_exit_status $$pkg || exit $$?; \
 	done
 

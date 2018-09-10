@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -19,7 +19,7 @@ type SnowflakeError struct {
 func (se *SnowflakeError) Error() string {
 	message := se.Message
 	if len(se.MessageArgs) > 0 {
-		message = fmt.Sprintf(se.Message, se.MessageArgs)
+		message = fmt.Sprintf(se.Message, se.MessageArgs...)
 	}
 	if se.SQLState != "" {
 		if se.IncludeQueryID {
@@ -75,6 +75,12 @@ const (
 	ErrFailedToAuthOKTA = 261006
 	// ErrFailedToGetSSO is an error code for the case where authentication via OKTA failed for unknown reason.
 	ErrFailedToGetSSO = 261007
+	// ErrFailedToParseResponse is an error code for when we cannot parse an external browser response from Snowflake.
+	ErrFailedToParseResponse = 261008
+	// ErrFailedToGetExternalBrowserResponse is an error code for when there's an error reading from the open socket.
+	ErrFailedToGetExternalBrowserResponse = 261009
+	// ErrFailedToHeartbeat is an error code when a heartbeat fails.
+	ErrFailedToHeartbeat = 261010
 
 	/* rows */
 
@@ -115,6 +121,8 @@ const (
 	errMsgFailedToAuthSAML                   = "failed to auth via SAML for unknown reason. HTTP: %v, URL: %v"
 	errMsgFailedToAuthOKTA                   = "failed to auth via OKTA for unknown reason. HTTP: %v, URL: %v"
 	errMsgFailedToGetSSO                     = "failed to auth via OKTA for unknown reason. HTTP: %v, URL: %v"
+	errMsgFailedToParseResponse              = "failed to parse a response from Snowflake. Response: %v"
+	errMsgFailedToGetExternalBrowserResponse = "failed to get an external browser response from Snowflake, err: %s"
 	errMsgNoReadOnlyTransaction              = "no readonly mode is supported"
 	errMsgNoDefaultTransactionIsolationLevel = "no default isolation transaction level is supported"
 	errMsgServiceUnavailable                 = "service is unavailable. check your connectivity. you may need a proxy server. HTTP: %v, URL: %v"

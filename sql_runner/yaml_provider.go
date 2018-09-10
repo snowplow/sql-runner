@@ -14,11 +14,13 @@ package main
 
 type YAMLFilePlaybookProvider struct {
 	playbookPath string
+	variables    map[string]string
 }
 
-func NewYAMLFilePlaybookProvider(playbookPath string) *YAMLFilePlaybookProvider {
+func NewYAMLFilePlaybookProvider(playbookPath string, variables map[string]string) *YAMLFilePlaybookProvider {
 	return &YAMLFilePlaybookProvider{
 		playbookPath: playbookPath,
+		variables:    variables,
 	}
 }
 
@@ -28,6 +30,6 @@ func (p YAMLFilePlaybookProvider) GetPlaybook() (*Playbook, error) {
 		return nil, err
 	}
 
-	playbook, pbErr := parsePlaybookYaml(lines)
+	playbook, pbErr := parsePlaybookYaml(lines, p.variables)
 	return &playbook, pbErr
 }

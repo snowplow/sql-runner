@@ -1,4 +1,5 @@
 To get started:
 vagrant ssh
 cd /opt/gopath/src/github.com/snowplow/sql-runner
-godep go build -o sql-runner ./sql_runner/
+dep ensure
+go build -o sql-runner ./sql_runner/

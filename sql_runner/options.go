@@ -13,6 +13,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strings"
@@ -26,11 +27,16 @@ func (i *CLIVariables) String() string {
 }
 
 func (i *CLIVariables) Set(value string) error {
-	var split = strings.SplitN(value, "=", 2)
-	if len(split) > 1 {
-		key := split[0]
-		val := split[1]
-		(*i)[key] = val
+	var split = strings.Split(value, ",")
+
+	for value := range split {
+		kv := strings.SplitN(split[value], "=", 2)
+
+		if len(kv) != 2 {
+			return errors.New("Invalid size for key, value, key value should be in the key=value format")
+		}
+
+		(*i)[kv[0]] = kv[1]
 	}
 	return nil
 }
@@ -49,6 +55,9 @@ type Options struct {
 	deleteLock string
 	runQuery   string
 	variables  CLIVariables
+	fillTemplates bool
+	consulOnlyForLock    bool
+	showQueryOutput bool
 }
 
 func NewOptions() Options {
@@ -71,6 +80,9 @@ func (o *Options) GetFlagSet() *flag.FlagSet {
 	fs.StringVar(&(o.checkLock), "checkLock", "", "Checks whether the lockfile already exists")
 	fs.StringVar(&(o.deleteLock), "deleteLock", "", "Will attempt to delete a lockfile if it exists")
 	fs.StringVar(&(o.runQuery), "runQuery", "", "Will run a single query in the playbook")
+	fs.BoolVar(&(o.fillTemplates), "fillTemplates", false, "Will print all queries after templates are filled")
+	fs.BoolVar(&(o.consulOnlyForLock), "consulOnlyForLock", false, "Will read playbooks locally, but use Consul for locking.")
+	fs.BoolVar(&(o.showQueryOutput), "showQueryOutput", false, "Will print all output from queries")
 	// TODO: add format flag if/when we support TOML
 
 	return fs

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Snowflake Computing Inc. All right reserved.
+// Copyright (c) 2017-2018 Snowflake Computing Inc. All right reserved.
 
 package gosnowflake
 
@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 const (
@@ -39,11 +39,12 @@ type snowflakeRestful struct {
 	Token       string
 	MasterToken string
 	SessionID   int
+	HeartBeat   *heartbeat
 
 	Connection          *snowflakeConn
 	FuncPostQuery       func(context.Context, *snowflakeRestful, *url.Values, map[string]string, []byte, time.Duration) (*execResponse, error)
 	FuncPostQueryHelper func(context.Context, *snowflakeRestful, *url.Values, map[string]string, []byte, time.Duration, string) (*execResponse, error)
-	FuncPost            func(context.Context, *snowflakeRestful, string, map[string]string, []byte, time.Duration) (*http.Response, error)
+	FuncPost            func(context.Context, *snowflakeRestful, string, map[string]string, []byte, time.Duration, bool) (*http.Response, error)
 	FuncGet             func(context.Context, *snowflakeRestful, string, map[string]string, time.Duration) (*http.Response, error)
 	FuncRenewSession    func(context.Context, *snowflakeRestful) error
 	FuncPostAuth        func(*snowflakeRestful, *url.Values, map[string]string, []byte, time.Duration) (*authResponse, error)
@@ -83,9 +84,10 @@ func postRestful(
 	fullURL string,
 	headers map[string]string,
 	body []byte,
-	timeout time.Duration) (
+	timeout time.Duration,
+	raise4XX bool) (
 	*http.Response, error) {
-	return retryHTTP(ctx, sr.Client, http.NewRequest, "POST", fullURL, headers, body, timeout)
+	return retryHTTP(ctx, sr.Client, http.NewRequest, "POST", fullURL, headers, body, timeout, raise4XX)
 }
 
 func getRestful(
@@ -95,7 +97,7 @@ func getRestful(
 	headers map[string]string,
 	timeout time.Duration) (
 	*http.Response, error) {
-	return retryHTTP(ctx, sr.Client, http.NewRequest, "GET", fullURL, headers, nil, timeout)
+	return retryHTTP(ctx, sr.Client, http.NewRequest, "GET", fullURL, headers, nil, timeout, false)
 }
 
 type execResponseAndErr struct {
@@ -112,7 +114,7 @@ func postRestfulQuery(
 	timeout time.Duration) (
 	data *execResponse, err error) {
 
-	requestID := uuid.NewV4().String()
+	requestID := uuid.New().String()
 	execResponseChan := make(chan execResponseAndErr)
 
 	go func() {
@@ -151,7 +153,7 @@ func postRestfulQueryHelper(
 	fullURL := fmt.Sprintf(
 		"%s://%s:%d%s", sr.Protocol, sr.Host, sr.Port,
 		"/queries/v1/query-request?"+params.Encode())
-	resp, err := sr.FuncPost(ctx, sr, fullURL, headers, body, timeout)
+	resp, err := sr.FuncPost(ctx, sr, fullURL, headers, body, timeout, false)
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +231,7 @@ func closeSession(sr *snowflakeRestful) error {
 	glog.V(2).Info("close session")
 	params := &url.Values{}
 	params.Add("delete", "true")
-	params.Add("requestId", uuid.NewV4().String())
+	params.Add("requestId", uuid.New().String())
 	fullURL := fmt.Sprintf(
 		"%s://%s:%d%s", sr.Protocol, sr.Host, sr.Port, "/session?"+params.Encode())
 
@@ -239,7 +241,7 @@ func closeSession(sr *snowflakeRestful) error {
 	headers["User-Agent"] = userAgent
 	headers[headerAuthorizationKey] = fmt.Sprintf(headerSnowflakeToken, sr.Token)
 
-	resp, err := sr.FuncPost(context.TODO(), sr, fullURL, headers, nil, 5*time.Second)
+	resp, err := sr.FuncPost(context.TODO(), sr, fullURL, headers, nil, 5*time.Second, false)
 	if err != nil {
 		return err
 	}
@@ -284,7 +286,7 @@ func closeSession(sr *snowflakeRestful) error {
 func renewRestfulSession(ctx context.Context, sr *snowflakeRestful) error {
 	glog.V(2).Info("start renew session")
 	params := &url.Values{}
-	params.Add("requestId", uuid.NewV4().String())
+	params.Add("requestId", uuid.New().String())
 	fullURL := fmt.Sprintf(
 		"%s://%s:%d%s", sr.Protocol, sr.Host, sr.Port, "/session/token-request?"+params.Encode())
 
@@ -304,7 +306,7 @@ func renewRestfulSession(ctx context.Context, sr *snowflakeRestful) error {
 		return err
 	}
 
-	resp, err := sr.FuncPost(ctx, sr, fullURL, headers, reqBody, sr.RequestTimeout)
+	resp, err := sr.FuncPost(ctx, sr, fullURL, headers, reqBody, sr.RequestTimeout, false)
 	if err != nil {
 		return err
 	}
@@ -351,7 +353,7 @@ func renewRestfulSession(ctx context.Context, sr *snowflakeRestful) error {
 func cancelQuery(sr *snowflakeRestful, requestID string) error {
 	glog.V(2).Info("cancel query")
 	params := &url.Values{}
-	params.Add("requestId", uuid.NewV4().String())
+	params.Add("requestId", uuid.New().String())
 	fullURL := fmt.Sprintf(
 		"%s://%s:%d%s", sr.Protocol, sr.Host, sr.Port, "/queries/v1/abort-request?"+params.Encode())
 
@@ -369,7 +371,7 @@ func cancelQuery(sr *snowflakeRestful, requestID string) error {
 		return err
 	}
 
-	resp, err := sr.FuncPost(context.TODO(), sr, fullURL, headers, reqByte, 0)
+	resp, err := sr.FuncPost(context.TODO(), sr, fullURL, headers, reqByte, 0, false)
 	if err != nil {
 		return err
 	}

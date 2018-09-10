@@ -1,6 +1,6 @@
 # SQL Runner
 
-[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Release][release-image]][releases] [![License][license-image]][license]
+[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Go Report Card][goreport-image]][goreport] [![Release][release-image]][releases] [![License][license-image]][license]
 
 ## Overview
 
@@ -17,8 +17,8 @@ Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of ev
 Assuming you are running on **64bit Linux**:
 
 ```bash
-> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.6.0_linux_amd64.zip
-> unzip sql_runner_0.6.0_linux_amd64.zip
+> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.7.0_linux_amd64.zip
+> unzip sql_runner_0.7.0_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
@@ -38,7 +38,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.6.0-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.7.0-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
@@ -46,6 +46,9 @@ limitations under the License.
 
 [coveralls-image]: https://coveralls.io/repos/github/snowplow/sql-runner/badge.svg?branch=master
 [coveralls]: https://coveralls.io/github/snowplow/sql-runner?branch=master
+
+[goreport]: https://goreportcard.com/report/github.com/snowplow/sql-runner
+[goreport-image]: https://goreportcard.com/badge/github.com/snowplow/sql-runner
 
 [snowplow]: https://github.com/snowplow/snowplow
 

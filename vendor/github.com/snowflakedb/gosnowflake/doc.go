@@ -30,6 +30,8 @@ The Go Snowflake Driver supports the following connection syntaxes (or data sour
 	* username[:password]@accountname/dbname[?param1=value&...&paramN=valueN
 	* username[:password]@hostname:port/dbname/schemaname?account=<your_account>[&param1=value&...&paramN=valueN]
 
+where all parameters must be escaped or use `Config` and `DSN` to construct a DSN string.
+
 The following example opens a database handle with the Snowflake account
 myaccount where the username is jsmith, password is mypassword, database is
 mydb, schema is testschema, and warehouse is mywh:
@@ -76,12 +78,21 @@ The following connection parameters are supported:
 	* authenticator: Specifies the authenticator to use for authenticating user credentials:
 		- To use the internal Snowflake authenticator, specify snowflake (Default).
 		- To authenticate through Okta, specify https://<okta_account_name>.okta.com (URL prefix for Okta).
+		- To authenticate using your IDP via a browser, specify externalbrowser.
+		- To authenticate via OAuth, specify oauth and provide an OAuth Access Token (see the token parameter below).
 
 	* application: Identifies your application to Snowflake Support.
 
-	* insecureMode false by default. Set to true to bypass the Offensive
-		Security Certified Professional (OSCP) certificate revocation check.
+	* insecureMode false by default. Set to true to bypass the Online
+		Certificate Status Protocol (OCSP) certificate revocation check.
 		IMPORTANT: Change the default value for testing or emergency situations only.
+
+	* token: a token that can be used to authenticate. Should be used in conjunction with the "oauth" authenticator.
+
+	* client_session_keep_alive: Set to true have a heartbeat in the background every hour to keep the connection alive
+		such that the connection session will never expire. Care should be taken in using this option as it opens up
+		the access forever as long as the process is alive.
+
 
 All other parameters are taken as session parameters. For example, TIMESTAMP_OUTPUT_FORMAT session parameter can be
 set by adding:

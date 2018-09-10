@@ -1,4 +1,22 @@
-Version 0.6.0 (2017-01-01)
+Version 0.7.0 (2018-09-10)
+--------------------------
+Update Vagrant configuration for dep and new playbooks (#131)
+Add -showQueryOutput flag to show output from SQL queries (#107)
+Add -consulOnlyForLock flag to read local playbook but use Consul locking (#96)
+Attempt connection to targets on -dryRun (#51)
+Elide default Snowflake region in Target config (#121)
+Add 'check SQL query' mode (#124)
+Exit with dedicated return code if no queries to run (#105)
+Replace godep with dep (#127)
+Add Goreport badge (#95)
+Remove Wine from required playbooks (#129)
+Fix v0.6.0 release date in CHANGELOG (#126)
+Add the possibility to template playbooks (#103)
+Allow passing multiple key value pairs to the -var flag (#120)
+Add a random number templating function (#109)
+Bump pg version to 6 (#133)
+
+Version 0.6.0 (2018-01-01)
 --------------------------
 Bump Go version to 1.9.2 (#112)
 Remove Go versions 1.6 and 1.7 from .travis.yml (#110)
