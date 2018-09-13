@@ -31,7 +31,7 @@ func (sft SnowFlakeTarget) IsConnectable() bool {
 
 func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
 	var region string
-	if strings.Contains(target.Region, "us-west") {
+	if target.Region == "us-west-1" {
 		region = ""
 	} else {
 		region = target.Region
