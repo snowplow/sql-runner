@@ -1,3 +1,7 @@
+Version 0.7.1 (2018-10-15)
+--------------------------
+Fix non-default Snowflake region from being invalidated (#134)
+
 Version 0.7.0 (2018-09-10)
 --------------------------
 Update Vagrant configuration for dep and new playbooks (#131)
