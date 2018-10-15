@@ -17,8 +17,8 @@ Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of ev
 Assuming you are running on **64bit Linux**:
 
 ```bash
-> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.7.0_linux_amd64.zip
-> unzip sql_runner_0.7.0_linux_amd64.zip
+> wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.7.1_linux_amd64.zip
+> unzip sql_runner_0.7.1_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
@@ -38,7 +38,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.7.0-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.7.1-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
