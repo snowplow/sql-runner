@@ -21,8 +21,8 @@ type Playbook struct {
 
 type Target struct {
 	Name, Type, Host, Database, Port, Username,
-	Password, Region, Account, Warehouse 		string
-	Ssl                                         bool
+	Password, Region, Account, Warehouse, Project string
+	Ssl                                           bool
 }
 
 type Step struct {
