@@ -24,6 +24,7 @@ const (
 	POSTGRES_TYPE   = "postgres"
 	POSTGRESQL_TYPE = "postgresql"
 	SNOWFLAKE_TYPE  = "snowflake"
+	BIGQUERY_TYPE   = "bigquery"
 
 	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
 	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
@@ -259,6 +260,11 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 		go func(tgt Target) {
 			snfl := NewSnowflakeTarget(tgt)
 			targetChan <- runSteps(snfl, readySteps, dryRun, showQueryOutput)
+		}(target)
+	case BIGQUERY_TYPE:
+		go func(tgt Target) {
+			bq := NewBigQueryTarget(tgt)
+			targetChan <- runSteps(bq, readySteps, dryRun, showQueryOutput)
 		}(target)
 	default:
 		targetChan <- unsupportedDbType(target.Name, target.Type)
