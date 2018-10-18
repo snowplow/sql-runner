@@ -1,0 +1,26 @@
+targets:
+  - name: "My BigQuery database"
+    type: bigquery
+    project: ADD HERE # Project ID as shown in the GCP console's front page
+    # Service account credentials should also be implicitly provided: https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually
+variables:
+  foo: bar
+steps:
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
