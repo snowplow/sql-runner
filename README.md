@@ -18,7 +18,7 @@ Assuming you are running on **64bit Linux**:
 
 ```bash
 > wget http://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.7.1_linux_amd64.zip
-> unzip sql_runner_0.8.0_linux_amd64.zip
+> unzip sql_runner_0.7.1_linux_amd64.zip
 > ./sql-runner -usage
 ```
 
