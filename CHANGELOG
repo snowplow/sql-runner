@@ -1,3 +1,7 @@
+Version 0.8.0 (2018-11-08)
+--------------------------
+Add support for BigQuery (#92)
+
 Version 0.7.1 (2018-10-15)
 --------------------------
 Fix non-default Snowflake region from being invalidated (#134)
