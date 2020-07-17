@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -34,14 +34,14 @@ func TestPutGetDelStringValueFromConsul_Failure(t *testing.T) {
 func TestPutGetDelStringValueFromConsul_Success(t *testing.T) {
 	assert := assert.New(t)
 
-	err := PutStringValueToConsul("localhost:8500", "somekey", "somevalue")
+	err := PutStringValueToConsul("localhost:8502", "somekey", "somevalue")
 	assert.Nil(err)
 
-	str, err := GetStringValueFromConsul("localhost:8500", "somekey")
+	str, err := GetStringValueFromConsul("localhost:8502", "somekey")
 	assert.Nil(err)
 	assert.NotNil(str)
 	assert.Equal("somevalue", str)
 
-	err = DeleteValueFromConsul("localhost:8500", "somekey")
+	err = DeleteValueFromConsul("localhost:8502", "somekey")
 	assert.Nil(err)
 }

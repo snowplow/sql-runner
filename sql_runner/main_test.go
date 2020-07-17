@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -78,7 +78,7 @@ func TestResolveSqlRoot(t *testing.T) {
 	str, err := resolveSqlRoot(SQLROOT_BINARY, "../integration/resources/good-postgres.yml", "", false)
 	assert.NotNil(str)
 	assert.Nil(err)
-	str, err = resolveSqlRoot(SQLROOT_BINARY, "../integration/resources/good-postgres.yml", "localhost:8500", false)
+	str, err = resolveSqlRoot(SQLROOT_BINARY, "../integration/resources/good-postgres.yml", "localhost:8502", false)
 	assert.NotNil(str)
 	assert.NotNil(err)
 	assert.Equal("", str)
@@ -88,7 +88,7 @@ func TestResolveSqlRoot(t *testing.T) {
 	assert.NotNil(str)
 	assert.Nil(err)
 	assert.True(strings.HasSuffix(str, "/integration/resources"))
-	str, err = resolveSqlRoot(SQLROOT_PLAYBOOK, "../integration/resources/good-postgres.yml", "localhost:8500", false)
+	str, err = resolveSqlRoot(SQLROOT_PLAYBOOK, "../integration/resources/good-postgres.yml", "localhost:8502", false)
 	assert.NotNil(str)
 	assert.Nil(err)
 	assert.True(strings.HasSuffix(str, "/integration/resources"))
@@ -98,12 +98,12 @@ func TestResolveSqlRoot(t *testing.T) {
 	assert.NotNil(err)
 	assert.Equal("", str)
 	assert.Equal("Cannot use PLAYBOOK_CHILD option without -consul argument", err.Error())
-	str, err = resolveSqlRoot(SQLROOT_PLAYBOOK_CHILD, "../integration/resources/good-postgres.yml", "localhost:8500", false)
+	str, err = resolveSqlRoot(SQLROOT_PLAYBOOK_CHILD, "../integration/resources/good-postgres.yml", "localhost:8502", false)
 	assert.NotNil(str)
 	assert.Nil(err)
 	assert.Equal("../integration/resources/good-postgres.yml", str)
 
-	str, err = resolveSqlRoot("random", "../integration/resources/good-postgres.yml", "localhost:8500", false)
+	str, err = resolveSqlRoot("random", "../integration/resources/good-postgres.yml", "localhost:8502", false)
 	assert.NotNil(str)
 	assert.Nil(err)
 	assert.Equal("random", str)

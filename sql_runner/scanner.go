@@ -17,10 +17,10 @@ import (
 )
 
 type Results struct {
-	results [][]string
-	columns []string
+	results  [][]string
+	columns  []string
 	elements int
-	rows int
+	rows     int
 }
 
 var _ orm.HooklessModel = (*Results)(nil)
@@ -48,14 +48,14 @@ func (Results) AddModel(_ orm.ColumnScanner) error {
 }
 
 func (results *Results) ScanColumn(colIdx int, colName string, b []byte) error {
-	curRow := len(results.results)-1
+	curRow := len(results.results) - 1
 
 	if colIdx == 0 {
 		results.results = append(results.results, []string{})
-		curRow = len(results.results)-1
+		curRow = len(results.results) - 1
 		results.rows += 1
 	}
-	
+
 	if curRow == 0 {
 		results.columns = append(results.columns, colName)
 	}
