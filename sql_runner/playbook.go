@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -22,7 +22,7 @@ type Playbook struct {
 type Target struct {
 	Name, Type, Host, Database, Port, Username,
 	Password, Region, Account, Warehouse, Project string
-	Ssl                                           bool
+	Ssl bool
 }
 
 type Step struct {

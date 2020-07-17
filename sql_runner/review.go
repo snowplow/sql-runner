@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -46,8 +46,6 @@ func review(statuses []TargetStatus) (int, string) {
 		return exitCode, getFailureMessage(statuses)
 	}
 }
-
-
 
 // Don't use a template here as executing it could fail
 func getSuccessMessage(queryCount int, targetCount int) string {

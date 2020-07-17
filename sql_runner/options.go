@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -42,22 +42,22 @@ func (i *CLIVariables) Set(value string) error {
 }
 
 type Options struct {
-	help       bool
-	version    bool
-	playbook   string
-	sqlroot    string
-	fromStep   string
-	dryRun     bool
-	consul     string
-	lock       string
-	softLock   string
-	checkLock  string
-	deleteLock string
-	runQuery   string
-	variables  CLIVariables
-	fillTemplates bool
-	consulOnlyForLock    bool
-	showQueryOutput bool
+	help              bool
+	version           bool
+	playbook          string
+	sqlroot           string
+	fromStep          string
+	dryRun            bool
+	consul            string
+	lock              string
+	softLock          string
+	checkLock         string
+	deleteLock        string
+	runQuery          string
+	variables         CLIVariables
+	fillTemplates     bool
+	consulOnlyForLock bool
+	showQueryOutput   bool
 }
 
 func NewOptions() Options {

@@ -2,15 +2,15 @@ package main
 
 import (
 	"database/sql"
-	"log"
-	"time"
 	sf "github.com/snowflakedb/gosnowflake"
+	"log"
 	"strings"
+	"time"
 	//"github.com/olekukonko/tablewriter"
-	"os"
+	"errors"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"errors"
+	"os"
 )
 
 // Specific for Snowflake db
@@ -120,7 +120,7 @@ func printSfTable(rows *sql.Rows) error {
 	}
 
 	vals := make([]interface{}, len(cols))
-	for i, _ := range cols {
+	for i := range cols {
 		vals[i] = new(sql.RawBytes)
 	}
 
