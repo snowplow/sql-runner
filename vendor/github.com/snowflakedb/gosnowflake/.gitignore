@@ -1,7 +1,0 @@
-.idea/
-parameters.json
-coverage.txt
-fuzz-*/
-/select1
-/selectmany
-/verifycert
