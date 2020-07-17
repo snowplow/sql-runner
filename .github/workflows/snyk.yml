@@ -16,6 +16,6 @@ jobs:
       uses: snyk/actions/golang@master
       with:
         command: monitor
-        args: --project-name=sql-runner
+        args: --prune-repeated-subdependencies --project-name=sql-runner
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
