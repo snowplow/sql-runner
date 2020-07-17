@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2017 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -13,10 +13,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"strings"
-	"bytes"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 
 	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
 	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
-	ERROR_QUERY_FAILED_INIT   = "An error occured loading the SQL file"
+	ERROR_QUERY_FAILED_INIT   = "An error occurred loading the SQL file"
 	ERROR_RUN_QUERY_NOT_FOUND = "The runQuery argument did not match any available queries"
 )
 
