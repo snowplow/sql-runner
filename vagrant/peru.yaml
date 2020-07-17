@@ -1,7 +1,0 @@
-imports:
-    ansible_playbooks: oss-playbooks
-
-git module ansible_playbooks:
-    url: https://github.com/snowplow/ansible-playbooks.git
-    # Comment out to fetch a specific rev instead of master:
-    # rev: xxx
