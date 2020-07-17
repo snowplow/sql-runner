@@ -3,7 +3,7 @@
     :type: postgres
     :host: {{.host}}
     :database: sql_runner_tests_1
-    :port: 5432
+    :port: 5434
     :username: {{.username}}
     :password: {{.password}}
     :ssl: false # SSL disabled by default

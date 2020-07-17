@@ -4,17 +4,17 @@
     :type: postgres
     :host: localhost
     :database: sql_runner_tests_1
-    :port: 5432
-    :username: postgres
-    :password:
+    :port: 5434
+    :username: snowplow
+    :password: snowplow
     :ssl: false # SSL disabled by default
   - :name: "My Postgres database 2"
     :type: postgres
     :host: localhost
     :database: sql_runner_tests_2
-    :port: 5432
-    :username: postgres
-    :password:
+    :port: 5434
+    :username: snowplow
+    :password: snowplow
     :ssl: false # SSL disabled by default
 :variables:
   :test_schema: sql_runner_tests
