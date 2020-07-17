@@ -1,40 +1,31 @@
-dist: trusty
-sudo: false
-
+sudo: required
 language: go
+services:
+  - docker
 go:
-  - 1.9.2
-  - tip
-
-before_install:
-  - go get github.com/mattn/goveralls
-  - go get golang.org/x/tools/cmd/cover
+  - "1.13.8"
 
 before_script:
-  - ./integration/setup_travis.sh
+  - make setup-up
 
 script:
-  - go build -o sql-runner ./sql_runner/
-  - ./integration/run_tests.sh
-  - go test ./sql_runner/ -v -covermode=count -coverprofile=coverage.out
-  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+  - make
+  - make goveralls
+  - DISTRO=linux make integration
 
 before_deploy:
-  - go get github.com/mitchellh/gox
-  - pip install --user release-manager==0.1.0
+  - sudo pip install pyOpenSSL==16.2.0
+  - pip install --user release-manager==0.4.1
 
 deploy:
   skip_cleanup: true
   provider: script
-  script: release-manager --config .release.yml --check-version --make-version --make-artifact --upload-artifact
+  script: make release
   on:
-    condition: '"${TRAVIS_GO_VERSION}" == "1.9.2"'
+    condition: '"${TRAVIS_GO_VERSION}" == "1.13.8"'
     tags: true
-
-addons:
-  postgresql: '9.3'
 
 env:
   global:
-  - secure: eP2CEhjE6YEgajudRcW6Lsyy92IxAB1KS5Cw0p/defwpouSuZS4NF8+YjcUhfI9sbkobL6KGaL12CYqLWToepQpiDHJ1eRaH+/8HQ+kgqwLxmHptVlqEXhkQPVJL04MvxZqeXocuOluGlWHOHMdlmDTA7eI/tKJtyykIRKyXFAc=
-  - secure: TP/mMjN910q8M/tknHkPxdYfKl25eQqdSscfTlQlnBxJpQgrgX25WgK1XuNI+IUTTmn1cM/eVRyKvUWflxqzwSUhgWO7s1EcN18WYU7Xl+RkWaoOMjqzV3q5l4M8rDK8LiBM/xrcz/rQMTZnWYm/tJ6+tjTQiuAezZh3bwuMvAo=
+    - secure: eP2CEhjE6YEgajudRcW6Lsyy92IxAB1KS5Cw0p/defwpouSuZS4NF8+YjcUhfI9sbkobL6KGaL12CYqLWToepQpiDHJ1eRaH+/8HQ+kgqwLxmHptVlqEXhkQPVJL04MvxZqeXocuOluGlWHOHMdlmDTA7eI/tKJtyykIRKyXFAc=
+    - secure: TP/mMjN910q8M/tknHkPxdYfKl25eQqdSscfTlQlnBxJpQgrgX25WgK1XuNI+IUTTmn1cM/eVRyKvUWflxqzwSUhgWO7s1EcN18WYU7Xl+RkWaoOMjqzV3q5l4M8rDK8LiBM/xrcz/rQMTZnWYm/tJ6+tjTQiuAezZh3bwuMvAo=

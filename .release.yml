@@ -1,9 +1,4 @@
 ---
-output_paths:
-  linux   : dist/linux/sql-runner
-  darwin  : dist/darwin/sql-runner
-  windows : dist/windows/sql-runner
-
 local:
   root_dir : <%= ENV['TRAVIS_BUILD_DIR'] %>
 
@@ -21,25 +16,19 @@ packages:
     continue_on_conflict: false
     version  : <%= CMD['cat VERSION'] %>
     build_version : <%= ENV['TRAVIS_TAG'] %>
-
-    build_commands:
-      - gox -osarch=linux/amd64 -output={{ output_paths.linux }} ./sql_runner/
-      - gox -osarch=darwin/amd64 -output={{ output_paths.darwin }} ./sql_runner/
-      - gox -osarch=windows/amd64 -output={{ output_paths.windows }} ./sql_runner/
-
     artifacts:
       - prefix : "sql_runner_"
         suffix : "_linux_amd64"
         type   : "zip"
         binary_paths:
-          - "{{ output_paths.linux }}"
+          - build/output/linux/sql-runner
       - prefix : "sql_runner_"
         suffix : "_darwin_amd64"
         type   : "zip"
         binary_paths:
-          - "{{ output_paths.darwin }}"
+          - build/output/darwin/sql-runner
       - prefix : "sql_runner_"
         suffix : "_windows_amd64"
         type   : "zip"
         binary_paths:
-          - "{{ output_paths.windows }}.exe"
+          - build/output/windows/sql-runner.exe
