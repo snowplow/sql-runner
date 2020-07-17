@@ -3,7 +3,7 @@ targets:
     type: postgres
     host: localhost
     database: sql_runner_tests_1
-    port: 5432
+    port: 5434
     username: postgres
     password:
     ssl: false # SSL disabled by default

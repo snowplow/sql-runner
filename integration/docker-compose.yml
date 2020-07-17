@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:9.4
+    container_name: postgres-sql-runner
+    restart: always
+    volumes:
+      - ./setup_postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+    logging:
+      options:
+        max-size: "1M"
+        max-file: "10"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+  
+  consul:
+    image: consul:1.4.4
+    container_name: consul-sql-runner
+    restart: always
+    ports:
+      - "8502:8500"
+      - "8602:8600/udp"
+    logging:
+      options:
+        max-size: "1M"
+        max-file: "10"
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
