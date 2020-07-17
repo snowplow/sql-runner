@@ -1,14 +1,14 @@
 package main
 
 import (
+	bq "cloud.google.com/go/bigquery"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 	"log"
 	"os"
 	"strings"
-	bq "cloud.google.com/go/bigquery"
-	"golang.org/x/net/context"
-	"google.golang.org/api/iterator"
-	"github.com/olekukonko/tablewriter"
 )
 
 type BigQueryTarget struct {
@@ -24,7 +24,7 @@ func (bqt BigQueryTarget) IsConnectable() bool {
 	query := client.Query("SELECT 1") // empty query to test connection
 
 	it, err := query.Read(ctx)
-	if err !=  nil {
+	if err != nil {
 		log.Printf("ERROR: Failed to perform test query: %v", err)
 		return false
 	}
@@ -48,7 +48,7 @@ func NewBigQueryTarget(target Target) *BigQueryTarget {
 		log.Fatalf("ERROR: Failed to create client: %v", err)
 	}
 
-	return &BigQueryTarget{target,client}
+	return &BigQueryTarget{target, client}
 }
 
 func (bqt BigQueryTarget) GetTarget() Target {
