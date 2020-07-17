@@ -1,3 +1,10 @@
+Version 0.9.0 (2020-07-17)
+--------------------------
+Replace Vagrant with Docker based development experience (#150)
+Update project to use go mod instead of dep (#151)
+Update Copyright to 2015-2020 (#152)
+Add Snyk Integration (#154)
+
 Version 0.8.0 (2018-11-08)
 --------------------------
 Add support for BigQuery (#92)
