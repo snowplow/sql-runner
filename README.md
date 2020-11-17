@@ -53,9 +53,9 @@ guest> make format
 
 First either compile the binary from source using the above `make` command or download the published Binary directly from Bintray:
 
-* [Darwin (macOS)](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.0_darwin_amd64.zip)
-* [Linux](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.0_linux_amd64.zip)
-* [Windows](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.0_windows_amd64.zip)
+* [Darwin (macOS)](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.1_darwin_amd64.zip)
+* [Linux](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.1_linux_amd64.zip)
+* [Windows](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.1_windows_amd64.zip)
 
 ### CLI Output
 
@@ -117,7 +117,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.9.0-6ad7e5.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.9.1-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
