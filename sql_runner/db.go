@@ -14,30 +14,7 @@ package main
 
 import (
 	"bytes"
-	"math/rand"
-	"os"
-	"strconv"
 	"text/template"
-	"time"
-)
-
-var (
-	templFuncs = template.FuncMap{
-		"nowWithFormat": func(format string) string {
-			return time.Now().Format(format)
-		},
-		"systemEnv": func(env string) string {
-			return os.Getenv(env)
-		},
-		"randomInt": func() (string, error) {
-			r := rand.NewSource(time.Now().UnixNano())
-			return strconv.FormatInt(r.Int63(), 10), nil
-		},
-		"awsChainCredentials":   awsChainCredentials,
-		"awsEC2RoleCredentials": awsEC2RoleCredentials,
-		"awsEnvCredentials":     awsEnvCredentials,
-		"awsProfileCredentials": awsProfileCredentials,
-	}
 )
 
 // Generalized interface to a database client
@@ -70,8 +47,7 @@ func prepareQuery(queryPath string, sp SQLProvider, template bool, variables map
 
 // Fills in a script which is a template
 func fillTemplate(script string, variables map[string]interface{}) (string, error) {
-
-	t, err := template.New("playbook").Funcs(templFuncs).Parse(script)
+	t, err := template.New("playbook").Funcs(TemplFuncs).Parse(script)
 	if err != nil {
 		return "", err
 	}

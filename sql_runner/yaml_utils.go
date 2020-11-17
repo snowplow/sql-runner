@@ -59,7 +59,7 @@ func cleanYaml(rawYaml []byte) []byte {
 }
 
 func fillPlaybookTemplate(playbookStr string, variables map[string]string) (string, error) {
-	t, err := template.New("playbook").Parse(playbookStr)
+	t, err := template.New("playbook").Funcs(TemplFuncs).Parse(playbookStr)
 	if err != nil {
 		return "", err
 	}
