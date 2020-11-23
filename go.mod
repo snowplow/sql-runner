@@ -1,14 +1,13 @@
 module github.com/snowplow/sql-runner
 
-go 1.13
+go 1.15
 
 require (
-	cloud.google.com/go/bigquery v1.9.0
+	cloud.google.com/go/bigquery v1.13.0
 	github.com/armon/go-metrics v0.3.3 // indirect
 	github.com/aws/aws-sdk-go v1.15.27
 	github.com/go-ini/ini v1.38.2 // indirect
 	github.com/go-pg/pg v6.14.5+incompatible
-	github.com/google/uuid v1.0.0 // indirect
 	github.com/hashicorp/consul v1.2.2
 	github.com/hashicorp/go-msgpack v1.1.5 // indirect
 	github.com/hashicorp/go-rootcerts v0.0.0-20160503143440-6bb64b370b90 // indirect
@@ -30,9 +29,8 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/snowflakedb/gosnowflake v1.1.10
 	github.com/stretchr/testify v1.4.0
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
-	golang.org/x/tools v0.0.0-20200714190737-9048b464a08d // indirect
-	google.golang.org/api v0.29.0
+	golang.org/x/net v0.0.0-20201026091529-146b70c837a4
+	google.golang.org/api v0.34.0
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 )
