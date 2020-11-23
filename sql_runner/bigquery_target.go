@@ -72,48 +72,48 @@ func (bqt BigQueryTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutpu
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 
-	scripts := strings.Split(query.Script, ";")
 
-	for _, script := range scripts {
-		if len(strings.TrimSpace(script)) > 0 {
-			// If showing query output, perform a dry run to get column metadata
-			if showQueryOutput {
-				dq := bqt.Client.Query(script)
-				dq.DryRun = true
-				dqJob, err := dq.Run(ctx)
-				if err != nil {
-					log.Printf("ERROR: Failed to dry run job: %s.", err)
-					return QueryStatus{query, query.Path, int(affected), err}
-				}
 
-				schema = dqJob.LastStatus().Statistics.Details.(*bq.QueryStatistics).Schema
-			}
+	script := query.Script			// strings.Split(query.Script, ";")
 
-			q := bqt.Client.Query(script)
-
-			job, err := q.Run(ctx)
+	if len(strings.TrimSpace(script)) > 0 {
+		// If showing query output, perform a dry run to get column metadata
+		if showQueryOutput {
+			dq := bqt.Client.Query(script)
+			dq.DryRun = true
+			dqJob, err := dq.Run(ctx)
 			if err != nil {
-				log.Printf("ERROR: Failed to run job: %s.", err)
+				log.Printf("ERROR: Failed to dry run job: %s.", err)
 				return QueryStatus{query, query.Path, int(affected), err}
 			}
 
-			it, err := job.Read(ctx)
+			schema = dqJob.LastStatus().Statistics.Details.(*bq.QueryStatistics).Schema
+		}
+
+		q := bqt.Client.Query(script)
+
+		job, err := q.Run(ctx)
+		if err != nil {
+			log.Printf("ERROR: Failed to run job: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+
+		it, err := job.Read(ctx)
+		if err != nil {
+			log.Printf("ERROR: Failed to read job results: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+
+		if showQueryOutput {
+			err = printBqTable(it, schema)
 			if err != nil {
-				log.Printf("ERROR: Failed to read job results: %s.", err)
+				log.Printf("ERROR: Failed to print output: %s.", err)
 				return QueryStatus{query, query.Path, int(affected), err}
 			}
-
-			if showQueryOutput {
-				err = printBqTable(it, schema)
-				if err != nil {
-					log.Printf("ERROR: Failed to print output: %s.", err)
-					return QueryStatus{query, query.Path, int(affected), err}
-				}
-			} else {
-				queryStats := job.LastStatus().Statistics.Details.(*bq.QueryStatistics)
-				aff := queryStats.NumDMLAffectedRows
-				affected += aff
-			}
+		} else {
+			queryStats := job.LastStatus().Statistics.Details.(*bq.QueryStatistics)
+			aff := queryStats.NumDMLAffectedRows
+			affected += aff
 		}
 	}
 
