@@ -104,6 +104,16 @@ func (bqt BigQueryTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutpu
 			return QueryStatus{query, query.Path, int(affected), err}
 		}
 
+		this, err := job.Status(ctx)
+		if err != nil {
+			log.Printf("ERROR: Failed to read job results: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+		if err := this.Err(); err != nil {
+			log.Printf("ERROR: Error running job: %s.", err)
+			return QueryStatus{query, query.Path, int(affected), err}
+		}
+
 		if showQueryOutput {
 			err = printBqTable(it, schema)
 			if err != nil {
