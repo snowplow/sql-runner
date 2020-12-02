@@ -1,3 +1,9 @@
+Version 0.9.2 (2020-12-10)
+--------------------------
+BigQuery: Run multiple-step queries as single script (closes #169)
+BigQuery: Explicitly set Client.Location from the region playbook variable (closes #173)
+Bump Travis Golang version to 1.15 (closes #174)
+
 Version 0.9.1 (2020-11-17)
 --------------------------
 Add ability to template YAML playbook with custom functions (#167)
