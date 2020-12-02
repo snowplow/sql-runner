@@ -48,6 +48,8 @@ func NewBigQueryTarget(target Target) *BigQueryTarget {
 		log.Fatalf("ERROR: Failed to create client: %v", err)
 	}
 
+	client.Location = target.Region
+
 	return &BigQueryTarget{target, client}
 }
 
