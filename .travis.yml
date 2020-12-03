@@ -3,7 +3,7 @@ language: go
 services:
   - docker
 go:
-  - "1.13.8"
+  - "1.15.5"
 
 before_script:
   - make setup-up
@@ -22,7 +22,7 @@ deploy:
   provider: script
   script: make release
   on:
-    condition: '"${TRAVIS_GO_VERSION}" == "1.13.8"'
+    condition: '"${TRAVIS_GO_VERSION}" == "1.15.5"'
     tags: true
 
 env:
