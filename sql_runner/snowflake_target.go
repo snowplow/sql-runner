@@ -136,8 +136,9 @@ func printSfTable(rows *sql.Rows) error {
 	}
 
 	vals := make([]interface{}, len(cols))
-	for i := range cols {
-		vals[i] = new(sql.RawBytes)
+	rawResult := make([][]byte, len(cols))
+	for i := range rawResult {
+		vals[i] = &rawResult[i]
 	}
 
 	for rows.Next() {
@@ -147,7 +148,7 @@ func printSfTable(rows *sql.Rows) error {
 		}
 
 		if len(vals) > 0 {
-			outputBuffer = append(outputBuffer, stringify(vals))
+			outputBuffer = append(outputBuffer, stringify(rawResult))
 		}
 	}
 
@@ -167,10 +168,10 @@ func printSfTable(rows *sql.Rows) error {
 	return nil
 }
 
-func stringify(row []interface{}) []string {
+func stringify(row [][]byte) []string {
 	var line []string
 	for _, element := range row {
-		line = append(line, fmt.Sprint(element))
+		line = append(line, fmt.Sprint(string(element)))
 	}
 	return line
 }
