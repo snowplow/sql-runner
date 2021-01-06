@@ -1,21 +1,22 @@
 package main
 
 import (
+	"context"
 	"database/sql"
-	sf "github.com/snowflakedb/gosnowflake"
-	"log"
-	"strings"
-	"time"
-	//"github.com/olekukonko/tablewriter"
 	"errors"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	sf "github.com/snowflakedb/gosnowflake"
+	"log"
 	"os"
+	"strings"
+	"time"
 )
 
 // Specific for Snowflake db
 const (
-	loginTimeout = 5 * time.Second // by default is 60
+	loginTimeout  = 5 * time.Second                // by default is 60
+	multiStmtName = "multiple statement execution" // https://github.com/snowflakedb/gosnowflake/blob/e909f00ff624a7e60d4f91718f6adc92cbd0d80f/connection.go#L57-L61
 )
 
 type SnowFlakeTarget struct {
@@ -30,6 +31,7 @@ func (sft SnowFlakeTarget) IsConnectable() bool {
 }
 
 func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
+	// Note: region connection parameter is deprecated
 	var region string
 	if target.Region == "us-west-1" {
 		region = ""
@@ -65,7 +67,6 @@ func (sft SnowFlakeTarget) GetTarget() Target {
 }
 
 // Run a query against the target
-// One statement per API call
 func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var affected int64 = 0
 	var err error
@@ -80,32 +81,39 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 
-	scripts := strings.Split(query.Script, ";")
+	// 0 allows arbitrary number of statements
+	ctx, _ := sf.WithMultiStatement(context.Background(), 0)
+	script := query.Script
 
-	for _, script := range scripts {
-		if len(strings.TrimSpace(script)) > 0 {
-			if showQueryOutput {
-				rows, err := sft.Client.Query(script)
-				if err != nil {
-					log.Printf("ERROR: %s.", err)
-					return QueryStatus{query, query.Path, int(affected), err}
-				}
+	if len(strings.TrimSpace(script)) > 0 {
+		if showQueryOutput {
+			rows, err := sft.Client.QueryContext(ctx, script)
+			if err != nil {
+				return QueryStatus{query, query.Path, int(affected), err}
+			}
+			defer rows.Close()
 
+			err = printSfTable(rows)
+			if err != nil {
+				log.Printf("ERROR: %s.", err)
+				return QueryStatus{query, query.Path, int(affected), err}
+			}
+
+			for rows.NextResultSet() {
 				err = printSfTable(rows)
 				if err != nil {
 					log.Printf("ERROR: %s.", err)
 					return QueryStatus{query, query.Path, int(affected), err}
 				}
-			} else {
-				res, err := sft.Client.Exec(script)
-
-				if err != nil {
-					return QueryStatus{query, query.Path, int(affected), err}
-				} else {
-					aff, _ := res.RowsAffected()
-					affected += aff
-				}
 			}
+		} else {
+			res, err := sft.Client.ExecContext(ctx, script)
+			if err != nil {
+				return QueryStatus{query, query.Path, int(affected), err}
+			}
+
+			aff, _ := res.RowsAffected()
+			affected += aff
 		}
 	}
 
@@ -114,9 +122,17 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 
 func printSfTable(rows *sql.Rows) error {
 	outputBuffer := make([][]string, 0, 10)
-	cols, err := rows.Columns() // Remember to check err afterwards
+	cols, err := rows.Columns()
 	if err != nil {
 		return errors.New("Unable to read columns")
+	}
+
+	// check to prevent rows.Next() on multi-statement
+	// see also: https://github.com/snowflakedb/gosnowflake/issues/365
+	for _, c := range cols {
+		if c == multiStmtName {
+			return errors.New("Unable to showQueryOutput for multi-statement queries")
+		}
 	}
 
 	vals := make([]interface{}, len(cols))
