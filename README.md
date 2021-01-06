@@ -53,14 +53,14 @@ guest> make format
 
 First either compile the binary from source using the above `make` command or download the published Binary directly from Bintray:
 
-* [Darwin (macOS)](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.2_darwin_amd64.zip)
-* [Linux](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.2_linux_amd64.zip)
-* [Windows](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.2_windows_amd64.zip)
+* [Darwin (macOS)](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.3_darwin_amd64.zip)
+* [Linux](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.3_linux_amd64.zip)
+* [Windows](https://dl.bintray.com/snowplow/snowplow-generic/sql_runner_0.9.3_windows_amd64.zip)
 
 ### CLI Output
 
 ```bash
-sql-runner version: 0.9.2
+sql-runner version: 0.9.3
 Run playbooks of SQL scripts in series and parallel on Redshift and Postgres
 Usage:
   -checkLock string
@@ -117,7 +117,7 @@ limitations under the License.
 [travis]: https://travis-ci.org/snowplow/sql-runner
 [travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
 
-[release-image]: http://img.shields.io/badge/release-0.9.2-6ad7e5.svg?style=flat
+[release-image]: https://img.shields.io/github/v/release/snowplow/sql-runner
 [releases]: https://github.com/snowplow/sql-runner/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
