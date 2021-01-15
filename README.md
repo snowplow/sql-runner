@@ -99,7 +99,7 @@ Usage:
 
 ## Copyright and license
 
-SQL Runner is copyright 2015-2020 Snowplow Analytics Ltd.
+SQL Runner is copyright 2015-2021 Snowplow Analytics Ltd.
 
 Licensed under the **[Apache License, Version 2.0][license]** (the "License");
 you may not use this software except in compliance with the License.
