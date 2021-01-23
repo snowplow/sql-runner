@@ -1,0 +1,30 @@
+targets:
+  - name: "My MySQL database"
+    type: mysql
+    host: ADD HERE
+    database: ADD HERE # Name of database
+    port: 3306 # Default Postgres port
+    user: ADD HERE
+    password: ADD HERE
+    ssl: false # SSL disabled by default
+variables:
+  foo: bar
+steps:
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true
+  - name: ADD HERE
+    queries:
+      - name: ADD HERE
+        file: ADD REL/ABS PATH
+        template: true

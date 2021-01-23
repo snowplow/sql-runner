@@ -25,9 +25,10 @@ import (
 )
 
 // For Redshift queries
+// Currently exportable with the intent to be used among all SQL targets
 const (
-	dialTimeout = 10 * time.Second
-	readTimeout = 8 * time.Hour // TODO: make this user configurable
+	SQL_dialTimeout = 10 * time.Second
+	SQL_readTimeout = 8 * time.Hour // TODO: make this user configurable
 )
 
 type PostgresTarget struct {
@@ -56,10 +57,10 @@ func NewPostgresTarget(target Target) *PostgresTarget {
 		Password:    target.Password,
 		Database:    target.Database,
 		TLSConfig:   tlsConfig,
-		DialTimeout: dialTimeout,
-		ReadTimeout: readTimeout,
+		DialTimeout: SQL_dialTimeout,
+		ReadTimeout: SQL_readTimeout,
 		Dialer: func(network, addr string) (net.Conn, error) {
-			cn, err := net.DialTimeout(network, addr, dialTimeout)
+			cn, err := net.DialTimeout(network, addr, SQL_dialTimeout)
 			if err != nil {
 				return nil, err
 			}

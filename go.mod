@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.15.27
 	github.com/go-ini/ini v1.38.2 // indirect
 	github.com/go-pg/pg v6.14.5+incompatible
+	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/hashicorp/consul v1.2.2
 	github.com/hashicorp/go-msgpack v1.1.5 // indirect
 	github.com/hashicorp/go-rootcerts v0.0.0-20160503143440-6bb64b370b90 // indirect
