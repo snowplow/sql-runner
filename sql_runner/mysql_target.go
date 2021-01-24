@@ -24,6 +24,7 @@ type MySQLTarget struct {
 	clientConfig *mysql.Config
 }
 
+// Checks whether target database can connect
 func (mt MySQLTarget) IsConnectable() bool {
 	client := mt.Client
 	var result int
@@ -84,7 +85,6 @@ func NewMySQLTarget(target Target) *MySQLTarget {
 	return &MySQLTarget{target, db, targetConfig}
 }
 
-// Getter required by run.runSteps for all database targets
 func (mt MySQLTarget) GetTarget() Target {
 	return mt.Target
 }
@@ -110,7 +110,7 @@ func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bo
 		return QueryStatus{query, query.Path, 0, nil}
 	}
 
-	var affected int64 = 0
+	affected := 0
 
 	if query.isSelectQuery() {
 		rows, err := mt.Client.Query(query.Script)
@@ -120,7 +120,8 @@ func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bo
 	} else {
 		res, err := mt.Client.Exec(query.Script)
 		if err == nil {
-			affected, _ = res.RowsAffected()
+			affectedInt64, _ := res.RowsAffected()
+			affected = int(affectedInt64)
 		}
 	}
 
@@ -141,7 +142,7 @@ func stringList(spList []*string) []string {
 }
 
 // Interpret sql.Rows results to ensure all rows are counted
-func interpretRows(rows *sql.Rows, shouldPrintTable bool) (affected int64, funcErr error) {
+func interpretRows(rows *sql.Rows, shouldPrintTable bool) (affected int, funcErr error) {
 	defer rows.Close()
 
 	if !shouldPrintTable {
@@ -149,17 +150,16 @@ func interpretRows(rows *sql.Rows, shouldPrintTable bool) (affected int64, funcE
 			affected += 1
 		}
 	} else {
-		affected, funcErr = printTable(rows)
+		affected, funcErr = printMSTable(rows)
 	}
 	return
 }
 
 // Print table produced by sql.DB.Query
-func printTable(rows *sql.Rows) (affected int64, funcErr error) {
+func printMSTable(rows *sql.Rows) (affected int, funcErr error) {
 	columns, colErr := rows.Columns()
 	if colErr != nil {
 		return affected, errors.New("Unable to read columns")
-		log.Printf("ERROR | printTable: %s", colErr)
 	}
 
 	log.Printf("QUERY OUTPUT:\n")
@@ -175,7 +175,7 @@ func printTable(rows *sql.Rows) (affected int64, funcErr error) {
 			vals[i] = &strs[i]
 		}
 		if err := rows.Scan(vals...); err != nil {
-			log.Printf("ERROR | printTable: %s", err)
+			log.Printf("ERROR | printMSTable: %s", err)
 		} else {
 			affected += 1
 			table.Append(stringList(strs))

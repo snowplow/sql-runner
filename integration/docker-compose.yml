@@ -29,3 +29,18 @@ services:
         max-file: "10"
     environment:
       CONSUL_BIND_INTERFACE: eth0
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-sql-runner
+    restart: always
+    volumes:
+      - ./setup_mysql.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+        - "3306:3306"
+    logging:
+      options:
+        max-size: "1M"
+        max-file: "10"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"

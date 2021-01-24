@@ -253,12 +253,11 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 // See https://www.golang-book.com/books/intro/10#section2 on Go channels
 func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool, showQueryOutput bool) {
 	switch strings.ToLower(target.Type) {
-	// TODO: MYSQL_TYPE support
-	// case MYSQL_TYPE:
-	// 	go func(tgt Target) {
-	// 		mys := NewMySQLTarget(tgt)
-	// 		targetChan <- runSteps(mys, readySteps, dryRun, showQueryOutput)
-	// 	}(target)
+	case MYSQL_TYPE:
+		go func(tgt Target) {
+			mys := NewMySQLTarget(tgt)
+			targetChan <- runSteps(mys, readySteps, dryRun, showQueryOutput)
+		}(target)
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
 		go func(tgt Target) {
 			pg := NewPostgresTarget(tgt)

@@ -82,11 +82,11 @@ endif
 #  RELEASE
 # -----------------------------------------------------------------------------
 
-release:
-	release-manager --config .release.yml --check-version --make-artifact --make-version --upload-artifact
+# release:
+# 	release-manager --config .release.yml --check-version --make-artifact --make-version --upload-artifact
 
-release-dry:
-	release-manager --config .release.yml --check-version --make-artifact
+# release-dry:
+# 	release-manager --config .release.yml --check-version --make-artifact
 
 # -----------------------------------------------------------------------------
 #  CLEANUP
