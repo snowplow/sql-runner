@@ -1,5 +1,6 @@
-Version 0.9.3-rc1 (2021-01-15)
+Version 0.9.3-rc2 (2021-01-25)
 ------------------------------
+Migrate to Github actions for CI/CD (closes #158)
 Update Copyright to 2015-2021 (closes #177)
 Snowflake: convert query output to string before printing (closes #166)
 Commented lines execute as empty SQL statements in Snowflake (closes #119)
