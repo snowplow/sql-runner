@@ -29,7 +29,7 @@ func (mt MySQLTarget) IsConnectable() bool {
 	client := mt.Client
 	var result int
 	err := client.QueryRow("SELECT 1").Scan(&result) // test connection
-	if err != nil {
+	if err != nil && VerbosityOption > 0 {
 		fmt.Println("ERROR:", err)
 	}
 
@@ -103,8 +103,10 @@ func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bo
 	if dryRun {
 		address := mt.clientConfig.Addr
 		if mt.IsConnectable() {
-			log.Printf("SUCCESS: Able to connect to target database, %s\n.", address)
-		} else {
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("SUCCESS: Able to connect to target database, %s\n.", address)
+			}
+		} else if VerbosityOption > 0 {
 			log.Printf("ERROR: Cannot connect to target database, %s\n.", address)
 		}
 		return QueryStatus{query, query.Path, 0, nil}
@@ -113,12 +115,14 @@ func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bo
 	affected := 0
 
 	if query.isSelectQuery() {
-		rows, err := mt.Client.Query(query.Script)
+		var rows *sql.Rows
+		rows, err = mt.Client.Query(query.Script)
 		if err == nil {
 			affected, _ = interpretRows(rows, showQueryOutput)
 		}
 	} else {
-		res, err := mt.Client.Exec(query.Script)
+		var res sql.Result
+		res, err = mt.Client.Exec(query.Script)
 		if err == nil {
 			affectedInt64, _ := res.RowsAffected()
 			affected = int(affectedInt64)

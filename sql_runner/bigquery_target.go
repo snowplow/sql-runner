@@ -45,7 +45,11 @@ func NewBigQueryTarget(target Target) *BigQueryTarget {
 
 	client, err := bq.NewClient(ctx, projectID)
 	if err != nil {
-		log.Fatalf("ERROR: Failed to create client: %v", err)
+		if VerbosityOption > 0 {
+			log.Fatalf("ERROR: Failed to create client: %v", err)
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	client.Location = target.Region
@@ -66,8 +70,10 @@ func (bqt BigQueryTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutpu
 
 	if dryRun {
 		if bqt.IsConnectable() {
-			log.Printf("SUCCESS: Able to connect to target database, %s.", bqt.Project)
-		} else {
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("SUCCESS: Able to connect to target database, %s.", bqt.Project)
+			}
+		} else if VerbosityOption > 0 {
 			log.Printf("ERROR: Cannot connect to target database, %s.", bqt.Project)
 		}
 		return QueryStatus{query, query.Path, 0, nil}

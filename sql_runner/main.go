@@ -30,7 +30,11 @@ const (
 	SQLROOT_BINARY         = "BINARY"
 	SQLROOT_PLAYBOOK       = "PLAYBOOK"
 	SQLROOT_PLAYBOOK_CHILD = "PLAYBOOK_CHILD"
+
+	MAX_VERBOSITY   = 2
 )
+
+var VerbosityOption = MAX_VERBOSITY
 
 // main is the entry point for the application
 func main() {
@@ -39,19 +43,29 @@ func main() {
 
 	lockFile, lockErr := LockFileFromOptions(options)
 	if lockErr != nil {
-		log.Printf("Error: %s", lockErr.Error())
+		if VerbosityOption > 0 {
+			log.Printf("Error: %s", lockErr.Error())
+		}
 		os.Exit(3)
 	}
 
 	pbp, pbpErr := PlaybookProviderFromOptions(options)
 	if pbpErr != nil {
-		log.Fatalf("Could not determine playbook source: %s", pbpErr.Error())
+		if VerbosityOption > 0 {
+			log.Fatalf("Could not determine playbook source: %s", pbpErr.Error())
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	pb, err := pbp.GetPlaybook()
 
 	if err != nil {
-		log.Fatalf("Error getting playbook: %s", err.Error())
+		if VerbosityOption > 0 {
+			log.Fatalf("Error getting playbook: %s", err.Error())
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	pb.MergeCLIVariables(options.variables)
@@ -59,14 +73,22 @@ func main() {
 	sp, spErr := SQLProviderFromOptions(options)
 
 	if spErr != nil {
-		log.Fatalf("Could not determine sql source: %s", spErr.Error())
+		if VerbosityOption > 0 {
+			log.Fatalf("Could not determine sql source: %s", spErr.Error())
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	// Lock it up...
 	if lockFile != nil {
 		lockErr2 := lockFile.Lock()
 		if lockErr2 != nil {
-			log.Fatalf("Error making lock: %s", lockErr2.Error())
+			if VerbosityOption > 0 {
+				log.Fatalf("Error making lock: %s", lockErr2.Error())
+			} else {
+				os.Exit(1)
+			}
 		}
 	}
 
@@ -105,12 +127,21 @@ func processFlags() Options {
 		os.Exit(0)
 	}
 
+	if options.verbosity > MAX_VERBOSITY {
+		fmt.Println("Error: -verbosity flag cannot be greater than 2. Given", options.verbosity)
+		os.Exit(2)
+	} else {
+		VerbosityOption = options.verbosity
+	}
+
 	if options.checkLock != "" {
 		lockFile, lockErr := LockFileFromOptions(options)
 		if lockErr != nil {
-			log.Printf("Error: %s found, previous run failed or is ongoing", lockFile.Path)
+			if VerbosityOption > 0 {
+				log.Printf("Error: %s found, previous run failed or is ongoing", lockFile.Path)
+			}
 			os.Exit(3)
-		} else {
+		} else if VerbosityOption == MAX_VERBOSITY {
 			log.Printf("Success: %s does not exist", lockFile.Path)
 			os.Exit(0)
 		}
@@ -121,14 +152,18 @@ func processFlags() Options {
 		if lockErr != nil {
 			unlockErr := lockFile.Unlock()
 			if unlockErr != nil {
-				log.Printf("Error: %s found but could not delete: %s", lockFile.Path, unlockErr.Error())
+				if VerbosityOption > 0 {
+					log.Printf("Error: %s found but could not delete: %s", lockFile.Path, unlockErr.Error())
+				}
 				os.Exit(1)
-			} else {
+			} else if VerbosityOption == MAX_VERBOSITY {
 				log.Printf("Success: %s found and deleted", lockFile.Path)
 				os.Exit(0)
 			}
 		} else {
-			log.Printf("Error: %s does not exist, nothing to delete", lockFile.Path)
+			if VerbosityOption > 0 {
+				log.Printf("Error: %s does not exist, nothing to delete", lockFile.Path)
+			}
 			os.Exit(1)
 		}
 	}
@@ -140,7 +175,9 @@ func processFlags() Options {
 
 	sr, err := resolveSqlRoot(options.sqlroot, options.playbook, options.consul, options.consulOnlyForLock)
 	if err != nil {
-		fmt.Printf("Error resolving -sqlroot: %s\n%s\n", options.sqlroot, err)
+		if VerbosityOption > 0 {
+			fmt.Printf("Error resolving -sqlroot: %s\n%s\n", options.sqlroot, err)
+		}
 		os.Exit(2)
 	}
 	options.sqlroot = sr // Yech, mutate in place

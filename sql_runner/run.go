@@ -83,6 +83,9 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 	} else {
 		steps, trimErr = trimSteps(pb.Steps, fromStep, pb.Targets)
 	}
+	if VerbosityOption == 2 {
+		log.Println("Steps:", steps)
+	}
 	if trimErr != nil {
 		return trimErr
 	}
@@ -329,7 +332,10 @@ func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuer
 	// Route each target to the right db client and run
 	for _, query := range queries {
 		go func(qry ReadyQuery) {
-			log.Printf("EXECUTING %s (in step %s @ %s): %s", qry.Name, stepName, dbName, qry.Path)
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("EXECUTING %s (in step %s @ %s): %s", qry.Name, stepName, dbName, qry.Path)
+				log.Printf("Script: %s", qry.Script)
+			}
 			queryChan <- database.RunQuery(qry, dryRun, showQueryOutput)
 		}(query)
 	}
@@ -340,8 +346,10 @@ func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuer
 		select {
 		case status := <-queryChan:
 			if status.Error != nil {
-				log.Printf("FAILURE: %s (step %s @ target %s), ERROR: %s\n", status.Query.Name, stepName, dbName, status.Error.Error())
-			} else {
+				if VerbosityOption > 0 {
+					log.Printf("FAILURE: %s (step %s @ target %s), ERROR: %s\n", status.Query.Name, stepName, dbName, status.Error.Error())
+				}
+			} else if VerbosityOption == MAX_VERBOSITY {
 				log.Printf("SUCCESS: %s (step %s @ target %s), ROWS AFFECTED: %d\n", status.Query.Name, stepName, dbName, status.Affected)
 			}
 			allStatuses = append(allStatuses, status)

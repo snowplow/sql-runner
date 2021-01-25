@@ -83,8 +83,10 @@ func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput
 		options := pt.Client.Options()
 		address := options.Addr
 		if pt.IsConnectable() {
-			log.Printf("SUCCESS: Able to connect to target database, %s\n.", address)
-		} else {
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("SUCCESS: Able to connect to target database, %s\n.", address)
+			}
+		} else if VerbosityOption > 0 {
 			log.Printf("ERROR: Cannot connect to target database, %s\n.", address)
 		}
 		return QueryStatus{query, query.Path, 0, nil}
@@ -97,13 +99,17 @@ func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput
 		if err == nil {
 			affected = res.RowsAffected()
 		} else {
-			log.Printf("ERROR: %s.", err)
+			if VerbosityOption > 0 {
+				log.Printf("ERROR: %s.", err)
+			}
 			return QueryStatus{query, query.Path, int(affected), err}
 		}
 
 		err = printTable(&results)
 		if err != nil {
-			log.Printf("ERROR: %s.", err)
+			if VerbosityOption > 0 {
+				log.Printf("ERROR: %s.", err)
+			}
 			return QueryStatus{query, query.Path, int(affected), err}
 		}
 	} else {

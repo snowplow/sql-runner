@@ -27,6 +27,7 @@ ROOT_KEY=${DIR}/resources
 
 declare -a consul_keys=( 
   "${ROOT_KEY}/good-postgres.yml"
+  "${ROOT_KEY}/good-mysql.yml"
   "${ROOT_KEY}/postgres-sql/bad/1.sql"
   "${ROOT_KEY}/postgres-sql/good/1.sql"
   "${ROOT_KEY}/postgres-sql/good/2a.sql"

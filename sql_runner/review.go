@@ -49,7 +49,10 @@ func review(statuses []TargetStatus) (int, string) {
 
 // Don't use a template here as executing it could fail
 func getSuccessMessage(queryCount int, targetCount int) string {
-	return fmt.Sprintf("SUCCESS: %d queries executed against %d targets", queryCount, targetCount)
+	if VerbosityOption == MAX_VERBOSITY {
+		return fmt.Sprintf("SUCCESS: %d queries executed against %d targets", queryCount, targetCount)
+	}
+	return ""
 }
 
 // TODO: maybe would be cleaner to bubble up error from this function
@@ -57,7 +60,11 @@ func getFailureMessage(statuses []TargetStatus) string {
 
 	var message bytes.Buffer
 	if err := failureTemplate.Execute(&message, statuses); err != nil {
-		return fmt.Sprintf("ERROR: executing failure message template itself failed: %s", err.Error())
+		if VerbosityOption > 0 {
+			return fmt.Sprintf("ERROR: executing failure message template itself failed: %s", err.Error())
+		} else {
+			return ""
+		}
 	}
 
 	return message.String()

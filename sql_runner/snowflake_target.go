@@ -72,8 +72,10 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 
 	if dryRun {
 		if sft.IsConnectable() {
-			log.Printf("SUCCESS: Able to connect to target database, %s\n.", sft.Account)
-		} else {
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("SUCCESS: Able to connect to target database, %s\n.", sft.Account)
+			}
+		} else if VerbosityOption > 0 {
 			log.Printf("ERROR: Cannot connect to target database, %s\n.", sft.Account)
 		}
 
@@ -87,13 +89,17 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 			if showQueryOutput {
 				rows, err := sft.Client.Query(script)
 				if err != nil {
-					log.Printf("ERROR: %s.", err)
+					if VerbosityOption > 0 {
+						log.Printf("ERROR: %s.", err)
+					}
 					return QueryStatus{query, query.Path, int(affected), err}
 				}
 
 				err = printSfTable(rows)
 				if err != nil {
-					log.Printf("ERROR: %s.", err)
+					if VerbosityOption > 0 {
+						log.Printf("ERROR: %s.", err)
+					}
 					return QueryStatus{query, query.Path, int(affected), err}
 				}
 			} else {
