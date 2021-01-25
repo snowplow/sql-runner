@@ -1,6 +1,6 @@
 # SQL Runner
 
-[![Build Status][travis-image]][travis] [![Coveralls][coveralls-image]][coveralls] [![Go Report Card][goreport-image]][goreport] [![Release][release-image]][releases] [![License][license-image]][license]
+[![Build Status][gh-actions-image]][gh-actions] [![Coveralls][coveralls-image]][coveralls] [![Go Report Card][goreport-image]][goreport] [![Release][release-image]][releases] [![License][license-image]][license]
 
 ## Overview
 
@@ -114,8 +114,8 @@ limitations under the License.
 [docker-url]: https://docs.docker.com/get-docker/
 [docker-compose-url]: https://docs.docker.com/compose/install/
 
-[travis]: https://travis-ci.org/snowplow/sql-runner
-[travis-image]: https://travis-ci.org/snowplow/sql-runner.png?branch=master
+[gh-actions]: https://github.com/snowplow/sql-runner/actions
+[gh-actions-image]: https://github.com/snowplow/sql-runner/workflows/Build/badge.svg?branch=master
 
 [release-image]: http://img.shields.io/badge/release-0.9.2-6ad7e5.svg?style=flat
 [releases]: https://github.com/snowplow/sql-runner/releases
