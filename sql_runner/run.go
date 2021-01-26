@@ -83,9 +83,6 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 	} else {
 		steps, trimErr = trimSteps(pb.Steps, fromStep, pb.Targets)
 	}
-	if VerbosityOption == 2 {
-		log.Println("Steps:", steps)
-	}
 	if trimErr != nil {
 		return trimErr
 	}
@@ -334,7 +331,6 @@ func runQueries(database Db, stepIndex int, stepName string, queries []ReadyQuer
 		go func(qry ReadyQuery) {
 			if VerbosityOption == MAX_VERBOSITY {
 				log.Printf("EXECUTING %s (in step %s @ %s): %s", qry.Name, stepName, dbName, qry.Path)
-				log.Printf("Script: %s", qry.Script)
 			}
 			queryChan <- database.RunQuery(qry, dryRun, showQueryOutput)
 		}(query)

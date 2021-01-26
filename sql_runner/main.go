@@ -141,8 +141,10 @@ func processFlags() Options {
 				log.Printf("Error: %s found, previous run failed or is ongoing", lockFile.Path)
 			}
 			os.Exit(3)
-		} else if VerbosityOption == MAX_VERBOSITY {
-			log.Printf("Success: %s does not exist", lockFile.Path)
+		} else {
+			if VerbosityOption == MAX_VERBOSITY {
+				log.Printf("Success: %s does not exist", lockFile.Path)
+			}
 			os.Exit(0)
 		}
 	}
@@ -156,8 +158,10 @@ func processFlags() Options {
 					log.Printf("Error: %s found but could not delete: %s", lockFile.Path, unlockErr.Error())
 				}
 				os.Exit(1)
-			} else if VerbosityOption == MAX_VERBOSITY {
-				log.Printf("Success: %s found and deleted", lockFile.Path)
+			} else {
+				if VerbosityOption == MAX_VERBOSITY {
+					log.Printf("Success: %s found and deleted", lockFile.Path)
+				}
 				os.Exit(0)
 			}
 		} else {

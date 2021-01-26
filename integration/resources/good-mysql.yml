@@ -1,22 +1,22 @@
 :targets:
   - :name: "My MySQL database 1"
     :type: mysql
-    :host: localhost
+    :host: 0.0.0.0
     :database: sql_runner_tests_1
-    :port: 3306
+    :port: 3307
     :username: snowplow
     :password: snowplow
     :ssl: false # SSL disabled by default
   - :name: "My MySQL database 2"
     :type: mysql
-    :host: localhost
+    :host: 0.0.0.0
     :database: sql_runner_tests_2
-    :port: 3306
+    :port: 3307
     :username: snowplow
     :password: snowplow
     :ssl: false # SSL disabled by default
 :variables:
-  :test_schema: sql_runner_tests
+  :test_schema: mys_test_schema
   :timeFormat: "2006_01_02"
 :steps:
   - :name: Failing
@@ -26,7 +26,7 @@
   - :name: Create schema and table
     :queries:
       - :name: Create schema and table
-        :file: postgres-sql/good/1.sql
+        :file: mysql-sql-good/1.sql
         :template: true
   - :name: Parallel load
     :queries:
@@ -44,7 +44,7 @@
   - :name: Assertions
     :queries:
       - :name: Assertions
-        :file: postgres-sql/good/assert.sql
+        :file: mysql-sql-good/assert.sql
         :template: true
   - :name: Output
     :queries:
