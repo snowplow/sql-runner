@@ -36,6 +36,8 @@ declare -a consul_keys=(
   "${ROOT_KEY}/postgres-sql/good/assert.sql"
   "${ROOT_KEY}/postgres-sql/good/output.sql"
   "${ROOT_KEY}/mysql-sql-good/1.sql"
+  "${ROOT_KEY}/mysql-sql-good/2b.sql"
+  "${ROOT_KEY}/mysql-sql-good/3.sql"
   "${ROOT_KEY}/mysql-sql-good/assert.sql"
 )
 

@@ -1,15 +1,19 @@
 -- Test file: assert.sql
 
-CREATE OR REPLACE FUNCTION assert_average_age() RETURNS VOID AS $$
-DECLARE
-  expected_average_age CONSTANT integer := 23;
+DELIMITER $$
+DROP FUNCTION IF EXISTS {{.test_schema}}.assert_average_age;
+CREATE FUNCTION {{.test_schema}}.assert_average_age(age INT) RETURNS INT
 BEGIN
-  {{/* Update view names to today's date or Travis will error */}}
-  IF (SELECT average_age <> expected_average_age FROM {{.test_schema}}.view_{{.test_date}}) THEN
-    RAISE EXCEPTION 'Average_age % does not match expected age %',
-    	(SELECT average_age FROM view_{{.test_date}}),
-    	expected_average_age;
+  DECLARE expected_average_age INT DEFAULT 23;
+  IF age <> expected_average_age THEN
+    SIGNAL SQLSTATE 'HY000' SET MESSAGE_TEXT = 'average_age does not match expected age';
   END IF;
-END;
+  RETURN (expected_average_age);
+END $$
 
-SELECT {{.test_schema}}.assert_average_age();
+DELIMITER ;
+
+SELECT {{.test_schema}}.assert_average_age(a.average_age)
+FROM (
+  SELECT average_age FROM {{.test_schema}}.view_{{.test_date}}
+) as a;

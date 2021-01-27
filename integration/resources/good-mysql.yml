@@ -1,16 +1,8 @@
 :targets:
-  - :name: "My MySQL database 1"
+  - :name: "My MySQL database"
     :type: mysql
     :host: 0.0.0.0
     :database: sql_runner_tests_1
-    :port: 3307
-    :username: snowplow
-    :password: snowplow
-    :ssl: false # SSL disabled by default
-  - :name: "My MySQL database 2"
-    :type: mysql
-    :host: 0.0.0.0
-    :database: sql_runner_tests_2
     :port: 3307
     :username: snowplow
     :password: snowplow
@@ -23,9 +15,9 @@
     :queries:
       - :name: Corrupted script
         :file: postgres-sql/bad/1.sql
-  - :name: Create schema and table
+  - :name: Create database and table
     :queries:
-      - :name: Create schema and table
+      - :name: Create database and table
         :file: mysql-sql-good/1.sql
         :template: true
   - :name: Parallel load
@@ -34,18 +26,19 @@
         :file: postgres-sql/good/2a.sql
         :template: true
       - :name: Parallel load 2
-        :file: postgres-sql/good/2b.sql
+        :file: mysql-sql-good/2b.sql
         :template: true
   - :name: Create view
     :queries:
       - :name: Create view
-        :file: postgres-sql/good/3.sql
+        :file: mysql-sql-good/3.sql
         :template: true
-  - :name: Assertions
-    :queries:
-      - :name: Assertions
-        :file: mysql-sql-good/assert.sql
-        :template: true
+  # Skipping assertion until MySQL function handling is implemented
+  # - :name: Assertions
+  #   :queries:
+  #     - :name: Assertions
+  #       :file: mysql-sql-good/assert.sql
+  #       :template: true
   - :name: Output
     :queries:
       - :name: Output

@@ -76,18 +76,19 @@ assert_ExitCodeForCommand "7" "${bin_path} -playbook ${root_key}/bad-mixed.yml -
 
 # Test: Valid playbook with invalid query should return exit code 6
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"`"
-assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -verbosity 1"
+assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"`"
 
 # Test: Valid playbook which attempts to lock but fails should return exit code 1
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/locks/integration/1 -verbosity 1"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock /locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/locks/integration/1 -verbosity 1"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock /locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/locks/integration/1"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock /locks/integration/1 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/locks/integration/1"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock /locks/integration/1 -consul ${consul_server_uri}"
 
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/locks/integration/1 -verbosity 0"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock /locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/locks/integration/1 -verbosity 0"
-assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock /locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+# Case 8
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/locks/integration/1"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock /locks/integration/1 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/locks/integration/1"
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock /locks/integration/1 -consul ${consul_server_uri}"
 
 # Test: Checking for a lock that does not exist should return exit code 0
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/locks/integration/1"
@@ -97,35 +98,35 @@ assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consu
 assert_ExitCodeForCommand "1" "${bin_path} -deleteLock ${root}/dist/locks/integration/1"
 assert_ExitCodeForCommand "1" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri}"
 
-# Test: Valid playbook which creates a hard-lock and then fails SHOULD leave the lock around afterwards
+# 16 - Test: Valid playbook which creates a hard-lock and then fails SHOULD leave the lock around afterwards
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock locks/integration/1 -consul ${consul_server_uri}"
 assert_ExitCodeForCommand "3" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "3" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "3" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock"
 assert_ExitCodeForCommand "3" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "3" "${bin_path} -checkLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -deleteLock ${root}/dist/integration-lock"
+assert_ExitCodeForCommand "3" "${bin_path} -checkLock ${root}/dist/integration-lock -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -deleteLock ${root}/dist/integration-lock -verbosity 0"
 
-# Test: MySQL Valid playbook which creates a hard-lock and then fails SHOULD leave the lock around afterwards
+# 24 - Test: MySQL Valid playbook which creates a hard-lock and then fails SHOULD leave the lock around afterwards
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -lock locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
 assert_ExitCodeForCommand "3" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -lock locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
-assert_ExitCodeForCommand "3" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
-assert_ExitCodeForCommand "0" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
+assert_ExitCodeForCommand "3" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock -verbosity 1"
 assert_ExitCodeForCommand "3" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -lock ${root}/dist/integration-lock -verbosity 1"
 assert_ExitCodeForCommand "3" "${bin_path} -checkLock ${root}/dist/integration-lock -verbosity 1"
 assert_ExitCodeForCommand "0" "${bin_path} -deleteLock ${root}/dist/integration-lock -verbosity 1"
 
-# Test: Valid playbook which creates a soft-lock and then fails SHOULD NOT leave the lock around afterwards
+# 32 - Test: Valid playbook which creates a soft-lock and then fails SHOULD NOT leave the lock around afterwards
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -softLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "1" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+assert_ExitCodeForCommand "1" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri} -verbosity 1"
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -softLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "1" "${bin_path} -deleteLock ${root}/dist/integration-lock"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock -verbosity 0"
+assert_ExitCodeForCommand "1" "${bin_path} -deleteLock ${root}/dist/integration-lock -verbosity 1"
 
-# Test: MySQL Valid playbook which creates a soft-lock and then fails SHOULD NOT leave the lock around afterwards
+# 38 - Test: MySQL Valid playbook which creates a soft-lock and then fails SHOULD NOT leave the lock around afterwards
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -softLock locks/integration/1 -consul ${consul_server_uri}"
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
 assert_ExitCodeForCommand "1" "${bin_path} -deleteLock locks/integration/1 -consul ${consul_server_uri}"
@@ -133,24 +134,25 @@ assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-mysql.yml 
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
 assert_ExitCodeForCommand "1" "${bin_path} -deleteLock ${root}/dist/integration-lock"
 
-# Test: Valid playbook which creates a hard/soft-lock and then succeeds SHOULD NOT leave the lock around afterwards
+# 44 - Test: Valid playbook which creates a hard/soft-lock and then succeeds SHOULD NOT leave the lock around afterwards
 assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock locks/integration/1 -consul ${consul_server_uri}"
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/integration-lock -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri} -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/integration-lock -verbosity 0"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock -verbosity 0"
 
-# Test: MySQL Valid playbook which creates a hard/soft-lock and then succeeds SHOULD NOT leave the lock around afterwards
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -lock ${root}/dist/integration-lock"
+# 52 - Test: MySQL Valid playbook which creates a hard/soft-lock and then succeeds SHOULD NOT leave the lock around afterwards
+# BREAK
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create database and table\" -lock locks/integration/2 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/2 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create database and table\" -lock ${root}/dist/integration-lock"
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/1 -consul ${consul_server_uri}"
-assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create schema and table\" -softLock ${root}/dist/integration-lock"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create database and table\" -softLock locks/integration/2 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "0" "${bin_path} -checkLock locks/integration/2 -consul ${consul_server_uri}"
+assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-mysql.yml -var test_date=`date "+%Y_%m_%d"` -fromStep \"Create database and table\" -softLock ${root}/dist/integration-lock"
 assert_ExitCodeForCommand "0" "${bin_path} -checkLock ${root}/dist/integration-lock"
 
 # Test: Invalid playbook which creates a hard/soft-lock but is run using -dryRun should return exit code 0

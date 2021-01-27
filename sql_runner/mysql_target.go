@@ -11,7 +11,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 )
 
 const msNetwork = "tcp"
@@ -89,14 +88,6 @@ func (mt MySQLTarget) GetTarget() Target {
 	return mt.Target
 }
 
-// Check if query is a SELECT by checking the starting SQL command.
-// This should ensure that we return an accurate Rows Affected value for SELECT queries to match postgres_target's Rows Affected policy
-func (query ReadyQuery) isSelectQuery() bool {
-	firstWord := strings.ToLower(strings.Split(query.Script, " ")[0])
-
-	return firstWord == "select"
-}
-
 // Run a query against the target
 func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var err error = nil
@@ -114,18 +105,32 @@ func (mt MySQLTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bo
 
 	affected := 0
 
-	if query.isSelectQuery() {
-		var rows *sql.Rows
-		rows, err = mt.Client.Query(query.Script)
-		if err == nil {
-			affected, _ = interpretRows(rows, showQueryOutput)
-		}
-	} else {
-		var res sql.Result
-		res, err = mt.Client.Exec(query.Script)
-		if err == nil {
-			affectedInt64, _ := res.RowsAffected()
-			affected = int(affectedInt64)
+	// sql.Exec cannot handle commands formatted over multiple lines
+	queryStrings := FormatMultiqueryString(query.Script)
+
+	txn, err := mt.Client.Begin()
+	if err == nil {
+		defer func() {
+			// If transaction was already committed, this will do nothing
+			_ = txn.Rollback()
+		}()
+
+		for _, q := range queryStrings {
+			// This should ensure that we return an accurate Rows Affected value for SELECT queries to match postgres_target's Rows Affected policy
+			if IsSelectQuery(q) {
+				var rows *sql.Rows
+				rows, err = mt.Client.Query(q)
+				if err == nil {
+					affected, _ = interpretRows(rows, showQueryOutput)
+				}
+			} else {
+				var res sql.Result
+				res, err = mt.Client.Exec(q)
+				if err == nil {
+					affectedInt64, _ := res.RowsAffected()
+					affected = int(affectedInt64)
+				}
+			}
 		}
 	}
 
