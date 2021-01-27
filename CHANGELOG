@@ -1,3 +1,11 @@
+Version 0.9.3 (2021-01-25)
+--------------------------
+Migrate to Github actions for CI/CD (closes #158)
+Update Copyright to 2015-2021 (closes #177)
+Snowflake: convert query output to string before printing (closes #166)
+Commented lines execute as empty SQL statements in Snowflake (closes #119)
+Add Snowflake reference to application description in help message (closes #132)
+
 Version 0.9.2 (2020-12-15)
 --------------------------
 BigQuery: Run multiple-step queries as single script (closes #169)

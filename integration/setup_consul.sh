@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2015-2020 Snowplow Analytics Ltd. All rights reserved.
+# Copyright (c) 2015-2021 Snowplow Analytics Ltd. All rights reserved.
 #
 # This program is licensed to you under the Apache License Version 2.0,
 # and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -25,7 +25,7 @@ ROOT_KEY=${DIR}/resources
 #  EXECUTION
 # -----------------------------------------------------------------------------
 
-declare -a consul_keys=( 
+declare -a consul_keys=(
   "${ROOT_KEY}/good-postgres.yml"
   "${ROOT_KEY}/good-mysql.yml"
   "${ROOT_KEY}/postgres-sql/bad/1.sql"
@@ -44,7 +44,7 @@ declare -a consul_keys=(
 echo " --- Stubbing Consul key values for integration tests --- "
 
 for i in "${!consul_keys[@]}"
-  do 
+  do
       :
       key=${consul_keys[$i]}
       value=`cat ${key}`

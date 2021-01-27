@@ -25,14 +25,12 @@ require (
 	github.com/mitchellh/mapstructure v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.0-20180506121414-d4647c9c7a84
 	github.com/onsi/ginkgo v1.14.0 // indirect
-	github.com/pkg/browser v0.0.0-20170505125900-c90ca0c84f15 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/snowflakedb/gosnowflake v1.1.10
+	github.com/snowflakedb/gosnowflake v1.3.12
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/net v0.0.0-20201026091529-146b70c837a4
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
-	golang.org/x/tools v0.1.0 // indirect
+	golang.org/x/tools v0.0.0-20210105210202-9ed45478a130 // indirect
 	google.golang.org/api v0.34.0
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
