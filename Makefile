@@ -70,7 +70,7 @@ test:
 
 goveralls: test
 	GO111MODULE=on go get -u github.com/mattn/goveralls
-	goveralls -coverprofile=$(coverage_out) -service=travis-ci
+	goveralls -coverprofile=$(coverage_out) -service=github
 
 integration:
 ifndef DISTRO

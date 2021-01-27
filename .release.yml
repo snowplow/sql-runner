@@ -1,6 +1,6 @@
 ---
 local:
-  root_dir : <%= ENV['TRAVIS_BUILD_DIR'] %>
+  root_dir : <%= ENV['GITHUB_WORKSPACE'] %>
 
 targets:
   - type     : "bintray"
@@ -14,8 +14,8 @@ packages:
     publish  : true
     override : false
     continue_on_conflict: false
-    version  : <%= CMD['cat VERSION'] %>
-    build_version : <%= ENV['TRAVIS_TAG'] %>
+    version  : <%= ENV['SQL_RUNNER_VERSION'] %>
+    build_version : <%= ENV['TAG_VERSION'] %>
     artifacts:
       - prefix : "sql_runner_"
         suffix : "_linux_amd64"
