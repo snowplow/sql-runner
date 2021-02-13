@@ -8,9 +8,9 @@ Run playbooks of SQL scripts in series and parallel on Snowflake DB, Amazon Reds
 
 Used with **[Snowplow][snowplow]** for scheduled SQL-based transformations of event stream data.
 
-|  **[Devops Guide][devops-guide]**     | **[Analysts Guide][analysts-guide]**     | **[Developers Guide][developers-guide]**     |
-|:--------------------------------------:|:-----------------------------------------:|:---------------------------------------------:|
-|  [![i1][devops-image]][devops-guide] | [![i2][analysts-image]][analysts-guide] | [![i3][developers-image]][developers-guide] |
+|  **[Setup Guide][setup-guide]**     | **[User Guide][user-guide]**     |
+|:--------------------------------------:|:-----------------------------------------:|
+|  [![i1][setup-image]][setup-guide] | [![i2][user-image]][user-guide] |
 
 ## Quick start
 
@@ -53,14 +53,14 @@ guest> make format
 
 First either compile the binary from source using the above `make` command or download the published Binary directly from the GitHub release:
 
-* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.9.3/sql_runner_0.9.3_darwin_amd64.zip)
-* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.9.3/sql_runner_0.9.3_linux_amd64.zip)
-* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.9.3/sql_runner_0.9.3_windows_amd64.zip)
+* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.9.4/sql_runner_0.9.4_darwin_amd64.zip)
+* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.9.4/sql_runner_0.9.4_linux_amd64.zip)
+* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.9.4/sql_runner_0.9.4_windows_amd64.zip)
 
 ### CLI Output
 
 ```bash
-sql-runner version: 0.9.3
+sql-runner version: 0.9.4
 Run playbooks of SQL scripts in series and parallel on Redshift and Postgres
 Usage:
   -checkLock string
@@ -131,10 +131,8 @@ limitations under the License.
 
 [snowplow]: https://github.com/snowplow/snowplow
 
-[analysts-guide]: https://github.com/snowplow/sql-runner/wiki/Guide-for-analysts
-[developers-guide]: https://github.com/snowplow/sql-runner/wiki/Guide-for-developers
-[devops-guide]: https://github.com/snowplow/sql-runner/wiki/Guide-for-devops
+[setup-guide]: https://docs.snowplowanalytics.com/docs/modeling-your-data/setup-and-run-sql-runner/
+[user-guide]: https://docs.snowplowanalytics.com/docs/modeling-your-data/setup-and-run-sql-runner/#User_guide
 
-[devops-image]:  https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
-[analysts-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
-[developers-image]:  https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
+[setup-image]:  https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
+[user-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
