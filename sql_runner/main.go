@@ -25,7 +25,7 @@ import (
 const (
 	CLI_NAME        = "sql-runner"
 	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift, Postgres, BigQuery and Snowflake`
-	CLI_VERSION     = "0.9.4"
+	CLI_VERSION     = "0.9.4-rc1"
 
 	SQLROOT_BINARY         = "BINARY"
 	SQLROOT_PLAYBOOK       = "PLAYBOOK"
