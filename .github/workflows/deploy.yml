@@ -9,10 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
 
-    env:
-      BINTRAY_SNOWPLOW_GENERIC_USER: ${{ secrets.BINTRAY_SNOWPLOW_GENERIC_USER }}
-      BINTRAY_SNOWPLOW_GENERIC_API_KEY: ${{ secrets.BINTRAY_SNOWPLOW_GENERIC_API_KEY }}
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -36,28 +32,19 @@ jobs:
         make goveralls
         DISTRO=linux make integration
 
-    - name: Setup Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies and update PATH
-      run: |
-        python -m pip install --upgrade pip
-        sudo pip install pyOpenSSL==16.2.0
-        pip install --user release-manager==0.4.1
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
     - name: Get tag and sql-runner version information
       id: version
       run: |
         echo ::set-output name=TAG_VERSION::${GITHUB_REF#refs/*/}
         echo "##[set-output name=SQL_RUNNER_VERSION;]$(cat VERSION)"
 
-    - name: Upload to bintray
-      env:
-        TAG_VERSION: ${{ steps.version.outputs.TAG_VERSION }}
-        SQL_RUNNER_VERSION: ${{ steps.version.outputs.SQL_RUNNER_VERSION }}
+    - name: Fail if version mismatch
+      if: ${{ steps.version.outputs.TAG_VERSION != steps.version.outputs.SQL_RUNNER_VERSION }}
+      run: |
+        echo "Tag version (${{ steps.version.outputs.TAG_VERSION }}) doesn't match version in project (${{ steps.version.outputs.SQL_RUNNER_VERSION }})"
+        exit 1
+
+    - name: Make release assets
       run: make release
 
     - name: Get date for release name
@@ -65,7 +52,6 @@ jobs:
       run: echo "RELEASE_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
     - name: Create release
-      if: ${{ ! contains(steps.version.outputs.TAG_VERSION, '-rc') }}
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,4 +59,11 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: Version ${{ github.ref }} (${{ env.RELEASE_DATE }})
         draft: false
-        prerelease: false
+        prerelease: ${{ contains(steps.version.outputs.TAG_VERSION, '-rc') }}
+
+    - name: Upload release assets
+      uses: alexellis/upload-assets@0.2.3
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["./build/dist/*"]'

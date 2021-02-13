@@ -23,6 +23,18 @@ bin_linux     = $(linux_dir)/$(bin_name)
 bin_darwin    = $(darwin_dir)/$(bin_name)
 bin_windows   = $(windows_dir)/$(bin_name)
 
+version       = $(shell cat VERSION)
+
+artifacts_dir = $(build_dir)/dist
+
+zip_suffix    = amd64.zip
+zip_prefix    = sql_runner_$(subst -,_,$(version))
+
+zip_linux     = $(zip_prefix)_linux_$(zip_suffix)
+zip_darwin    = $(zip_prefix)_darwin_$(zip_suffix)
+zip_windows   = $(zip_prefix)_windows_$(zip_suffix)
+
+
 # -----------------------------------------------------------------------------
 #  BUILDING
 # -----------------------------------------------------------------------------
@@ -82,11 +94,16 @@ endif
 #  RELEASE
 # -----------------------------------------------------------------------------
 
-release:
-	release-manager --config .release.yml --check-version --make-artifact --make-version --upload-artifact
+release: all
+	mkdir -p $(artifacts_dir)
+	(cd $(linux_dir) && zip staging.zip $(bin_name))
+	(cd $(darwin_dir) && zip staging.zip $(bin_name))
+	(cd $(windows_dir) && zip staging.zip $(bin_name).exe)
+	mv $(linux_dir)/staging.zip $(artifacts_dir)/$(zip_linux)
+	mv $(darwin_dir)/staging.zip $(artifacts_dir)/$(zip_darwin)
+	mv $(windows_dir)/staging.zip $(artifacts_dir)/$(zip_windows)
 
-release-dry:
-	release-manager --config .release.yml --check-version --make-artifact
+release-dry: release
 
 # -----------------------------------------------------------------------------
 #  CLEANUP
