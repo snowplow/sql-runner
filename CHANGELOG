@@ -1,20 +1,24 @@
+Version 0.9.5 (2021-04-30)
+--------------------------
+Upgrade dependencies (#183)
+
 Version 0.9.4 (2021-02-15)
 --------------------------
-Remove Bintray (closes #179)
+Remove Bintray (#179)
 
 Version 0.9.3 (2021-01-25)
 --------------------------
-Migrate to Github actions for CI/CD (closes #158)
-Update Copyright to 2015-2021 (closes #177)
-Snowflake: convert query output to string before printing (closes #166)
-Commented lines execute as empty SQL statements in Snowflake (closes #119)
-Add Snowflake reference to application description in help message (closes #132)
+Migrate to Github actions for CI/CD (#158)
+Update Copyright to 2015-2021 (#177)
+Snowflake: convert query output to string before printing (#166)
+Commented lines execute as empty SQL statements in Snowflake (#119)
+Add Snowflake reference to application description in help message (#132)
 
 Version 0.9.2 (2020-12-15)
 --------------------------
-BigQuery: Run multiple-step queries as single script (closes #169)
-BigQuery: Explicitly set Client.Location from the region playbook variable (closes #173)
-Bump Travis Golang version to 1.15 (closes #174)
+BigQuery: Run multiple-step queries as single script (#169)
+BigQuery: Explicitly set Client.Location from the region playbook variable (#173)
+Bump Travis Golang version to 1.15 (#174)
 
 Version 0.9.1 (2020-11-17)
 --------------------------
