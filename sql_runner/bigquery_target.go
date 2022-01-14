@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2021 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2022 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -13,14 +13,15 @@
 package main
 
 import (
-	bq "cloud.google.com/go/bigquery"
 	"fmt"
-	"github.com/olekukonko/tablewriter"
-	"golang.org/x/net/context"
-	"google.golang.org/api/iterator"
 	"log"
 	"os"
 	"strings"
+
+	bq "cloud.google.com/go/bigquery"
+	"github.com/olekukonko/tablewriter"
+	"golang.org/x/net/context"
+	"google.golang.org/api/iterator"
 )
 
 type BigQueryTarget struct {

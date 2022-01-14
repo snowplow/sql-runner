@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2015-2021 Snowplow Analytics Ltd. All rights reserved.
+// Copyright (c) 2015-2022 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
 // and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -15,13 +15,14 @@ package main
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
-	"github.com/olekukonko/tablewriter"
 	"log"
 	"net"
 	"os"
 	"time"
+
+	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
+	"github.com/olekukonko/tablewriter"
 )
 
 // For Redshift queries
