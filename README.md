@@ -53,14 +53,14 @@ guest> make format
 
 First either compile the binary from source using the above `make` command or download the published Binary directly from the GitHub release:
 
-* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.9.5/sql_runner_0.9.5_darwin_amd64.zip)
-* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.9.5/sql_runner_0.9.5_linux_amd64.zip)
-* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.9.5/sql_runner_0.9.5_windows_amd64.zip)
+* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.9.6/sql_runner_0.9.6_darwin_amd64.zip)
+* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.9.6/sql_runner_0.9.6_linux_amd64.zip)
+* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.9.6/sql_runner_0.9.6_windows_amd64.zip)
 
 ### CLI Output
 
 ```bash
-sql-runner version: 0.9.5
+sql-runner version: 0.9.6
 Run playbooks of SQL scripts in series and parallel on Redshift and Postgres
 Usage:
   -checkLock string

@@ -1,3 +1,9 @@
+Version 0.9.6 (2022-01-18)
+--------------------------
+Bump dependencies (#187)
+Update copyright for 2022 (#189)
+Update go version to 1.17 (#190)
+
 Version 0.9.5 (2021-04-30)
 --------------------------
 Upgrade dependencies (#183)
