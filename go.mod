@@ -12,6 +12,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/onsi/ginkgo v1.16.1 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/snowflakedb/gosnowflake v1.6.5
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20211118161319-6a13c67c3ce4
