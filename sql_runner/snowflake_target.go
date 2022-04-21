@@ -28,8 +28,9 @@ import (
 
 // Specific for Snowflake db
 const (
-	loginTimeout  = 5 * time.Second                // by default is 60
-	multiStmtName = "multiple statement execution" // https://github.com/snowflakedb/gosnowflake/blob/e909f00ff624a7e60d4f91718f6adc92cbd0d80f/connection.go#L57-L61
+	snowplowAppName = `Snowplow_OSS`
+	loginTimeout    = 5 * time.Second                // by default is 60
+	multiStmtName   = "multiple statement execution" // https://github.com/snowflakedb/gosnowflake/blob/e909f00ff624a7e60d4f91718f6adc92cbd0d80f/connection.go#L57-L61
 )
 
 type SnowFlakeTarget struct {
@@ -53,7 +54,7 @@ func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
 		region = target.Region
 	}
 
-	configStr, err := sf.DSN(&sf.Config{
+	config := &sf.Config{
 		Region:       region,
 		Account:      target.Account,
 		User:         target.Username,
@@ -61,7 +62,14 @@ func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
 		Database:     target.Database,
 		Warehouse:    target.Warehouse,
 		LoginTimeout: loginTimeout,
-	})
+	}
+	if envAppName := os.Getenv(`SNOWPLOW_SQL_RUNNER_SNOWFLAKE_APP_NAME`); envAppName != `` {
+		config.Application = `Snowplow_` + envAppName
+	} else {
+		config.Application = snowplowAppName
+	}
+
+	configStr, err := sf.DSN(config)
 
 	if err != nil {
 		log.Fatal(err)
