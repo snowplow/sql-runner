@@ -1,3 +1,7 @@
+Version 0.9.8 (2022-04-22)
+--------------------------
+Add Application to JDBC driver configuration for identifying Snowplow jobs (#198)
+
 Version 0.9.7 (2022-01-25)
 --------------------------
 Handle Snowflake error `-00001:` (#191)
