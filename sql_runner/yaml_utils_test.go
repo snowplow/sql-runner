@@ -13,8 +13,10 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -72,4 +74,66 @@ func TestTemplateYaml(t *testing.T) {
 	assert.Equal("qwerty123", playbook.Targets[0].Password)
 	assert.Equal("animoto", playbook.Targets[0].Username)
 	assert.Equal("theinternetz", playbook.Targets[0].Host)
+}
+
+func TestParse_QueryFlag(t *testing.T) {
+	testCases := []struct {
+		Name     string
+		Playbook string
+		Expected *Playbook
+	}{
+		{
+			Name: "simple",
+			Playbook: `
+:targets:
+- :type:      snowflake
+  :query_tag: "snowplow"
+`,
+			Expected: &Playbook{
+				Targets: []Target{
+					{
+						Type:     "snowflake",
+						QueryTag: "snowplow",
+					},
+				},
+				Variables: make(map[string]interface{}),
+				Steps:     nil,
+			},
+		},
+		{
+			Name: "with_escaped_quotes",
+			Playbook: `
+:targets:
+- :type:      snowflake
+  :query_tag: "{module: \"base\", steps: \"main\"}"
+`,
+			Expected: &Playbook{
+				Targets: []Target{
+					{
+						Type:     "snowflake",
+						QueryTag: `{module: "base", steps: "main"}`,
+					},
+				},
+				Variables: make(map[string]interface{}),
+				Steps:     nil,
+			},
+		},
+	}
+
+	noVars := make(map[string]string)
+
+	for _, tt := range testCases {
+		t.Run(tt.Name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			result, err := parsePlaybookYaml([]byte(tt.Playbook), noVars)
+			assert.Nil(err)
+			if !reflect.DeepEqual(result, tt.Expected) {
+				t.Fatalf("\nGOT:\n%s\nEXPECTED:\n%s\n",
+					spew.Sdump(result),
+					spew.Sdump(tt.Expected))
+			}
+		})
+	}
+
 }

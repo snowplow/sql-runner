@@ -23,7 +23,8 @@ type Playbook struct {
 type Target struct {
 	Name, Type, Host, Database, Port, Username,
 	Password, Region, Account, Warehouse, Project string
-	Ssl bool
+	QueryTag string `yaml:"query_tag"`
+	Ssl      bool
 }
 
 // Step represents a playbook step.

@@ -50,6 +50,11 @@ func (sft SnowflakeTarget) IsConnectable() bool {
 
 // NewSnowflakeTarget returns a ptr to a SnowflakeTarget.
 func NewSnowflakeTarget(target Target) (*SnowflakeTarget, error) {
+	params := make(map[string]*string)
+	if target.QueryTag != "" {
+		params["QUERY_TAG"] = &target.QueryTag
+	}
+
 	config := &sf.Config{
 		Region:       target.Region,
 		Account:      target.Account,
@@ -58,6 +63,7 @@ func NewSnowflakeTarget(target Target) (*SnowflakeTarget, error) {
 		Database:     target.Database,
 		Warehouse:    target.Warehouse,
 		LoginTimeout: loginTimeout,
+		Params:       params,
 	}
 	if envAppName := os.Getenv(`SNOWPLOW_SQL_RUNNER_SNOWFLAKE_APP_NAME`); envAppName != `` {
 		config.Application = `Snowplow_` + envAppName
