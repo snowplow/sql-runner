@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	// TemplFuncs is the supported template functions map.
 	TemplFuncs = template.FuncMap{
 		"nowWithFormat": func(format string) string {
 			return time.Now().Format(format)

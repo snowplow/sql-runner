@@ -17,6 +17,7 @@ import (
 	"github.com/go-pg/pg/v10/types"
 )
 
+// Results information.
 type Results struct {
 	results  [][]string
 	columns  []string
@@ -26,6 +27,7 @@ type Results struct {
 
 var _ orm.HooklessModel = (*Results)(nil)
 
+// Init initializes Results.
 func (results *Results) Init() error {
 	results.elements = 0
 	results.rows = 0
@@ -40,14 +42,17 @@ func (results *Results) Init() error {
 	return nil
 }
 
+// NextColumnScanner returns a ColumnScanner that is used to scan columns.
 func (results *Results) NextColumnScanner() orm.ColumnScanner {
 	return results
 }
 
+// AddColumnScanner adds the ColumnScanner to the model.
 func (Results) AddColumnScanner(_ orm.ColumnScanner) error {
 	return nil
 }
 
+// ScanColumn implements ColumnScanner interface.
 func (results *Results) ScanColumn(col types.ColumnInfo, rd types.Reader, n int) error {
 	tmp, err := rd.ReadFullTemp()
 	if err != nil {
@@ -59,7 +64,7 @@ func (results *Results) ScanColumn(col types.ColumnInfo, rd types.Reader, n int)
 	if col.Index == 0 {
 		results.results = append(results.results, []string{})
 		curRow = len(results.results) - 1
-		results.rows += 1
+		results.rows++
 	}
 
 	if curRow == 0 {

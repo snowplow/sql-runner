@@ -17,7 +17,7 @@ import (
 	"text/template"
 )
 
-// Generalized interface to a database client
+// Db is a generalized interface to a database client.
 type Db interface {
 	RunQuery(ReadyQuery, bool, bool) QueryStatus
 	GetTarget() Target

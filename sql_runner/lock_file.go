@@ -20,6 +20,7 @@ import (
 	"time"
 )
 
+// LockFile holds information for a lock file.
 type LockFile struct {
 	Path          string
 	SoftLock      bool
@@ -40,15 +41,14 @@ func InitLockFile(path string, softLock bool, consulAddress string) (LockFile, e
 
 	if lockFile.LockExists() {
 		return lockFile, fmt.Errorf("%s found on start, previous run failed or is ongoing. Cannot start", path)
-	} else {
-		return lockFile, nil
 	}
+	return lockFile, nil
 }
 
 // Lock creates a new lock file or kv entry
 func (lf *LockFile) Lock() error {
 	if lf.locked == true {
-		return fmt.Errorf("LockFile is already locked!")
+		return fmt.Errorf("cannot Lock: LockFile is already locked")
 	}
 
 	value := time.Now().UTC().Format("2006-01-02T15:04:05-0700")
@@ -77,16 +77,16 @@ func (lf *LockFile) Lock() error {
 
 		lf.locked = true
 		return nil
-	} else {
-		// Create the KV pair
-		err := PutStringValueToConsul(lf.ConsulAddress, lf.Path, value)
-		if err != nil {
-			return err
-		}
-
-		lf.locked = true
-		return nil
 	}
+
+	// Create the KV pair
+	err := PutStringValueToConsul(lf.ConsulAddress, lf.Path, value)
+	if err != nil {
+		return err
+	}
+
+	lf.locked = true
+	return nil
 }
 
 // Unlock deletes the lock or kv entry
@@ -103,16 +103,16 @@ func (lf *LockFile) Unlock() error {
 
 		lf.locked = false
 		return nil
-	} else {
-		// Delete the KV pair
-		err := DeleteValueFromConsul(lf.ConsulAddress, lf.Path)
-		if err != nil {
-			return err
-		}
-
-		lf.locked = false
-		return nil
 	}
+
+	// Delete the KV pair
+	err := DeleteValueFromConsul(lf.ConsulAddress, lf.Path)
+	if err != nil {
+		return err
+	}
+
+	lf.locked = false
+	return nil
 }
 
 // LockExists checks if the lock file
@@ -121,16 +121,13 @@ func (lf *LockFile) LockExists() bool {
 	if lf.ConsulAddress == "" {
 		if _, err := os.Stat(lf.Path); os.IsNotExist(err) {
 			return false
-		} else {
-			return true
 		}
-	} else {
-		value, err := GetStringValueFromConsul(lf.ConsulAddress, lf.Path)
-
-		if err != nil && value == "" {
-			return false
-		} else {
-			return true
-		}
+		return true
 	}
+
+	value, err := GetStringValueFromConsul(lf.ConsulAddress, lf.Path)
+	if err != nil && value == "" {
+		return false
+	}
+	return true
 }

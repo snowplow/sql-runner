@@ -29,5 +29,5 @@ func TestLoadLocalFile(t *testing.T) {
 	bytes, err = loadLocalFile("../VERSION")
 	assert.NotNil(bytes)
 	assert.Nil(err)
-	assert.Equal(CLI_VERSION, string(bytes))
+	assert.Equal(cliVersion, string(bytes))
 }

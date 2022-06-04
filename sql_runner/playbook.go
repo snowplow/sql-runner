@@ -12,34 +12,38 @@
 //
 package main
 
-// Maps exactly onto our YAML format
+// Playbook maps exactly onto our YAML format
 type Playbook struct {
 	Targets   []Target
 	Variables map[string]interface{}
 	Steps     []Step
 }
 
+// Target represents the playbook target.
 type Target struct {
 	Name, Type, Host, Database, Port, Username,
 	Password, Region, Account, Warehouse, Project string
 	Ssl bool
 }
 
+// Step represents a playbook step.
 type Step struct {
 	Name    string
 	Queries []Query
 }
 
+// Query represents a playbook query.
 type Query struct {
 	Name, File string
 	Template   bool
 }
 
-// Initialize properly the Playbook
+// NewPlaybook initializes properly the Playbook.
 func NewPlaybook() Playbook {
 	return Playbook{Variables: make(map[string]interface{})}
 }
 
+// MergeCLIVariables merges CLIVariables to playbook variables.
 func (p Playbook) MergeCLIVariables(variables map[string]string) Playbook {
 	// TODO: Ideally this would return a new copy of the playbook to avoid
 	// mutable state.

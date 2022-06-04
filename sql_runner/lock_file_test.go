@@ -47,7 +47,7 @@ func TestLockUnlockFile_Local(t *testing.T) {
 
 	err = lockFile.Lock()
 	assert.NotNil(err)
-	assert.Equal("LockFile is already locked!", err.Error())
+	assert.Equal("cannot Lock: LockFile is already locked", err.Error())
 	assert.True(lockFile.LockExists())
 
 	_, err2 := InitLockFile("../dist/lock.lockfile", false, "")
@@ -122,7 +122,7 @@ func TestLockUnlockFile_Consul(t *testing.T) {
 
 	err = lockFile.Lock()
 	assert.NotNil(err)
-	assert.Equal("LockFile is already locked!", err.Error())
+	assert.Equal("cannot Lock: LockFile is already locked", err.Error())
 	assert.True(lockFile.LockExists())
 
 	_, err2 := InitLockFile("dist/lock.lockfile", false, "localhost:8502")

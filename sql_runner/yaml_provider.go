@@ -12,11 +12,13 @@
 //
 package main
 
+// YAMLFilePlaybookProvider represents YAML as playbook provider.
 type YAMLFilePlaybookProvider struct {
 	playbookPath string
 	variables    map[string]string
 }
 
+// NewYAMLFilePlaybookProvider returns a ptr to YAMLFilePlaybookProvider.
 func NewYAMLFilePlaybookProvider(playbookPath string, variables map[string]string) *YAMLFilePlaybookProvider {
 	return &YAMLFilePlaybookProvider{
 		playbookPath: playbookPath,
@@ -24,6 +26,7 @@ func NewYAMLFilePlaybookProvider(playbookPath string, variables map[string]strin
 	}
 }
 
+// GetPlaybook returns a ptr to a yaml playbook.
 func (p YAMLFilePlaybookProvider) GetPlaybook() (*Playbook, error) {
 	lines, err := loadLocalFile(p.playbookPath)
 	if err != nil {

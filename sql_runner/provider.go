@@ -12,7 +12,7 @@
 //
 package main
 
-// Defines an interface for different providers
+// PlaybookProvider is an interface for different providers.
 type PlaybookProvider interface {
 	GetPlaybook() (*Playbook, error)
 }

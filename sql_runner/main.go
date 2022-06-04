@@ -24,13 +24,13 @@ import (
 )
 
 const (
-	CLI_NAME        = "sql-runner"
-	CLI_DESCRIPTION = `Run playbooks of SQL scripts in series and parallel on Redshift, Postgres, BigQuery and Snowflake`
-	CLI_VERSION     = "0.9.8"
+	cliName        = "sql-runner"
+	cliDescription = `Run playbooks of SQL scripts in series and parallel on Redshift, Postgres, BigQuery and Snowflake`
+	cliVersion     = "0.9.8"
 
-	SQLROOT_BINARY         = "BINARY"
-	SQLROOT_PLAYBOOK       = "PLAYBOOK"
-	SQLROOT_PLAYBOOK_CHILD = "PLAYBOOK_CHILD"
+	sqlrootBinary        = "BINARY"
+	sqlrootPlaybook      = "PLAYBOOK"
+	sqlrootPlaybookChild = "PLAYBOOK_CHILD"
 )
 
 // main is the entry point for the application
@@ -94,13 +94,13 @@ func processFlags() Options {
 	fs.Parse(os.Args[1:])
 
 	if options.version {
-		fmt.Printf("%s version: %s\n", CLI_NAME, CLI_VERSION)
+		fmt.Printf("%s version: %s\n", cliName, cliVersion)
 		os.Exit(0)
 	}
 
 	if len(os.Args[1:]) == 0 || options.help {
-		fmt.Printf("%s version: %s\n", CLI_NAME, CLI_VERSION)
-		fmt.Println(CLI_DESCRIPTION)
+		fmt.Printf("%s version: %s\n", cliName, cliVersion)
+		fmt.Println(cliDescription)
 		fmt.Println("Usage:")
 		fs.PrintDefaults()
 		os.Exit(0)
@@ -139,7 +139,7 @@ func processFlags() Options {
 		os.Exit(2)
 	}
 
-	sr, err := resolveSqlRoot(options.sqlroot, options.playbook, options.consul, options.consulOnlyForLock)
+	sr, err := resolveSQLRoot(options.sqlroot, options.playbook, options.consul, options.consulOnlyForLock)
 	if err != nil {
 		fmt.Printf("Error resolving -sqlroot: %s\n%s\n", options.sqlroot, err)
 		os.Exit(2)
@@ -217,19 +217,19 @@ func LockFileFromOptions(options Options) (*LockFile, error) {
 
 // --- SQLRoot resolvers
 
-// resolveSqlRoot returns the path to our SQL scripts
-func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string, consulOnlyForLock bool) (string, error) {
+// resolveSQLRoot returns the path to our SQL scripts
+func resolveSQLRoot(sqlroot string, playbookPath string, consulAddress string, consulOnlyForLock bool) (string, error) {
 	consulErr1 := fmt.Errorf("Cannot use %s option with -consul argument", sqlroot)
 	consulErr2 := fmt.Errorf("Cannot use %s option without -consul argument", sqlroot)
 	consulErr3 := fmt.Errorf("Cannot use %s option with -consulOnlyForLock argument", sqlroot)
 
 	if consulOnlyForLock {
 		switch sqlroot {
-		case SQLROOT_BINARY:
+		case sqlrootBinary:
 			return osext.ExecutableFolder()
-		case SQLROOT_PLAYBOOK:
+		case sqlrootPlaybook:
 			return filepath.Abs(filepath.Dir(playbookPath))
-		case SQLROOT_PLAYBOOK_CHILD:
+		case sqlrootPlaybookChild:
 			return "", consulErr3
 		default:
 			return sqlroot, nil
@@ -237,17 +237,17 @@ func resolveSqlRoot(sqlroot string, playbookPath string, consulAddress string, c
 	}
 
 	switch sqlroot {
-	case SQLROOT_BINARY:
+	case sqlrootBinary:
 		if consulAddress != "" {
 			return "", consulErr1
 		}
 		return osext.ExecutableFolder()
-	case SQLROOT_PLAYBOOK:
+	case sqlrootPlaybook:
 		if consulAddress != "" {
 			return getAbsConsulPath(playbookPath), nil
 		}
 		return filepath.Abs(filepath.Dir(playbookPath))
-	case SQLROOT_PLAYBOOK_CHILD:
+	case sqlrootPlaybookChild:
 		if consulAddress != "" {
 			return playbookPath, nil
 		}

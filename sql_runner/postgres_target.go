@@ -33,11 +33,14 @@ const (
 	readTimeout = 8 * time.Hour // TODO: make this user configurable
 )
 
+// PostgresTarget represents a Postgres as target.
 type PostgresTarget struct {
 	Target
 	Client *pg.DB
 }
 
+// IsConnectable tests connection to determine whether the Postgres target is
+// connectable.
 func (pt PostgresTarget) IsConnectable() bool {
 	client := pt.Client
 	err := client.Ping(context.Background())
@@ -45,6 +48,7 @@ func (pt PostgresTarget) IsConnectable() bool {
 	return err == nil
 }
 
+// NewPostgresTarget returns a ptr to a PostgresTarget.
 func NewPostgresTarget(target Target) (*PostgresTarget, error) {
 	var tlsConfig *tls.Config
 	if target.Ssl == true {
@@ -77,11 +81,12 @@ func NewPostgresTarget(target Target) (*PostgresTarget, error) {
 	return &PostgresTarget{target, db}, nil
 }
 
+// GetTarget returns the Target field of PostgresTarget.
 func (pt PostgresTarget) GetTarget() Target {
 	return pt.Target
 }
 
-// Run a query against the target
+// RunQuery runs a query against the target.
 func (pt PostgresTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var err error = nil
 	var res orm.Result

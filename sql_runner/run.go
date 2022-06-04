@@ -20,35 +20,35 @@ import (
 )
 
 const (
-	REDSHIFT_TYPE   = "redshift"
-	POSTGRES_TYPE   = "postgres"
-	POSTGRESQL_TYPE = "postgresql"
-	SNOWFLAKE_TYPE  = "snowflake"
-	BIGQUERY_TYPE   = "bigquery"
+	redshiftType   = "redshift"
+	postgresType   = "postgres"
+	postgresqlType = "postgresql"
+	snowflakeType  = "snowflake"
+	bigqueryType   = "bigquery"
 
-	ERROR_UNSUPPORTED_DB_TYPE = "Database type is unsupported"
-	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
-	ERROR_QUERY_FAILED_INIT   = "An error occurred loading the SQL file"
-	ERROR_RUN_QUERY_NOT_FOUND = "The runQuery argument did not match any available queries"
+	errorUnsupportedDbType = "Database type is unsupported"
+	errorFromStepNotFound  = "The fromStep argument did not match any available steps"
+	errorQueryFailedInit   = "An error occurred loading the SQL file"
+	errorRunQueryNotFound  = "The runQuery argument did not match any available queries"
 	errorNewTargetFailure  = "Failed to create target"
 )
 
-// Reports on any errors from running the
-// playbook against a singular target
+// TargetStatus reports on any errors from running the
+// playbook against a singular target.
 type TargetStatus struct {
 	Name   string
 	Errors []error // For any errors not related to a specific step
 	Steps  []StepStatus
 }
 
-// Reports on any errors from running a step
+// StepStatus reports on any errors from running a step.
 type StepStatus struct {
 	Name    string
 	Index   int
 	Queries []QueryStatus
 }
 
-// Reports ony any error from a query
+// QueryStatus reports ony any error from a query.
 type QueryStatus struct {
 	Query    ReadyQuery
 	Path     string
@@ -56,20 +56,20 @@ type QueryStatus struct {
 	Error    error
 }
 
-// Contains a step that is ready for execution
+// ReadyStep contains a step that is ready for execution.
 type ReadyStep struct {
 	Name    string
 	Queries []ReadyQuery
 }
 
-// Contains a query that is ready for execution
+// ReadyQuery contains a query that is ready for execution.
 type ReadyQuery struct {
 	Script string
 	Name   string
 	Path   string
 }
 
-// Runs a playbook of SQL scripts.
+// Run runs a playbook of SQL scripts.
 //
 // Handles dispatch to the appropriate
 // database engine
@@ -160,7 +160,7 @@ func trimToQuery(steps []Step, runQuery string, targets []Target) ([]Step, []Tar
 func runQueryNotFound(targets []Target, runQuery string) []TargetStatus {
 	allStatuses := make([]TargetStatus, 0)
 	for _, tgt := range targets {
-		errs := []error{fmt.Errorf("%s: '%s'", ERROR_RUN_QUERY_NOT_FOUND, runQuery)}
+		errs := []error{fmt.Errorf("%s: '%s'", errorRunQueryNotFound, runQuery)}
 		status := TargetStatus{
 			Name:   tgt.Name,
 			Errors: errs,
@@ -194,7 +194,7 @@ func trimSteps(steps []Step, fromStep string, targets []Target) ([]Step, []Targe
 func fromStepNotFound(targets []Target, fromStep string) []TargetStatus {
 	allStatuses := make([]TargetStatus, 0)
 	for _, tgt := range targets {
-		errs := []error{fmt.Errorf("%s: %s", ERROR_FROM_STEP_NOT_FOUND, fromStep)}
+		errs := []error{fmt.Errorf("%s: %s", errorFromStepNotFound, fromStep)}
 		status := TargetStatus{
 			Name:   tgt.Name,
 			Errors: errs,
@@ -228,9 +228,8 @@ func loadSteps(steps []Step, sp SQLProvider, variables map[string]interface{}, t
 					allStatuses = append(allStatuses, status)
 				}
 				return nil, allStatuses
-			} else {
-				readyQueries[j] = ReadyQuery{Script: queryText, Name: query.Name, Path: queryPath}
 			}
+			readyQueries[j] = ReadyQuery{Script: queryText, Name: query.Name, Path: queryPath}
 		}
 		readySteps[i] = ReadyStep{Name: step.Name, Queries: readyQueries}
 	}
@@ -239,7 +238,7 @@ func loadSteps(steps []Step, sp SQLProvider, variables map[string]interface{}, t
 
 // Helper for a load query failed error
 func loadQueryFailed(targetName string, queryPath string, err error) TargetStatus {
-	errs := []error{fmt.Errorf("%s: %s: %s", ERROR_QUERY_FAILED_INIT, queryPath, err)}
+	errs := []error{fmt.Errorf("%s: %s: %s", errorQueryFailedInit, queryPath, err)}
 	return TargetStatus{
 		Name:   targetName,
 		Errors: errs,
@@ -252,7 +251,7 @@ func loadQueryFailed(targetName string, queryPath string, err error) TargetStatu
 // Route to correct database client and run
 func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetStatus, dryRun bool, showQueryOutput bool) {
 	switch strings.ToLower(target.Type) {
-	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
+	case redshiftType, postgresType, postgresqlType:
 		go func(tgt Target) {
 			pg, err := NewPostgresTarget(tgt)
 			if err != nil {
@@ -261,7 +260,7 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 			}
 			targetChan <- runSteps(pg, readySteps, dryRun, showQueryOutput)
 		}(target)
-	case SNOWFLAKE_TYPE:
+	case snowflakeType:
 		go func(tgt Target) {
 			snfl, err := NewSnowflakeTarget(tgt)
 			if err != nil {
@@ -270,7 +269,7 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 			}
 			targetChan <- runSteps(snfl, readySteps, dryRun, showQueryOutput)
 		}(target)
-	case BIGQUERY_TYPE:
+	case bigqueryType:
 		go func(tgt Target) {
 			bq, err := NewBigQueryTarget(tgt)
 			if err != nil {
@@ -286,7 +285,7 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 
 // Helper for an unrecognized database type
 func unsupportedDbType(targetName string, targetType string) TargetStatus {
-	errs := []error{fmt.Errorf("%s: %s", ERROR_UNSUPPORTED_DB_TYPE, targetType)}
+	errs := []error{fmt.Errorf("%s: %s", errorUnsupportedDbType, targetType)}
 	return TargetStatus{
 		Name:   targetName,
 		Errors: errs,

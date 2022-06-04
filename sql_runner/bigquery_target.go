@@ -24,11 +24,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// BigQueryTarget represents BigQuery as a target.
 type BigQueryTarget struct {
 	Target
 	Client *bq.Client
 }
 
+// IsConnectable tests connection to determine whether the BigQuery target is
+// connectable.
 func (bqt BigQueryTarget) IsConnectable() bool {
 	var err error = nil
 	ctx := context.Background()
@@ -52,6 +55,7 @@ func (bqt BigQueryTarget) IsConnectable() bool {
 	return fmt.Sprint(row) == "[1]"
 }
 
+// NewBigQueryTarget returns a ptr to a BigQueryTarget.
 func NewBigQueryTarget(target Target) (*BigQueryTarget, error) {
 	projectID := target.Project
 	ctx := context.Background()
@@ -66,11 +70,12 @@ func NewBigQueryTarget(target Target) (*BigQueryTarget, error) {
 	return &BigQueryTarget{target, client}, nil
 }
 
+// GetTarget returns the Target field of BigQueryTarget.
 func (bqt BigQueryTarget) GetTarget() Target {
 	return bqt.Target
 }
 
-// Run a query against the target
+// RunQuery runs a query against the target.
 func (bqt BigQueryTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var affected int64 = 0
 	var err error = nil

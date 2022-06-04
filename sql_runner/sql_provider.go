@@ -17,25 +17,30 @@ import (
 	"path"
 )
 
+// SQLProvider is the interface that wraps the ResolveKey and GetSQL methods.
 type SQLProvider interface {
 	ResolveKey(key string) string
 	GetSQL(key string) (string, error)
 }
 
+// FileSQLProvider represents a file as a SQL provider.
 type FileSQLProvider struct {
 	rootPath string
 }
 
+// NewFileSQLProvider returns a ptr to a FileSQLProvider.
 func NewFileSQLProvider(rootPath string) *FileSQLProvider {
 	return &FileSQLProvider{
 		rootPath: rootPath,
 	}
 }
 
+// GetSQL implements SQLProvider.
 func (p FileSQLProvider) GetSQL(scriptPath string) (string, error) {
 	return readScript(p.ResolveKey(scriptPath))
 }
 
+// ResolveKey implements SQLProvider.
 func (p FileSQLProvider) ResolveKey(scriptPath string) string {
 	return path.Join(p.rootPath, scriptPath)
 }
@@ -49,11 +54,13 @@ func readScript(file string) (string, error) {
 	return string(scriptBytes), nil
 }
 
+// ConsulSQLProvider represents Consul as a SQL provider.
 type ConsulSQLProvider struct {
 	consulAddress string
 	keyPrefix     string
 }
 
+// NewConsulSQLProvider returns a pts to a ConsulSQLProvider.
 func NewConsulSQLProvider(consulAddress, keyPrefix string) *ConsulSQLProvider {
 	return &ConsulSQLProvider{
 		consulAddress: consulAddress,
@@ -61,10 +68,12 @@ func NewConsulSQLProvider(consulAddress, keyPrefix string) *ConsulSQLProvider {
 	}
 }
 
+// GetSQL implements SQLProcider.
 func (p ConsulSQLProvider) GetSQL(key string) (string, error) {
 	return GetStringValueFromConsul(p.consulAddress, p.ResolveKey(key))
 }
 
+// ResolveKey implements SQLProvider.
 func (p ConsulSQLProvider) ResolveKey(key string) string {
 	return path.Join(p.keyPrefix, key)
 }

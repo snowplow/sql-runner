@@ -19,6 +19,7 @@ import (
 	"strings"
 )
 
+// CLIVariables represents the cli variables map.
 type CLIVariables map[string]string
 
 // Implement the Value interface
@@ -26,6 +27,7 @@ func (i *CLIVariables) String() string {
 	return fmt.Sprintf("%s", *i)
 }
 
+// Set adds a kv pair given as string to CLIVariables.
 func (i *CLIVariables) Set(value string) error {
 	var split = strings.Split(value, ",")
 
@@ -33,7 +35,7 @@ func (i *CLIVariables) Set(value string) error {
 		kv := strings.SplitN(split[value], "=", 2)
 
 		if len(kv) != 2 {
-			return errors.New("Invalid size for key, value, key value should be in the key=value format")
+			return errors.New("invalid size for key, value, key value should be in the key=value format")
 		}
 
 		(*i)[kv[0]] = kv[1]
@@ -41,6 +43,7 @@ func (i *CLIVariables) Set(value string) error {
 	return nil
 }
 
+// Options represents the SQL-Runner options.
 type Options struct {
 	help              bool
 	version           bool
@@ -60,17 +63,19 @@ type Options struct {
 	showQueryOutput   bool
 }
 
+// NewOptions returns Options.
 func NewOptions() Options {
 	return Options{variables: make(map[string]string)}
 }
 
+// GetFlagSet returns a ptr to the FlagSet.
 func (o *Options) GetFlagSet() *flag.FlagSet {
 	var fs = flag.NewFlagSet("Options", flag.ContinueOnError)
 
 	fs.BoolVar(&(o.help), "help", false, "Shows this message")
 	fs.BoolVar(&(o.version), "version", false, "Shows the program version")
 	fs.StringVar(&(o.playbook), "playbook", "", "Playbook of SQL scripts to execute")
-	fs.StringVar(&(o.sqlroot), "sqlroot", SQLROOT_PLAYBOOK, fmt.Sprintf("Absolute path to SQL scripts. Use %s, %s and %s for those respective paths", SQLROOT_PLAYBOOK, SQLROOT_BINARY, SQLROOT_PLAYBOOK_CHILD))
+	fs.StringVar(&(o.sqlroot), "sqlroot", sqlrootPlaybook, fmt.Sprintf("Absolute path to SQL scripts. Use %s, %s and %s for those respective paths", sqlrootPlaybook, sqlrootBinary, sqlrootPlaybookChild))
 	fs.Var(&(o.variables), "var", "Variables to be passed to the playbook, in the key=value format")
 	fs.StringVar(&(o.fromStep), "fromStep", "", "Starts from a given step defined in your playbook")
 	fs.BoolVar(&(o.dryRun), "dryRun", false, "Runs through a playbook without executing any of the SQL")

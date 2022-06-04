@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
+// GetConsulClient returns a consul client given an address.
 func GetConsulClient(address string) (*api.Client, error) {
 	// Add address to config
 	conf := api.DefaultConfig()
@@ -41,9 +42,8 @@ func GetBytesFromConsul(address string, key string) ([]byte, error) {
 
 	if pair != nil {
 		return pair.Value, nil
-	} else {
-		return nil, fmt.Errorf("The key '%s' returned a nil value from the consul server", key)
 	}
+	return nil, fmt.Errorf("The key '%s' returned a nil value from the consul server", key)
 }
 
 // GetStringValueFromConsul attempts to return
@@ -53,9 +53,8 @@ func GetStringValueFromConsul(address string, key string) (string, error) {
 
 	if err != nil {
 		return "", err
-	} else {
-		return string(bytes), nil
 	}
+	return string(bytes), nil
 }
 
 // PutBytesToConsul attempts to push a new

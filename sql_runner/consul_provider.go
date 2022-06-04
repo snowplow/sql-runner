@@ -12,12 +12,14 @@
 //
 package main
 
+// ConsulPlaybookProvider represents consul information as playbook provider.
 type ConsulPlaybookProvider struct {
 	consulAddress string
 	consulKey     string
 	variables     map[string]string
 }
 
+// NewConsulPlaybookProvider returns a ptr to ConsulPlaybookProvider.
 func NewConsulPlaybookProvider(consulAddress, consulKey string, variables map[string]string) *ConsulPlaybookProvider {
 	return &ConsulPlaybookProvider{
 		consulAddress: consulAddress,
@@ -26,6 +28,7 @@ func NewConsulPlaybookProvider(consulAddress, consulKey string, variables map[st
 	}
 }
 
+// GetPlaybook returns a ptr to a playbook from consul.
 func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
 	lines, err := GetBytesFromConsul(p.consulAddress, p.consulKey)
 	if err != nil {

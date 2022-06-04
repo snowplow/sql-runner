@@ -33,18 +33,22 @@ const (
 	multiStmtName   = "multiple statement execution" // https://github.com/snowflakedb/gosnowflake/blob/e909f00ff624a7e60d4f91718f6adc92cbd0d80f/connection.go#L57-L61
 )
 
+// SnowFlakeTarget represents Snowflake as target.
 type SnowFlakeTarget struct {
 	Target
 	Client *sql.DB
 	Dsn    string
 }
 
+// IsConnectable tests connection to determine whether the Snowflake target is
+// connectable.
 func (sft SnowFlakeTarget) IsConnectable() bool {
 	client := sft.Client
 	err := client.Ping()
 	return err == nil
 }
 
+// NewSnowflakeTarget returns a ptr to a SnowFlakeTarget.
 func NewSnowflakeTarget(target Target) (*SnowFlakeTarget, error) {
 	// Note: region connection parameter is deprecated
 	var region string
@@ -84,11 +88,12 @@ func NewSnowflakeTarget(target Target) (*SnowFlakeTarget, error) {
 	return &SnowFlakeTarget{target, db, configStr}, nil
 }
 
+// GetTarget returns the Target field of SnowFlakeTarget.
 func (sft SnowFlakeTarget) GetTarget() Target {
 	return sft.Target
 }
 
-// Run a query against the target
+// RunQuery runs a query against the target
 func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var affected int64 = 0
 	var err error
@@ -104,18 +109,18 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 	}
 
 	// Enable grabbing the queryID
-	queryIdChannel := make(chan string)
-	ctxWithQueryIdChan := sf.WithQueryIDChan(context.Background(), queryIdChannel)
+	queryIDChannel := make(chan string)
+	ctxWithQueryIDChan := sf.WithQueryIDChan(context.Background(), queryIDChannel)
 
-	// Kick off a goroutine to grab the queryId when we get it from the driver (there should be one queryID per script)
-	var queryId string
-	qId := &queryId
+	// Kick off a goroutine to grab the queryID when we get it from the driver (there should be one queryID per script)
+	var queryID string
+	qID := &queryID
 	go func() {
-		*qId = <-queryIdChannel
+		*qID = <-queryIDChannel
 	}()
 
 	// 0 allows arbitrary number of statements
-	ctx, err := sf.WithMultiStatement(ctxWithQueryIdChan, 0)
+	ctx, err := sf.WithMultiStatement(ctxWithQueryIDChan, 0)
 	if err != nil {
 		log.Printf("ERROR: Could not initialise query script.")
 		return QueryStatus{query, query.Path, 0, err}
@@ -149,11 +154,11 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 				switch err.Error() {
 				// If the error message is `-00001: `, the DB failed to return accurate status. Request the status and proceed accordingly.
 				case "-00001: ":
-					fmt.Println("INFO: Encountered -1 status. Polling for query result with queryId: ", queryId)
-					pollResult := pollForQueryStatus(sft, queryId)
+					fmt.Println("INFO: Encountered -1 status. Polling for query result with queryID: ", queryID)
+					pollResult := pollForQueryStatus(sft, queryID)
 					return QueryStatus{query, query.Path, int(affected), pollResult}
 				default:
-					return QueryStatus{query, query.Path, int(affected), errors.Wrap(err, fmt.Sprintf("QueryID: %s", queryId))}
+					return QueryStatus{query, query.Path, int(affected), errors.Wrap(err, fmt.Sprintf("QueryID: %s", queryID))}
 				}
 			}
 			aff, _ := res.RowsAffected()
@@ -221,7 +226,7 @@ func stringify(row [][]byte) []string {
 }
 
 // Blocking function to poll for the true status of a query which didn't return a result.
-func pollForQueryStatus(sft SnowFlakeTarget, queryId string) error {
+func pollForQueryStatus(sft SnowFlakeTarget, queryID string) error {
 	// Get the snoflake driver and open a connection
 	sfd := sft.Client.Driver()
 	conn, err := sfd.Open(sft.Dsn)
@@ -230,7 +235,7 @@ func pollForQueryStatus(sft SnowFlakeTarget, queryId string) error {
 	}
 	// Poll Snowflake for actual query status
 	for {
-		qStatus, err := conn.(sf.SnowflakeConnection).GetQueryStatus(context.Background(), queryId)
+		qStatus, err := conn.(sf.SnowflakeConnection).GetQueryStatus(context.Background(), queryID)
 
 		switch {
 		case err != nil && strings.Contains(err.Error(), "279301:"): // The driver returns an error containing this code when the query is still running.
