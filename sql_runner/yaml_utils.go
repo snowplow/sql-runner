@@ -14,11 +14,12 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
 	"strings"
 	"text/template"
 
-	"gopkg.in/yaml.v1"
+	"github.com/goccy/go-yaml"
 )
 
 var (
@@ -28,7 +29,7 @@ var (
 
 // Parses a playbook.yml to return the targets
 // to execute against and the steps to execute
-func parsePlaybookYaml(playbookBytes []byte, variables map[string]string) (Playbook, error) {
+func parsePlaybookYaml(playbookBytes []byte, variables map[string]string) (*Playbook, error) {
 	// Define and initialize the Playbook struct
 	var playbook Playbook = NewPlaybook()
 
@@ -37,11 +38,16 @@ func parsePlaybookYaml(playbookBytes []byte, variables map[string]string) (Playb
 
 	// Run the yaml through the template engine
 	str, err := fillPlaybookTemplate(string(cleaned[:]), variables)
+	if err != nil {
+		return nil, fmt.Errorf("error filling playbook template")
+	}
 
 	// Unmarshal the yaml into the playbook
-	err = yaml.Unmarshal([]byte(str), &playbook)
+	if err = yaml.Unmarshal([]byte(str), &playbook); err != nil {
+		return nil, fmt.Errorf("error unmarshalling playbook yaml")
+	}
 
-	return playbook, err
+	return &playbook, nil
 }
 
 // Because our StorageLoader's YAML file has elements with

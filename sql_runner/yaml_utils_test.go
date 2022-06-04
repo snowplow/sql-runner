@@ -137,3 +137,119 @@ func TestParse_QueryFlag(t *testing.T) {
 	}
 
 }
+
+func TestParsePlaybookYaml_compatibility(t *testing.T) {
+	testCases := []struct {
+		Name     string
+		Playbook string
+		Expected *Playbook
+	}{
+		{
+			Name: "time",
+			Playbook: `
+:targets:
+- :name:     test
+  :database: 2022-01-01
+:variables:
+  :model_version: snowflake/web/1.0.1
+  :start_date:    2022-01-01
+`,
+			Expected: &Playbook{
+				Targets: []Target{
+					{
+						Name:     "test",
+						Database: "2022-01-01",
+					},
+				},
+				Variables: map[string]interface{}{
+					"model_version": "snowflake/web/1.0.1",
+					"start_date":    "2022-01-01",
+				},
+				Steps: nil,
+			},
+		},
+		{
+			Name: "int",
+			Playbook: `
+:targets:
+- :name:     test
+  :database: 7
+:variables:
+  :update_cadence_days:   7
+  :lookback_window_hours: -3
+  :some_float:            3.14
+`,
+			Expected: &Playbook{
+				Targets: []Target{
+					{
+						Name:     "test",
+						Database: string("7"),
+					},
+				},
+				Variables: map[string]interface{}{
+					"update_cadence_days":   uint64(7),
+					"lookback_window_hours": int64(-3),
+					"some_float":            float64(3.14),
+				},
+				Steps: nil,
+			},
+		},
+		{
+			Name: "bool",
+			Playbook: `
+:targets:
+- :name:     true
+  :database: test
+  :ssl:      true
+:variables:
+  :stage_next: true
+:steps:
+- :name: 01-stored-procedures
+  :queries:
+    - :name: 01-stored-procedures
+      :file: standard/00-setup/01-main/01-stored-procedures.sql
+      :template: true
+`,
+			Expected: &Playbook{
+				Targets: []Target{
+					{
+						Name:     string("true"),
+						Database: "test",
+						Ssl:      bool(true),
+					},
+				},
+				Variables: map[string]interface{}{
+					"stage_next": bool(true),
+				},
+				Steps: []Step{
+					{
+						Name: "01-stored-procedures",
+						Queries: []Query{
+							{
+								Name:     "01-stored-procedures",
+								File:     "standard/00-setup/01-main/01-stored-procedures.sql",
+								Template: bool(true),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	noVars := make(map[string]string)
+
+	for _, tt := range testCases {
+		t.Run(tt.Name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			result, err := parsePlaybookYaml([]byte(tt.Playbook), noVars)
+			assert.Nil(err)
+			if !reflect.DeepEqual(result, tt.Expected) {
+				t.Fatalf("\nGOT:\n%s\nEXPECTED:\n%s\n",
+					spew.Sdump(result),
+					spew.Sdump(tt.Expected))
+			}
+		})
+	}
+}

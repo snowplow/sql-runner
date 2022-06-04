@@ -35,6 +35,5 @@ func (p ConsulPlaybookProvider) GetPlaybook() (*Playbook, error) {
 		return nil, err
 	}
 
-	playbook, pbErr := parsePlaybookYaml(lines, p.variables)
-	return &playbook, pbErr
+	return parsePlaybookYaml(lines, p.variables)
 }

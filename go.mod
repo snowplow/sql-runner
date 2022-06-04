@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.32.0
 	github.com/aws/aws-sdk-go v1.44.27
 	github.com/go-pg/pg/v10 v10.10.6
+	github.com/goccy/go-yaml v1.9.5
 	github.com/hashicorp/consul/api v1.13.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/olekukonko/tablewriter v0.0.5
@@ -14,7 +15,6 @@ require (
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/net v0.0.0-20220531201128-c960675eff93
 	google.golang.org/api v0.82.0
-	gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
 )
 
 require (
@@ -53,7 +53,6 @@ require (
 	github.com/hashicorp/go-hclog v1.2.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
-	github.com/hashicorp/go-version v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/serf v0.9.8 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -64,8 +63,6 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/gox v1.0.1 // indirect
-	github.com/mitchellh/iochan v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/onsi/ginkgo v1.16.1 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect
