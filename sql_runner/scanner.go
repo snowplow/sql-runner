@@ -13,7 +13,8 @@
 package main
 
 import (
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10/orm"
+	"github.com/go-pg/pg/v10/types"
 )
 
 type Results struct {
@@ -39,28 +40,33 @@ func (results *Results) Init() error {
 	return nil
 }
 
-func (results *Results) NewModel() orm.ColumnScanner {
+func (results *Results) NextColumnScanner() orm.ColumnScanner {
 	return results
 }
 
-func (Results) AddModel(_ orm.ColumnScanner) error {
+func (Results) AddColumnScanner(_ orm.ColumnScanner) error {
 	return nil
 }
 
-func (results *Results) ScanColumn(colIdx int, colName string, b []byte) error {
+func (results *Results) ScanColumn(col types.ColumnInfo, rd types.Reader, n int) error {
+	tmp, err := rd.ReadFullTemp()
+	if err != nil {
+		return err
+	}
+
 	curRow := len(results.results) - 1
 
-	if colIdx == 0 {
+	if col.Index == 0 {
 		results.results = append(results.results, []string{})
 		curRow = len(results.results) - 1
 		results.rows += 1
 	}
 
 	if curRow == 0 {
-		results.columns = append(results.columns, colName)
+		results.columns = append(results.columns, col.Name)
 	}
 
-	results.elements += 1
-	results.results[curRow] = append(results.results[curRow], string(b))
+	results.elements++
+	results.results[curRow] = append(results.results[curRow], string(tmp))
 	return nil
 }

@@ -13,15 +13,17 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"time"
 
-	"github.com/go-pg/pg"
-	"github.com/go-pg/pg/orm"
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -38,9 +40,9 @@ type PostgresTarget struct {
 
 func (pt PostgresTarget) IsConnectable() bool {
 	client := pt.Client
-	var result int
-	_, err := client.QueryOne(&result, "SELECT 1") // empty query to test connection
-	return err == nil && result == 1
+	err := client.Ping(context.Background())
+
+	return err == nil
 }
 
 func NewPostgresTarget(target Target) (*PostgresTarget, error) {
@@ -51,15 +53,19 @@ func NewPostgresTarget(target Target) (*PostgresTarget, error) {
 		}
 	}
 
+	if target.Host == "" || target.Port == "" || target.Username == "" || target.Database == "" {
+		return nil, fmt.Errorf("missing target connection parameters")
+	}
+
 	db := pg.Connect(&pg.Options{
-		Addr:        target.Host + ":" + target.Port,
+		Addr:        fmt.Sprintf("%s:%s", target.Host, target.Port),
 		User:        target.Username,
 		Password:    target.Password,
 		Database:    target.Database,
 		TLSConfig:   tlsConfig,
 		DialTimeout: dialTimeout,
 		ReadTimeout: readTimeout,
-		Dialer: func(network, addr string) (net.Conn, error) {
+		Dialer: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			cn, err := net.DialTimeout(network, addr, dialTimeout)
 			if err != nil {
 				return nil, err
