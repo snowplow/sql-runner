@@ -33,8 +33,8 @@ const (
 	multiStmtName   = "multiple statement execution" // https://github.com/snowflakedb/gosnowflake/blob/e909f00ff624a7e60d4f91718f6adc92cbd0d80f/connection.go#L57-L61
 )
 
-// SnowFlakeTarget represents Snowflake as target.
-type SnowFlakeTarget struct {
+// SnowflakeTarget represents Snowflake as target.
+type SnowflakeTarget struct {
 	Target
 	Client *sql.DB
 	Dsn    string
@@ -42,24 +42,16 @@ type SnowFlakeTarget struct {
 
 // IsConnectable tests connection to determine whether the Snowflake target is
 // connectable.
-func (sft SnowFlakeTarget) IsConnectable() bool {
+func (sft SnowflakeTarget) IsConnectable() bool {
 	client := sft.Client
 	err := client.Ping()
 	return err == nil
 }
 
-// NewSnowflakeTarget returns a ptr to a SnowFlakeTarget.
-func NewSnowflakeTarget(target Target) (*SnowFlakeTarget, error) {
-	// Note: region connection parameter is deprecated
-	var region string
-	if target.Region == "us-west-1" {
-		region = ""
-	} else {
-		region = target.Region
-	}
-
+// NewSnowflakeTarget returns a ptr to a SnowflakeTarget.
+func NewSnowflakeTarget(target Target) (*SnowflakeTarget, error) {
 	config := &sf.Config{
-		Region:       region,
+		Region:       target.Region,
 		Account:      target.Account,
 		User:         target.Username,
 		Password:     target.Password,
@@ -74,27 +66,25 @@ func NewSnowflakeTarget(target Target) (*SnowFlakeTarget, error) {
 	}
 
 	configStr, err := sf.DSN(config)
-
 	if err != nil {
 		return nil, err
 	}
 
 	db, err := sql.Open("snowflake", configStr)
-
 	if err != nil {
 		return nil, err
 	}
 
-	return &SnowFlakeTarget{target, db, configStr}, nil
+	return &SnowflakeTarget{target, db, configStr}, nil
 }
 
-// GetTarget returns the Target field of SnowFlakeTarget.
-func (sft SnowFlakeTarget) GetTarget() Target {
+// GetTarget returns the Target field of SnowflakeTarget.
+func (sft SnowflakeTarget) GetTarget() Target {
 	return sft.Target
 }
 
 // RunQuery runs a query against the target
-func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
+func (sft SnowflakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutput bool) QueryStatus {
 	var affected int64 = 0
 	var err error
 
@@ -154,7 +144,7 @@ func (sft SnowFlakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 				switch err.Error() {
 				// If the error message is `-00001: `, the DB failed to return accurate status. Request the status and proceed accordingly.
 				case "-00001: ":
-					fmt.Println("INFO: Encountered -1 status. Polling for query result with queryID: ", queryID)
+					log.Println("INFO: Encountered -1 status. Polling for query result with queryID: ", queryID)
 					pollResult := pollForQueryStatus(sft, queryID)
 					return QueryStatus{query, query.Path, int(affected), pollResult}
 				default:
@@ -226,7 +216,7 @@ func stringify(row [][]byte) []string {
 }
 
 // Blocking function to poll for the true status of a query which didn't return a result.
-func pollForQueryStatus(sft SnowFlakeTarget, queryID string) error {
+func pollForQueryStatus(sft SnowflakeTarget, queryID string) error {
 	// Get the snoflake driver and open a connection
 	sfd := sft.Client.Driver()
 	conn, err := sfd.Open(sft.Dsn)
@@ -243,8 +233,8 @@ func pollForQueryStatus(sft SnowFlakeTarget, queryID string) error {
 		case err != nil:
 			// Any other error is genuine, return the error.
 			return err
-		case qStatus != nil && qStatus.ErrorCode == 0:
-			// A non-nil qStatus means the query completed. If the ErrorCode field is 0, we have no error.
+		case qStatus != nil && qStatus.ErrorCode == "":
+			// A non-nil qStatus means the query completed. If the ErrorCode field is empty string, we have no error.
 			return nil
 		case qStatus != nil:
 			// If qStatus is non-nil but has a non-zero error code, return the relevant info as an error.
