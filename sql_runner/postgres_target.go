@@ -43,7 +43,7 @@ func (pt PostgresTarget) IsConnectable() bool {
 	return err == nil && result == 1
 }
 
-func NewPostgresTarget(target Target) *PostgresTarget {
+func NewPostgresTarget(target Target) (*PostgresTarget, error) {
 	var tlsConfig *tls.Config
 	if target.Ssl == true {
 		tlsConfig = &tls.Config{
@@ -68,7 +68,7 @@ func NewPostgresTarget(target Target) *PostgresTarget {
 		},
 	})
 
-	return &PostgresTarget{target, db}
+	return &PostgresTarget{target, db}, nil
 }
 
 func (pt PostgresTarget) GetTarget() Target {

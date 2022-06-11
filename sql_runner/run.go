@@ -30,6 +30,7 @@ const (
 	ERROR_FROM_STEP_NOT_FOUND = "The fromStep argument did not match any available steps"
 	ERROR_QUERY_FAILED_INIT   = "An error occurred loading the SQL file"
 	ERROR_RUN_QUERY_NOT_FOUND = "The runQuery argument did not match any available queries"
+	errorNewTargetFailure  = "Failed to create target"
 )
 
 // Reports on any errors from running the
@@ -253,17 +254,29 @@ func routeAndRun(target Target, readySteps []ReadyStep, targetChan chan TargetSt
 	switch strings.ToLower(target.Type) {
 	case REDSHIFT_TYPE, POSTGRES_TYPE, POSTGRESQL_TYPE:
 		go func(tgt Target) {
-			pg := NewPostgresTarget(tgt)
+			pg, err := NewPostgresTarget(tgt)
+			if err != nil {
+				targetChan <- newTargetFailure(tgt, err)
+				return
+			}
 			targetChan <- runSteps(pg, readySteps, dryRun, showQueryOutput)
 		}(target)
 	case SNOWFLAKE_TYPE:
 		go func(tgt Target) {
-			snfl := NewSnowflakeTarget(tgt)
+			snfl, err := NewSnowflakeTarget(tgt)
+			if err != nil {
+				targetChan <- newTargetFailure(tgt, err)
+				return
+			}
 			targetChan <- runSteps(snfl, readySteps, dryRun, showQueryOutput)
 		}(target)
 	case BIGQUERY_TYPE:
 		go func(tgt Target) {
-			bq := NewBigQueryTarget(tgt)
+			bq, err := NewBigQueryTarget(tgt)
+			if err != nil {
+				targetChan <- newTargetFailure(tgt, err)
+				return
+			}
 			targetChan <- runSteps(bq, readySteps, dryRun, showQueryOutput)
 		}(target)
 	default:
@@ -276,6 +289,16 @@ func unsupportedDbType(targetName string, targetType string) TargetStatus {
 	errs := []error{fmt.Errorf("%s: %s", ERROR_UNSUPPORTED_DB_TYPE, targetType)}
 	return TargetStatus{
 		Name:   targetName,
+		Errors: errs,
+		Steps:  nil,
+	}
+}
+
+// Helper to create TargetStatus after an error on New*Target
+func newTargetFailure(target Target, err error) TargetStatus {
+	errs := []error{fmt.Errorf("%s: %s: %s", errorNewTargetFailure, target.Type, err.Error())}
+	return TargetStatus{
+		Name:   target.Name,
 		Errors: errs,
 		Steps:  nil,
 	}

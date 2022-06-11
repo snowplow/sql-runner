@@ -45,7 +45,7 @@ func (sft SnowFlakeTarget) IsConnectable() bool {
 	return err == nil
 }
 
-func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
+func NewSnowflakeTarget(target Target) (*SnowFlakeTarget, error) {
 	// Note: region connection parameter is deprecated
 	var region string
 	if target.Region == "us-west-1" {
@@ -72,16 +72,16 @@ func NewSnowflakeTarget(target Target) *SnowFlakeTarget {
 	configStr, err := sf.DSN(config)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	db, err := sql.Open("snowflake", configStr)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return &SnowFlakeTarget{target, db, configStr}
+	return &SnowFlakeTarget{target, db, configStr}, nil
 }
 
 func (sft SnowFlakeTarget) GetTarget() Target {

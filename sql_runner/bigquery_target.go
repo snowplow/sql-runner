@@ -52,18 +52,18 @@ func (bqt BigQueryTarget) IsConnectable() bool {
 	return fmt.Sprint(row) == "[1]"
 }
 
-func NewBigQueryTarget(target Target) *BigQueryTarget {
+func NewBigQueryTarget(target Target) (*BigQueryTarget, error) {
 	projectID := target.Project
 	ctx := context.Background()
 
 	client, err := bq.NewClient(ctx, projectID)
 	if err != nil {
-		log.Fatalf("ERROR: Failed to create client: %v", err)
+		return nil, err
 	}
 
 	client.Location = target.Region
 
-	return &BigQueryTarget{target, client}
+	return &BigQueryTarget{target, client}, nil
 }
 
 func (bqt BigQueryTarget) GetTarget() Target {
