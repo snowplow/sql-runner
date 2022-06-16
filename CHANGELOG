@@ -1,3 +1,17 @@
+Version 0.10.0 (2022-06-28)
+---------------------------
+Fix out of range panic on invalid runQuery argument (#210)
+Exit on flags parsing error (#208)
+Fail fast on invalid playbook (#207)
+Upgrade yaml library (#206)
+Fix go get deprecation warning (#205)
+Add ability to set QUERY_TAG session parameter in Snowflake (#201)
+Update Snowflake Driver (#196)
+Fix linter issues (#204)
+Update dependencies (#195)
+Upgrade go-pg/pg to v10 (#203)
+Prevent exiting from goroutine (#202)
+
 Version 0.9.8 (2022-04-22)
 --------------------------
 Add Application to JDBC driver configuration for identifying Snowplow jobs (#198)
