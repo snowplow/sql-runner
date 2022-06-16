@@ -70,7 +70,7 @@ func NewOptions() Options {
 
 // GetFlagSet returns a ptr to the FlagSet.
 func (o *Options) GetFlagSet() *flag.FlagSet {
-	var fs = flag.NewFlagSet("Options", flag.ContinueOnError)
+	var fs = flag.NewFlagSet("Options", flag.ExitOnError)
 
 	fs.BoolVar(&(o.help), "help", false, "Shows this message")
 	fs.BoolVar(&(o.version), "version", false, "Shows the program version")
