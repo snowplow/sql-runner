@@ -50,15 +50,17 @@ func main() {
 	}
 
 	pb, err := pbp.GetPlaybook()
-
 	if err != nil {
 		log.Fatalf("Error getting playbook: %s", err.Error())
+	}
+
+	if err := pb.Validate(); err != nil {
+		log.Fatalf("Invalid playbook: %s", err.Error())
 	}
 
 	pb.MergeCLIVariables(options.variables)
 
 	sp, spErr := SQLProviderFromOptions(options)
-
 	if spErr != nil {
 		log.Fatalf("Could not determine sql source: %s", spErr.Error())
 	}

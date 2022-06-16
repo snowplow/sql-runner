@@ -12,6 +12,10 @@
 //
 package main
 
+import (
+	"fmt"
+)
+
 // Playbook maps exactly onto our YAML format
 type Playbook struct {
 	Targets   []Target
@@ -52,4 +56,17 @@ func (p Playbook) MergeCLIVariables(variables map[string]string) Playbook {
 		p.Variables[k] = v
 	}
 	return p
+}
+
+// Validate provides a way to fail fast if playbook is invalid.
+func (p Playbook) Validate() error {
+	if p.Targets == nil || len(p.Targets) == 0 {
+		return fmt.Errorf("no targets")
+	}
+
+	if p.Steps == nil || len(p.Steps) == 0 {
+		return fmt.Errorf("no steps")
+	}
+
+	return nil
 }

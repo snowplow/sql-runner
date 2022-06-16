@@ -131,8 +131,8 @@ assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres-w
 assert_ExitCodeForCommand "6" "${bin_path} -playbook ${root_key}/good-postgres-with-template.yml"
 assert_ExitCodeForCommand "0" "${bin_path} -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"
 
-# Test: Truncated steps field in playbook should return exit code 8
-assert_ExitCodeForCommand "8" "${bin_path} -playbook ${root_key}/good-postgres-truncated.yml -lock ${root}/dist/integration-lock"
+# Test: Truncated steps field in playbook should return exit code 1
+assert_ExitCodeForCommand "1" "${bin_path} -playbook ${root_key}/good-postgres-truncated.yml -lock ${root}/dist/integration-lock"
 
 # Test: fillTemplate option should return exit code 8
 assert_ExitCodeForCommand "8" "${bin_path} -fillTemplates -playbook ${root_key}/good-postgres-with-template.yml -var username=postgres,password=,host=localhost"

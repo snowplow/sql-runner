@@ -5,6 +5,7 @@ go 1.17
 require (
 	cloud.google.com/go/bigquery v1.32.0
 	github.com/aws/aws-sdk-go v1.44.27
+	github.com/davecgh/go-spew v1.1.1
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/goccy/go-yaml v1.9.5
 	github.com/hashicorp/consul/api v1.13.0
@@ -38,7 +39,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.26.10 // indirect
 	github.com/aws/smithy-go v1.11.2 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
