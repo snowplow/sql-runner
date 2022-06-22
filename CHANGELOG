@@ -1,5 +1,5 @@
-Version 0.10.0 (2022-06-24)
----------------------------
+Version 0.10.0-rc2 (2022-06-24)
+-------------------------------
 Fix out of range panic on invalid runQuery argument (#210)
 Exit on flags parsing error (#208)
 Fail fast on invalid playbook (#207)
