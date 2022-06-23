@@ -30,6 +30,7 @@ const (
 	errorFromStepNotFound  = "The fromStep argument did not match any available steps"
 	errorQueryFailedInit   = "An error occurred loading the SQL file"
 	errorRunQueryNotFound  = "The runQuery argument did not match any available queries"
+	errorRunQueryArgument  = "Argument for -runQuery should be in format 'step::query'"
 	errorNewTargetFailure  = "Failed to create target"
 )
 
@@ -133,42 +134,38 @@ func Run(pb Playbook, sp SQLProvider, fromStep string, runQuery string, dryRun b
 // Trims down to an indivdual query
 func trimToQuery(steps []Step, runQuery string, targets []Target) ([]Step, []TargetStatus) {
 	runQueryParts := strings.Split(runQuery, "::")
+	if len(runQueryParts) != 2 {
+		err := fmt.Errorf(errorRunQueryArgument)
+		return nil, makeTargetStatuses(err, targets)
+	}
 
-	steps, trimErr := trimSteps(steps, runQueryParts[0], targets)
+	var stepName, queryName string = runQueryParts[0], runQueryParts[1]
+	if stepName == "" || queryName == "" {
+		err := fmt.Errorf(errorRunQueryArgument)
+		return nil, makeTargetStatuses(err, targets)
+	}
+
+	steps, trimErr := trimSteps(steps, stepName, targets)
 	if trimErr != nil {
 		return nil, trimErr
 	}
-	step := steps[0]
 
+	step := steps[0] // safe
 	queries := []Query{}
 	for _, query := range step.Queries {
-		if query.Name == runQueryParts[1] {
+		if query.Name == queryName {
 			queries = append(queries, query)
 			break
 		}
 	}
 
 	if len(queries) == 0 {
-		return nil, runQueryNotFound(targets, runQuery)
+		err := fmt.Errorf("%s: '%s'", errorRunQueryNotFound, queryName)
+		return nil, makeTargetStatuses(err, targets)
 	}
 	step.Queries = queries
 
 	return []Step{step}, nil
-}
-
-// Helper for a runQuery not found error
-func runQueryNotFound(targets []Target, runQuery string) []TargetStatus {
-	allStatuses := make([]TargetStatus, 0)
-	for _, tgt := range targets {
-		errs := []error{fmt.Errorf("%s: '%s'", errorRunQueryNotFound, runQuery)}
-		status := TargetStatus{
-			Name:   tgt.Name,
-			Errors: errs,
-			Steps:  nil,
-		}
-		allStatuses = append(allStatuses, status)
-	}
-	return allStatuses
 }
 
 // Trims skippable steps
@@ -183,18 +180,19 @@ func trimSteps(steps []Step, fromStep string, targets []Target) ([]Step, []Targe
 				break
 			}
 		}
-		if exists == false {
-			return nil, fromStepNotFound(targets, fromStep)
+		if !exists {
+			err := fmt.Errorf("%s: %s", errorFromStepNotFound, fromStep)
+			return nil, makeTargetStatuses(err, targets)
 		}
 	}
 	return steps[stepIndex:], nil
 }
 
-// Helper for a fromStep not found error
-func fromStepNotFound(targets []Target, fromStep string) []TargetStatus {
-	allStatuses := make([]TargetStatus, 0)
+// Helper to create the corresponding []TargetStatus given an error.
+func makeTargetStatuses(err error, targets []Target) []TargetStatus {
+	allStatuses := make([]TargetStatus, 0, len(targets))
 	for _, tgt := range targets {
-		errs := []error{fmt.Errorf("%s: %s", errorFromStepNotFound, fromStep)}
+		errs := []error{err}
 		status := TargetStatus{
 			Name:   tgt.Name,
 			Errors: errs,
@@ -202,6 +200,7 @@ func fromStepNotFound(targets []Target, fromStep string) []TargetStatus {
 		}
 		allStatuses = append(allStatuses, status)
 	}
+
 	return allStatuses
 }
 
