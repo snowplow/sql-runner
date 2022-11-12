@@ -105,15 +105,12 @@ func (sft SnowflakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 	}
 
 	// Enable grabbing the queryID
-	queryIDChannel := make(chan string)
+	queryIDChannel := make(chan string, 1)
 	ctxWithQueryIDChan := sf.WithQueryIDChan(context.Background(), queryIDChannel)
 
 	// Kick off a goroutine to grab the queryID when we get it from the driver (there should be one queryID per script)
-	var queryID string
-	qID := &queryID
-	go func() {
-		*qID = <-queryIDChannel
-	}()
+	goroutineQIDChannel := make(chan string)
+	go getQueryID(goroutineQIDChannel, queryIDChannel)
 
 	// 0 allows arbitrary number of statements
 	ctx, err := sf.WithMultiStatement(ctxWithQueryIDChan, 0)
@@ -147,15 +144,15 @@ func (sft SnowflakeTarget) RunQuery(query ReadyQuery, dryRun bool, showQueryOutp
 		} else {
 			res, err := sft.Client.ExecContext(ctx, script)
 			if err != nil {
-				switch err.Error() {
-				// If the error message is `-00001: `, the DB failed to return accurate status. Request the status and proceed accordingly.
-				case "-00001: ":
+				// We read queryID here
+				queryID := <-goroutineQIDChannel
+				if isSnowflakeUnknownError(err) {
 					log.Println("INFO: Encountered -1 status. Polling for query result with queryID: ", queryID)
 					pollResult := pollForQueryStatus(sft, queryID)
 					return QueryStatus{query, query.Path, int(affected), pollResult}
-				default:
-					return QueryStatus{query, query.Path, int(affected), errors.Wrap(err, fmt.Sprintf("QueryID: %s", queryID))}
 				}
+
+				return QueryStatus{query, query.Path, int(affected), errors.Wrap(err, fmt.Sprintf("QueryID: %s", queryID))}
 			}
 			aff, _ := res.RowsAffected()
 			affected += aff
@@ -221,6 +218,13 @@ func stringify(row [][]byte) []string {
 	return line
 }
 
+// getQueryID reads from queryIDch and writes to goroutineCh.
+// If goroutineCh is unbuffered (as is being used above), it blocks.
+func getQueryID(goroutineCh chan string, queryIDch chan string) {
+	queryID := <-queryIDch
+	goroutineCh <- queryID
+}
+
 // Blocking function to poll for the true status of a query which didn't return a result.
 func pollForQueryStatus(sft SnowflakeTarget, queryID string) error {
 	// Get the snoflake driver and open a connection
@@ -234,7 +238,7 @@ func pollForQueryStatus(sft SnowflakeTarget, queryID string) error {
 		qStatus, err := conn.(sf.SnowflakeConnection).GetQueryStatus(context.Background(), queryID)
 
 		switch {
-		case err != nil && strings.Contains(err.Error(), "279301:"): // The driver returns an error containing this code when the query is still running.
+		case err != nil && isSnowflakeQueryRunningError(err):
 			break
 		case err != nil:
 			// Any other error is genuine, return the error.
@@ -251,4 +255,31 @@ func pollForQueryStatus(sft SnowflakeTarget, queryID string) error {
 		// Give it a minute before polling again.
 		time.Sleep(60 * time.Second)
 	}
+}
+
+// isSnowflakeErrorCode returns whether its error argument is sf.SnowflakeError
+// with Number field equal to given code.
+func isSnowflakeErrorCode(e error, code int) bool {
+	if e == nil {
+		return false
+	}
+
+	var sfErr *sf.SnowflakeError
+	if errors.As(e, &sfErr) {
+		return sfErr.Number == code
+	}
+
+	return false
+}
+
+// isSnowflakeUnknownError returns whether an error is sf.ErrUnknownError
+// Based on: https://github.com/snowflakedb/gosnowflake/blob/5da2ab2463b2c7e544722bc58defdb23397287d6/errors.go#L312
+func isSnowflakeUnknownError(e error) bool {
+	return isSnowflakeErrorCode(e, -1)
+}
+
+// isSnowflakeQueryRunningError returns if a Snowflake Error has 279301 code.
+// The driver returns an error with this code when the query is still running.
+func isSnowflakeQueryRunningError(e error) bool {
+	return isSnowflakeErrorCode(e, sf.ErrQueryIsRunning)
 }
