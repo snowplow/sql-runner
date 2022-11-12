@@ -12,7 +12,7 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
-	github.com/snowflakedb/gosnowflake v1.6.10
+	github.com/snowflakedb/gosnowflake v1.6.13
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/net v0.0.0-20220531201128-c960675eff93
 	google.golang.org/api v0.82.0
