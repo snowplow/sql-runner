@@ -1,3 +1,9 @@
+Version 0.10.1 (2022-11-17)
+---------------------------
+Update GitHub Actions workflows (#213)
+Fix matching to gosnowflake ErrUnknownError (#212)
+Update Snowflake driver to v1.6.13 (#211)
+
 Version 0.10.0 (2022-06-28)
 ---------------------------
 Fix out of range panic on invalid runQuery argument (#210)
