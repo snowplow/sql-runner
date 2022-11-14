@@ -53,14 +53,14 @@ guest> make format
 
 First either compile the binary from source using the above `make` command or download the published Binary directly from the GitHub release:
 
-* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.10.0/sql_runner_0.10.0_darwin_amd64.zip)
-* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.10.0/sql_runner_0.10.0_linux_amd64.zip)
-* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.10.0/sql_runner_0.10.0_windows_amd64.zip)
+* [Darwin (macOS)](https://github.com/snowplow/sql-runner/releases/download/0.10.1/sql_runner_0.10.1_darwin_amd64.zip)
+* [Linux](https://github.com/snowplow/sql-runner/releases/download/0.10.1/sql_runner_0.10.1_linux_amd64.zip)
+* [Windows](https://github.com/snowplow/sql-runner/releases/download/0.10.1/sql_runner_0.10.1_windows_amd64.zip)
 
 ### CLI Output
 
 ```bash
-sql-runner version: 0.10.0
+sql-runner version: 0.10.1
 Run playbooks of SQL scripts in series and parallel on Redshift and Postgres
 Usage:
   -checkLock string
@@ -131,8 +131,8 @@ limitations under the License.
 
 [snowplow]: https://github.com/snowplow/snowplow
 
-[setup-guide]: https://docs.snowplowanalytics.com/docs/modeling-your-data/setup-and-run-sql-runner/
-[user-guide]: https://docs.snowplowanalytics.com/docs/modeling-your-data/setup-and-run-sql-runner/#User_guide
+[setup-guide]: https://docs.snowplow.io/docs/modeling-your-data/modeling-your-data-with-sql-runner/
+[user-guide]: https://docs.snowplow.io/docs/modeling-your-data/modeling-your-data-with-sql-runner/#user-guide
 
 [setup-image]:  https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [user-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
