@@ -1,5 +1,5 @@
-Version 0.10.1 (2022-11-16)
----------------------------
+Version 0.10.1-rc1 (2022-11-16)
+-------------------------------
 Update GitHub Actions workflows (#213)
 Fix matching to gosnowflake ErrUnknownError (#212)
 Update Snowflake driver to v1.6.13 (#211)
