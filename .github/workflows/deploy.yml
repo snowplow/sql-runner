@@ -55,13 +55,13 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.ref }}
-        name: Version ${{ github.ref }} (${{ env.RELEASE_DATE }})
+        tag: ${{ steps.version.outputs.TAG_VERSION }}
+        name: Version ${{ steps.version.outputs.TAG_VERSION }} (${{ env.RELEASE_DATE }})
         draft: false
         prerelease: ${{ contains(steps.version.outputs.TAG_VERSION, '-rc') }}
 
     - name: Upload release assets
-      uses: alexellis/upload-assets@0.2.3
+      uses: alexellis/upload-assets@0.4.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
