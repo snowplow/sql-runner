@@ -1,3 +1,11 @@
+Version 0.11.0 (2025-05-13)
+---------------------------
+Add support for PrivateKey authentication with the Snowflake Target (#216)
+Format code and update COPYRIGHT
+Updated out-of-date workflow build files
+Updated docker compose for integration tests
+Updated Snowflake Driver + Go version
+
 Version 0.10.1 (2022-11-17)
 ---------------------------
 Update GitHub Actions workflows (#213)
