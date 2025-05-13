@@ -81,7 +81,7 @@ func main() {
 		}
 	}
 
-	log.Printf(message)
+	log.Print(message)
 	os.Exit(code)
 }
 
