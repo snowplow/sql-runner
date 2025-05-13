@@ -1,4 +1,3 @@
-//
 // Copyright (c) 2015-2022 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
@@ -9,12 +8,14 @@
 // software distributed under the Apache License Version 2.0 is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
-//
 package main
 
 import (
 	"context"
+	"crypto/rsa"
+	"crypto/x509"
 	"database/sql"
+	"encoding/pem"
 	"fmt"
 	"log"
 	"os"
@@ -48,6 +49,41 @@ func (sft SnowflakeTarget) IsConnectable() bool {
 	return err == nil
 }
 
+// parsePrivateKey reads and parses a private key file, optionally decrypting it with a passphrase.
+func parsePrivateKey(path string, passphrase string) (*rsa.PrivateKey, error) {
+	privateKeyBytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read private key file: %w", err)
+	}
+
+	block, _ := pem.Decode(privateKeyBytes)
+	if block == nil {
+		return nil, fmt.Errorf("failed to decode PEM block from private key file")
+	}
+
+	var keyBytes []byte
+	if passphrase != "" {
+		keyBytes, err = x509.DecryptPEMBlock(block, []byte(passphrase))
+		if err != nil {
+			return nil, fmt.Errorf("failed to decrypt private key: %w", err)
+		}
+	} else {
+		keyBytes = block.Bytes
+	}
+
+	key, err := x509.ParsePKCS8PrivateKey(keyBytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse private key: %w", err)
+	}
+
+	privateKey, ok := key.(*rsa.PrivateKey)
+	if !ok {
+		return nil, fmt.Errorf("private key is not an RSA key")
+	}
+
+	return privateKey, nil
+}
+
 // NewSnowflakeTarget returns a ptr to a SnowflakeTarget.
 func NewSnowflakeTarget(target Target) (*SnowflakeTarget, error) {
 	params := make(map[string]*string)
@@ -59,12 +95,24 @@ func NewSnowflakeTarget(target Target) (*SnowflakeTarget, error) {
 		Region:       target.Region,
 		Account:      target.Account,
 		User:         target.Username,
-		Password:     target.Password,
 		Database:     target.Database,
 		Warehouse:    target.Warehouse,
 		LoginTimeout: loginTimeout,
 		Params:       params,
 	}
+
+	// Set authentication method based on available credentials
+	if target.PrivateKeyPath != "" {
+		config.Authenticator = sf.AuthTypeJwt
+		privateKey, err := parsePrivateKey(target.PrivateKeyPath, target.PrivateKeyPassphrase)
+		if err != nil {
+			return nil, err
+		}
+		config.PrivateKey = privateKey
+	} else {
+		config.Password = target.Password
+	}
+
 	if envAppName := os.Getenv(`SNOWPLOW_SQL_RUNNER_SNOWFLAKE_APP_NAME`); envAppName != `` {
 		config.Application = `Snowplow_` + envAppName
 	} else {
