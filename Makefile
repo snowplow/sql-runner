@@ -67,12 +67,12 @@ tidy:
 setup-reset: setup-down setup-up
 
 setup-up:
-	docker-compose -f ./integration/docker-compose.yml up -d
+	docker compose -f ./integration/docker-compose.yml up -d
 	sleep 2
 	./integration/setup_consul.sh
 
 setup-down:
-	docker-compose -f ./integration/docker-compose.yml down
+	docker compose -f ./integration/docker-compose.yml down
 
 test-setup:
 	mkdir -p $(coverage_dir)
