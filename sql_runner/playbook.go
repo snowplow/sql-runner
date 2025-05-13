@@ -1,4 +1,3 @@
-//
 // Copyright (c) 2015-2022 Snowplow Analytics Ltd. All rights reserved.
 //
 // This program is licensed to you under the Apache License Version 2.0,
@@ -9,7 +8,6 @@
 // software distributed under the Apache License Version 2.0 is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
-//
 package main
 
 import (
@@ -27,8 +25,10 @@ type Playbook struct {
 type Target struct {
 	Name, Type, Host, Database, Port, Username,
 	Password, Region, Account, Warehouse, Project string
-	QueryTag string `yaml:"query_tag"`
-	Ssl      bool
+	QueryTag             string `yaml:"query_tag"`
+	Ssl                  bool
+	PrivateKeyPath       string `yaml:"private_key_path"`
+	PrivateKeyPassphrase string `yaml:"private_key_passphrase"`
 }
 
 // Step represents a playbook step.
